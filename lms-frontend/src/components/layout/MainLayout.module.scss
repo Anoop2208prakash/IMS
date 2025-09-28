@@ -1,0 +1,15 @@
+.appContainer {
+  /* This pushes the entire content area down by the height of the fixed navbar. */
+  padding-top: 60px;
+}
+
+.mainContent {
+  display: flex;
+}
+
+.pageContent {
+  flex-grow: 1;
+  padding: 2rem;
+  height: calc(100vh - 60px); /* Full height minus navbar */
+  overflow-y: auto;
+}

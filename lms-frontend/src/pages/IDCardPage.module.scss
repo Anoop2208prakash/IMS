@@ -1,0 +1,69 @@
+.container {
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.idCard {
+  width: 350px;
+  height: 220px;
+  border: 1px solid #ccc;
+  border-radius: 12px;
+  background-color: #f9f9f9;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  background-color: #007bff;
+  color: white;
+  text-align: center;
+  padding: 0.5rem;
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+  h3 { margin: 0; }
+}
+
+.content {
+  display: flex;
+  padding: 1rem;
+  flex-grow: 1;
+}
+
+.photo {
+  width: 90px;
+  height: 110px;
+  border: 1px solid #ddd;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #aaa;
+}
+
+.details {
+  flex-grow: 1;
+  padding-left: 1rem;
+  p {
+    margin: 0.5rem 0;
+    font-size: 0.9rem;
+  }
+}
+
+.footer {
+  text-align: center;
+  font-size: 0.8rem;
+  padding: 0.5rem;
+  border-top: 1px solid #eee;
+}
+
+.printButton {
+  margin-top: 2rem;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  cursor: pointer;
+  @media print {
+    display: none;
+  }
+}

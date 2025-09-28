@@ -1,0 +1,75 @@
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 98%; // Corrected from 97% to span the full width
+  z-index: 1000;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 2rem;
+  height: 60px;
+  background-color: #333;
+  color: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.brand {
+  font-weight: bold;
+  font-size: 1.5rem;
+}
+
+.userInfo {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+// New styles for the profile circle and dropdown
+.profileContainer {
+  position: relative;
+}
+
+.profileCircle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #007bff;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  font-size: 1.2rem;
+  cursor: pointer;
+  user-select: none; // Prevents text selection
+}
+
+.dropdown {
+  position: absolute;
+  top: 50px; // Position it below the profile circle
+  right: 0;
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  min-width: 150px;
+  z-index: 1001;
+  display: flex;
+  flex-direction: column;
+
+  a, button {
+    padding: 0.75rem 1rem;
+    text-align: left;
+    text-decoration: none;
+    color: #333;
+    background: none;
+    border: none;
+    width: 100%;
+    cursor: pointer;
+
+    &:hover {
+      background-color: #f4f4f4;
+    }
+  }
+}

@@ -1,0 +1,254 @@
+.admissionPageContainer {
+  font-family: Arial, sans-serif;
+  max-width: 900px; // Adjust as needed
+  margin: 20px auto;
+  padding: 20px;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+
+  // Top header section
+  .header {
+    display: grid;
+    grid-template-columns: 1fr 3fr 1fr; // Adjust for logo, info, image
+    align-items: center;
+    background-color: #ffc107; // Orange color
+    color: #333;
+    padding: 15px 20px;
+    margin-bottom: 20px;
+    text-align: center;
+
+    .logoSection {
+      text-align: left;
+      .logo {
+        height: 80px; // Adjust size
+        width: auto;
+      }
+    }
+
+    .academyInfo {
+      h1, h2, h3 {
+        margin: 0;
+        padding: 2px 0;
+      }
+      h1 { font-size: 1.8em; }
+      h2 { font-size: 1.2em; }
+      h3 { font-size: 1.5em; border-top: 1px solid #333; padding-top: 5px; margin-top: 5px;}
+    }
+
+    .imageUploadBox {
+      border: 1px solid #ccc;
+      width: 120px;
+      height: 140px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+      background-color: #f9f9f9;
+      cursor: pointer;
+      text-align: center;
+      font-size: 0.9em;
+
+      .imagePreview {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+      }
+
+      .imageInput {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        cursor: pointer;
+      }
+    }
+  }
+
+  // General form styling
+  .admissionForm {
+    display: flex;
+    flex-direction: column;
+    gap: 15px; // Space between major sections
+
+    label {
+      display: flex; // To align input with label text horizontally
+      align-items: center;
+      margin-bottom: 8px; // Space between labels/inputs
+      font-weight: bold;
+      
+      input[type="text"],
+      input[type="email"],
+      input[type="tel"],
+      input[type="number"],
+      input[type="date"],
+      input[type="password"],
+      select,
+      textarea {
+        flex-grow: 1; // Input takes up remaining space
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        margin-left: 10px; // Space between label text and input field
+      }
+
+      textarea {
+        resize: vertical;
+        min-height: 40px;
+      }
+    }
+  }
+
+  // Groups of form fields
+  .formGroup {
+    display: grid;
+    grid-template-columns: 1fr 1fr; // Two columns for fields
+    gap: 15px; // Space between fields in a group
+    padding: 15px;
+    border: 1px dashed #ddd; // Dashed border for sections
+    border-radius: 5px;
+
+    .inlineGroup {
+      display: flex;
+      gap: 20px; // Space between birth date and gender
+      grid-column: span 2; // Make it span full width if needed
+      align-items: center;
+
+      .radioGroup {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: normal; // Reset font-weight for inner labels
+        
+        input[type="radio"] {
+          margin-right: 5px;
+          margin-left: 0; // Override default margin
+        }
+      }
+    }
+  }
+
+  // Address sections
+  .addressSection {
+    border: 1px dashed #ddd;
+    padding: 15px;
+    border-radius: 5px;
+
+    .addressLabel {
+      font-weight: bold;
+      text-decoration: underline;
+      margin-top: 0;
+      margin-bottom: 10px;
+    }
+
+    .addressFields {
+      display: grid;
+      grid-template-columns: 1fr 1fr; // Two columns for division/district
+      gap: 10px;
+
+      label:last-child { // The actual address textarea
+        grid-column: span 2; // Make it span full width
+      }
+    }
+  }
+
+  // Declaration section
+  .declarationSection {
+    text-align: center;
+    padding: 20px;
+    border: 1px solid #eee;
+    background-color: #f9f9f9;
+    border-radius: 5px;
+
+    h3 {
+      margin-top: 0;
+      color: #333;
+    }
+
+    p {
+      font-size: 0.9em;
+      color: #555;
+      margin-bottom: 30px;
+    }
+
+    .signatures {
+      display: flex;
+      justify-content: space-around;
+      margin-top: 40px;
+
+      .signatureBlock {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+
+        .signatureLine {
+          width: 150px;
+          border-bottom: 1px solid #333;
+          margin-bottom: 5px;
+        }
+
+        span {
+          font-size: 0.8em;
+          color: #555;
+        }
+      }
+    }
+  }
+
+  .submitButton {
+    background-color: #007bff; // Blue submit button
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1.1em;
+    margin-top: 20px;
+
+    &:hover {
+      background-color: #0056b3;
+    }
+  }
+
+  .errorMessage {
+    color: red;
+    text-align: center;
+    margin-bottom: 10px;
+  }
+
+  .successMessage {
+    color: green;
+    text-align: center;
+    margin-bottom: 10px;
+  }
+}
+
+// Adjustments for smaller screens (optional, but good practice)
+@media (max-width: 768px) {
+  .admissionPageContainer {
+    padding: 10px;
+    max-width: 100%;
+  }
+
+  .header {
+    grid-template-columns: 1fr;
+    .logoSection, .academyInfo, .imageUploadBox {
+      text-align: center;
+      margin-bottom: 10px;
+    }
+  }
+
+  .formGroup, .addressFields {
+    grid-template-columns: 1fr; // Stack fields on small screens
+  }
+
+  .inlineGroup {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+}
