@@ -1,0 +1,158 @@
+.storeContainer {
+  h2 {
+    margin-bottom: 20px;
+  }
+}
+
+.tabContainer {
+  margin-bottom: 25px;
+  border-bottom: 2px solid #dee2e6;
+  
+  button {
+    padding: 10px 20px;
+    font-size: 1.1em;
+    border: none;
+    background: none;
+    cursor: pointer;
+    color: #6c757d;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px; // Align with the container's border
+
+    &.active {
+      color: #007bff;
+      font-weight: bold;
+      border-bottom-color: #007bff;
+    }
+  }
+}
+
+.message {
+  padding: 10px;
+  margin-bottom: 20px;
+  border-radius: 5px;
+  font-weight: bold;
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.itemsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.itemCard {
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  border-left: 5px solid #007bff;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s ease-in-out;
+
+  &:hover {
+    transform: translateY(-5px);
+  }
+
+  h3 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    flex-grow: 1;
+  }
+
+  .price {
+    font-size: 1.6em;
+    font-weight: bold;
+    color: #343a40;
+    margin: 5px 0;
+  }
+
+  .stock {
+    font-size: 0.9em;
+    color: #6c757d;
+    margin-bottom: 15px;
+  }
+
+  button {
+    width: 100%;
+    padding: 10px;
+    font-size: 1em;
+    font-weight: bold;
+    color: white;
+    background-color: #28a745;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: auto;
+    transition: background-color 0.2s;
+
+    &:hover:not(:disabled) {
+      background-color: #218838;
+    }
+
+    &:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
+  }
+}
+
+.noData {
+  grid-column: 1 / -1; // Span across all columns
+  text-align: center;
+  color: #6c757d;
+  padding: 40px;
+}
+// --- New Layout Styles ---
+.pageLayout {
+  display: grid;
+  grid-template-columns: 3fr 1fr; // Store takes 3/4 of space, cart takes 1/4
+  gap: 30px;
+}
+
+.cartContainer {
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  align-self: start; // Makes the cart stick to the top
+}
+
+.cartItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.itemInfo {
+  display: flex;
+  flex-direction: column;
+  span:last-child {
+    font-size: 0.9em;
+    color: #6c757d;
+  }
+}
+
+.removeButton {
+  background: none;
+  border: none;
+  color: #e74c3c;
+  font-size: 1.5em;
+  cursor: pointer;
+}
+
+.cartTotal {
+  margin-top: 20px;
+  text-align: right;
+  font-size: 1.2em;
+}
+
+
+// --- Existing Styles (no changes needed) ---
+.storeContainer, .tabContainer, .message, .itemsGrid, .itemCard {
+  // ... keep all the previous styles for these classes
+}

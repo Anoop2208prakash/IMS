@@ -1,0 +1,92 @@
+.pageContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px;
+}
+
+.idCard {
+  width: 400px;
+  height: 250px;
+  background: #fff;
+  border-radius: 15px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  font-family: Arial, sans-serif;
+  border: 1px solid #ddd;
+}
+
+.header {
+  background-color: #004080;
+  color: white;
+  padding: 10px;
+  text-align: center;
+  border-top-left-radius: 15px;
+  border-top-right-radius: 15px;
+  h3, h4 {
+    margin: 0;
+  }
+  h3 { font-size: 16px; }
+  h4 { font-size: 12px; font-weight: normal; }
+}
+
+.content {
+  display: flex;
+  padding: 20px;
+  align-items: center;
+  flex-grow: 1;
+}
+
+.photo {
+  width: 100px;
+  height: 120px;
+  border: 1px solid #ccc;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #aaa;
+  font-size: 14px;
+}
+
+.details {
+  flex-grow: 1;
+  padding-left: 20px;
+  p {
+    margin: 8px 0;
+    font-size: 14px;
+  }
+}
+
+.printButton {
+  margin-top: 30px;
+  padding: 12px 25px;
+  font-size: 16px;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  &:hover {
+    background-color: #218838;
+  }
+}
+
+// Print-specific styles
+@media print {
+  body * {
+    visibility: hidden; // Hide everything
+  }
+  .pageContainer, .pageContainer * {
+    visibility: visible; // But show the card container and its children
+  }
+  .printButton {
+    display: none; // Hide the print button itself
+  }
+  .pageContainer {
+    position: absolute;
+    left: 0;
+    top: 0;
+  }
+}

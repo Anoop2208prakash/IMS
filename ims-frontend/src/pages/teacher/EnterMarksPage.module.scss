@@ -1,0 +1,63 @@
+.container {
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+.controls {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 25px;
+
+  select {
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 1em;
+    min-width: 200px;
+  }
+}
+
+.marksTable {
+  width: 100%;
+  border-collapse: collapse;
+
+  th, td {
+    border: 1px solid #ddd;
+    padding: 12px;
+    text-align: left;
+  }
+
+  thead {
+    background-color: #f8f9fa;
+  }
+}
+
+.marksInput {
+  width: 80px;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1em;
+  text-align: center;
+}
+
+.submitButton {
+  margin-top: 20px;
+  padding: 12px 25px;
+  font-size: 16px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #0056b3;
+  }
+}
+
+.message {
+  margin-top: 15px;
+  font-weight: bold;
+}

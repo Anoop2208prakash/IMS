@@ -1,0 +1,50 @@
+.container {
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+}
+.controls {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 25px;
+  select, input { padding: 10px; border-radius: 5px; border: 1px solid #ccc; }
+}
+.studentList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.studentRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px;
+  background: #f9f9f9;
+  border-radius: 5px;
+}
+.statusButtons {
+  display: flex;
+  gap: 5px;
+  button {
+    padding: 5px 10px;
+    border: 1px solid #ccc;
+    border-radius: 15px;
+    cursor: pointer;
+    background: #fff;
+    &.active {
+      color: white;
+      border-color: #007bff;
+      background: #007bff;
+    }
+  }
+}
+.submitButton {
+  margin-top: 20px;
+  padding: 12px 25px;
+  font-size: 16px;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}

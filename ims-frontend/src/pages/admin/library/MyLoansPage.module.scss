@@ -1,0 +1,32 @@
+.container {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+}
+
+.loansTable {
+  // You can reuse the .table styles from AdminPages.module.scss or define them here
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+
+  th, td {
+    border: 1px solid #ddd;
+    padding: 12px;
+    text-align: left;
+  }
+
+  thead { background-color: #f8f9fa; }
+}
+
+.status {
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 0.8em;
+  font-weight: bold;
+  color: white;
+}
+
+.active { background-color: #007bff; } // Blue
+.returned { background-color: #6c757d; } // Gray
+.overdue { background-color: #e74c3c; } // Red

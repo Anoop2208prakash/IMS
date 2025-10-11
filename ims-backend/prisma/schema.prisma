@@ -1,0 +1,302 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// --- Enums ---
+enum Role {
+  STUDENT
+  TEACHER
+  ADMIN
+  ADMIN_LIBRARY
+  ADMIN_ADMISSION
+  ADMIN_FINANCE
+  SUPER_ADMIN
+}
+
+enum AttendanceStatus {
+  PRESENT
+  ABSENT
+  LATE
+}
+
+enum FeeInvoiceStatus {
+  PENDING
+  PAID
+  OVERDUE
+  CANCELLED
+}
+
+enum ItemCategory {
+  UNIFORM
+  STATIONARY
+  OTHER
+}
+
+enum OrderStatus {
+  PENDING
+  COMPLETED
+  CANCELLED
+}
+
+// --- Main Models ---
+model User {
+  id                 String              @id @default(cuid())
+  email              String              @unique
+  name               String
+  password           String
+  role               Role                @default(STUDENT)
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+  
+  student            Student?
+  teacher            Teacher?
+  enrollments        Enrollment[]
+  assignments        CourseAssignment[]  @relation("TeacherAssignments")
+  loans              Loan[]
+  studentAttendance  Attendance[]        @relation("StudentAttendance")
+  markedAttendance   Attendance[]        @relation("TeacherAttendance")
+  examResults        ExamResult[]        @relation("StudentResults")
+  enteredExamResults ExamResult[]        @relation("TeacherEnteredResults")
+  invoices           FeeInvoice[]
+  payments           FeePayment[]
+  inventoryIssuances InventoryIssuance[]
+  orders             Order[] // New
+}
+
+model Student {
+  id            String   @id @default(cuid())
+  userId        String   @unique
+  rollNumber    String   @unique
+  admissionDate DateTime
+  user          User     @relation(fields: [userId], references: [id])
+}
+
+model Teacher {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  employeeId  String   @unique
+  department  String
+  dateJoined  DateTime
+  user        User     @relation(fields: [userId], references: [id])
+}
+
+model Course {
+  id                String             @id @default(cuid())
+  title             String             @unique
+  description       String?            @db.Text
+  courseCode        String             @unique
+  credits           Int
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  
+  enrollments       Enrollment[]
+  assignments       CourseAssignment[]
+  attendanceRecords Attendance[]
+  examResults       ExamResult[]
+  feeStructures     FeeStructure[]
+}
+
+model Enrollment {
+  id         String   @id @default(cuid())
+  userId     String
+  courseId   String
+  enrolledAt DateTime @default(now())
+
+  user   User   @relation(fields: [userId], references: [id])
+  course Course @relation(fields: [courseId], references: [id])
+  @@unique([userId, courseId])
+}
+
+model CourseAssignment {
+  id         String   @id @default(cuid())
+  teacherId  String
+  courseId   String
+  assignedAt DateTime @default(now())
+
+  teacher User   @relation("TeacherAssignments", fields: [teacherId], references: [id])
+  course  Course @relation(fields: [courseId], references: [id])
+  @@unique([teacherId, courseId])
+}
+
+model Book {
+  id                String       @id @default(cuid())
+  title             String
+  isbn              String       @unique
+  publishedDate     DateTime
+  totalQuantity     Int
+  availableQuantity Int
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+  
+  authors           BookAuthor[]
+  loans             Loan[]
+}
+
+model Author {
+  id        String       @id @default(cuid())
+  name      String
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+  
+  books     BookAuthor[]
+}
+
+model BookAuthor {
+  book     Book     @relation(fields: [bookId], references: [id])
+  bookId   String
+  author   Author   @relation(fields: [authorId], references: [id])
+  authorId String
+
+  @@id([bookId, authorId])
+}
+
+model Loan {
+  id           String    @id @default(cuid())
+  bookId       String
+  userId       String
+  checkoutDate DateTime  @default(now())
+  dueDate      DateTime
+  returnDate   DateTime?
+
+  book Book @relation(fields: [bookId], references: [id])
+  user User @relation(fields: [userId], references: [id])
+}
+
+model Attendance {
+  id         String           @id @default(cuid())
+  date       DateTime
+  status     AttendanceStatus
+  
+  studentId  String
+  student    User             @relation("StudentAttendance", fields: [studentId], references: [id])
+  
+  courseId   String
+  course     Course           @relation(fields: [courseId], references: [id])
+  
+  markedById String
+  markedBy   User             @relation("TeacherAttendance", fields: [markedById], references: [id])
+
+  createdAt  DateTime         @default(now())
+  @@unique([date, studentId, courseId])
+}
+
+model Exam {
+  id          String       @id @default(cuid())
+  name        String       @unique
+  date        DateTime
+  totalMarks  Int          @default(100)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  
+  results     ExamResult[]
+}
+
+model ExamResult {
+  id            String   @id @default(cuid())
+  marksObtained Float
+  
+  studentId     String
+  student       User     @relation("StudentResults", fields: [studentId], references: [id])
+  
+  courseId      String
+  course        Course   @relation(fields: [courseId], references: [id])
+  
+  examId        String
+  exam          Exam     @relation(fields: [examId], references: [id])
+
+  enteredById   String
+  enteredBy     User     @relation("TeacherEnteredResults", fields: [enteredById], references: [id])
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@unique([studentId, courseId, examId])
+}
+
+model FeeStructure {
+  id        String       @id @default(cuid())
+  name      String
+  amount    Float
+  courseId  String
+  course    Course       @relation(fields: [courseId], references: [id])
+  invoices  FeeInvoice[]
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+}
+
+model FeeInvoice {
+  id             String           @id @default(cuid())
+  userId         String
+  user           User             @relation(fields: [userId], references: [id])
+  feeStructureId String
+  feeStructure   FeeStructure     @relation(fields: [feeStructureId], references: [id])
+  amount         Float
+  dueDate        DateTime
+  status         FeeInvoiceStatus @default(PENDING)
+  payments       FeePayment[]
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+}
+
+model FeePayment {
+  id            String     @id @default(cuid())
+  invoiceId     String
+  invoice       FeeInvoice @relation(fields: [invoiceId], references: [id])
+  userId        String
+  user          User       @relation(fields: [userId], references: [id])
+  amount        Float
+  paymentDate   DateTime   @default(now())
+  method        String
+  transactionId String?    @unique
+  createdAt     DateTime   @default(now())
+}
+
+model InventoryItem {
+  id                String              @id @default(cuid())
+  name              String
+  category          ItemCategory
+  price             Float
+  quantityInStock   Int
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+  
+  issuances         InventoryIssuance[]
+  orderItems        OrderItem[] // New
+}
+
+model InventoryIssuance {
+  id             String        @id @default(cuid())
+  itemId         String
+  item           InventoryItem @relation(fields: [itemId], references: [id])
+  userId         String
+  user           User          @relation(fields: [userId], references: [id])
+  quantityIssued Int
+  dateIssued     DateTime      @default(now())
+}
+
+model Order {
+  id          String      @id @default(cuid())
+  orderId     String      @unique @default(cuid())
+  userId      String
+  user        User        @relation(fields: [userId], references: [id])
+  totalAmount Float
+  status      OrderStatus @default(PENDING)
+  createdAt   DateTime    @default(now())
+  
+  items       OrderItem[]
+}
+
+model OrderItem {
+  id                    String        @id @default(cuid())
+  orderId               String
+  order                 Order         @relation(fields: [orderId], references: [id])
+  itemId                String
+  item                  InventoryItem @relation(fields: [itemId], references: [id])
+  quantity              Int
+  priceAtTimeOfPurchase Float
+}

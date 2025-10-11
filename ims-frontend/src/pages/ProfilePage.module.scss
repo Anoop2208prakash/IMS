@@ -1,0 +1,31 @@
+.profileContainer {
+  display: flex;
+  justify-content: center;
+  padding-top: 40px;
+}
+
+.profileCard {
+  background: #fff;
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 600px;
+}
+
+.profileInfo p {
+  font-size: 1.1em;
+  line-height: 1.6;
+  strong {
+    color: #333;
+  }
+}
+
+.roleDetails {
+  margin-top: 20px;
+  h3 {
+    color: #007bff;
+    border-bottom: 2px solid #e9ecef;
+    padding-bottom: 10px;
+  }
+}

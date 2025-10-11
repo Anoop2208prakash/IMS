@@ -1,0 +1,42 @@
+.container {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+}
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+.totalDueCard {
+  background: #fff3cd;
+  border: 1px solid #ffeeba;
+  padding: 15px 25px;
+  border-radius: 8px;
+  text-align: right;
+  span {
+    display: block;
+    color: #856404;
+    font-size: 0.9em;
+  }
+  strong {
+    font-size: 1.8em;
+    color: #856404;
+  }
+}
+.invoicesTable { /* Use styles from .loansTable or .attendanceTable */ }
+.status { /* Use styles from MyLoansPage.module.scss */ }
+.pending, .overdue { background-color: #e74c3c; } // Red for pending/overdue
+.paid { background-color: #28a745; } // Green for paid
+
+.actions {
+  button {
+    padding: 5px 10px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+}

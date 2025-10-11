@@ -1,0 +1,101 @@
+.pageContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.invoiceBox {
+  width: 800px;
+  background: #fff;
+  border: 1px solid #ddd;
+  padding: 30px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  font-family: Arial, sans-serif;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  border-bottom: 2px solid #333;
+  padding-bottom: 15px;
+
+  h1 {
+    margin: 0;
+    color: #333;
+  }
+
+  .headerDetails {
+    text-align: right;
+    p { margin: 2px 0; }
+  }
+}
+
+.customerDetails {
+  padding: 20px 0;
+  p { margin: 2px 0; }
+}
+
+.itemsTable {
+  width: 100%;
+  border-collapse: collapse;
+  
+  th, td {
+    border-bottom: 1px solid #eee;
+    padding: 12px;
+    text-align: left;
+  }
+
+  thead {
+    background-color: #f8f9fa;
+    th {
+      border-bottom: 2px solid #ddd;
+    }
+  }
+
+  tbody tr:last-child td {
+    border-bottom: none;
+  }
+}
+
+.totalSection {
+  margin-top: 20px;
+  padding-top: 15px;
+  border-top: 2px solid #333;
+  text-align: right;
+  font-size: 1.4em;
+}
+
+.buttonRow {
+  margin-top: 30px;
+  display: flex;
+  gap: 20px;
+}
+
+.printButton, .backButton {
+  padding: 12px 25px;
+  font-size: 16px;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  text-decoration: none;
+  text-align: center;
+}
+.printButton { background-color: #007bff; }
+.backButton { background-color: #6c757d; }
+
+// Print-specific styles
+@media print {
+  body * { visibility: hidden; }
+  .invoiceBox, .invoiceBox * { visibility: visible; }
+  .invoiceBox {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    box-shadow: none;
+    border: none;
+  }
+  .buttonRow { display: none; }
+}
