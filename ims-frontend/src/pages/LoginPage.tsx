@@ -1,6 +1,5 @@
-// src/pages/LoginPage.tsx
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom'; // <-- Import Link
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import styles from './AdmissionPage.module.scss'; // Reusing styles
@@ -36,6 +35,12 @@ const LoginPage = () => {
           <label htmlFor="password">Password</label>
           <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
         </div>
+        
+        {/* Link to the Forgot Password page */}
+        <div style={{ textAlign: 'right', marginBottom: '15px', fontSize: '0.9em' }}>
+          <Link to="/forgot-password">Forgot Password?</Link>
+        </div>
+        
         <button type="submit" className={styles.submitButton}>Login</button>
         {error && <p className={styles.errorMessage}>{error}</p>}
       </form>

@@ -16,7 +16,7 @@ import MyCoursesPage from './pages/MyCoursesPage';
 // --- Teacher Page Imports ---
 import MyClassesPage from './pages/teacher/MyClassesPage';
 // --- Admin Page Imports ---
-import ViewAdmissionsPage from './pages/admin/ViewAdmissionsPage';
+import ViewAdmissionsPage from './pages/admin/admission/ViewAdmissionsPage';
 import ManageStudentsPage from './pages/admin/ManageStudentsPage';
 import ManageTeachersPage from './pages/admin/ManageTeachersPage';
 import ManageCoursesPage from './pages/admin/ManageCoursesPage';
@@ -39,12 +39,19 @@ import StationaryStorePage from './pages/student/StationaryStorePage';
 import OrderInvoicePage from './pages/student/OrderInvoicePage';
 import MyOrdersPage from './pages/student/MyOrdersPage';
 import ViewOrdersPage from './pages/admin/ViewOrdersPage';
+import ForgotPasswordPage from './pages/ForgotPasswordPage';
+import ResetPasswordPage from './pages/ResetPasswordPage';
+import EmailVerificationPage from './pages/EmailVerificationPage';
+import NewAdmissionPage from './pages/admin/admission/NewAdmissionPage';
 
 function App() {
   return (
     <Routes>
       {/* Public Routes */}
       <Route path="/login" element={<LoginPage />} />
+      <Route path="/verify-email/:token" element={<EmailVerificationPage />} />
+      <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+      <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
       <Route path="/admission" element={<AdmissionPage />} />
       <Route path="/staff-register" element={<StaffRegisterPage />} />
 
@@ -80,6 +87,7 @@ function App() {
           {/* Admin-Only Routes */}
           <Route element={<RoleProtectedRoute allowedRoles={['ADMIN', 'ADMIN_ADMISSION']} />}>
             <Route path="/admin/admissions" element={<ViewAdmissionsPage />} />
+            <Route path="/admin/admission/new" element={<NewAdmissionPage />} />
           </Route>
 
           <Route element={<RoleProtectedRoute allowedRoles={['ADMIN','ADMIN_LIBRARY']} />}>

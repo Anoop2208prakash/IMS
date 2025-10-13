@@ -45,27 +45,32 @@ enum OrderStatus {
 
 // --- Main Models ---
 model User {
-  id                 String              @id @default(cuid())
-  email              String              @unique
-  name               String
-  password           String
-  role               Role                @default(STUDENT)
-  createdAt          DateTime            @default(now())
-  updatedAt          DateTime            @updatedAt
-  
-  student            Student?
-  teacher            Teacher?
-  enrollments        Enrollment[]
-  assignments        CourseAssignment[]  @relation("TeacherAssignments")
-  loans              Loan[]
-  studentAttendance  Attendance[]        @relation("StudentAttendance")
-  markedAttendance   Attendance[]        @relation("TeacherAttendance")
-  examResults        ExamResult[]        @relation("StudentResults")
-  enteredExamResults ExamResult[]        @relation("TeacherEnteredResults")
-  invoices           FeeInvoice[]
-  payments           FeePayment[]
-  inventoryIssuances InventoryIssuance[]
-  orders             Order[] // New
+  id                   String              @id @default(cuid())
+  email                String              @unique
+  name                 String
+  password             String
+  role                 Role                @default(STUDENT)
+  createdAt            DateTime            @default(now())
+  updatedAt            DateTime            @updatedAt
+
+  // Password Reset Fields
+  passwordResetToken   String?             @unique
+  passwordResetExpires DateTime?
+
+  // Relations
+  student              Student?
+  teacher              Teacher?
+  enrollments          Enrollment[]
+  assignments          CourseAssignment[]  @relation("TeacherAssignments")
+  loans                Loan[]
+  studentAttendance    Attendance[]        @relation("StudentAttendance")
+  markedAttendance     Attendance[]        @relation("TeacherAttendance")
+  examResults          ExamResult[]        @relation("StudentResults")
+  enteredExamResults   ExamResult[]        @relation("TeacherEnteredResults")
+  invoices             FeeInvoice[]
+  payments             FeePayment[]
+  inventoryIssuances   InventoryIssuance[]
+  orders               Order[]
 }
 
 model Student {
@@ -266,7 +271,7 @@ model InventoryItem {
   updatedAt         DateTime            @updatedAt
   
   issuances         InventoryIssuance[]
-  orderItems        OrderItem[] // New
+  orderItems        OrderItem[]
 }
 
 model InventoryIssuance {

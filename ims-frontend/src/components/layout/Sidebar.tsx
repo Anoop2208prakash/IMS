@@ -45,6 +45,7 @@ const navLinks = {
     { path: '/', label: 'Dashboard' },
     { path: '/id-card', label: 'ID Card' },
     { path: '/admin/admissions', label: 'View Admissions' },
+    { path: '/admin/admission/new', label: 'New Admission' },
   ],
   ADMIN_FINANCE: [
     { path: '/', label: 'Dashboard' },
