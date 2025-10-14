@@ -1,4 +1,3 @@
-// src/controllers/profile.controller.ts
 import { Response } from 'express';
 import { PrismaClient } from '@prisma/client';
 import { AuthRequest } from '../middleware/auth.middleware';
@@ -19,8 +18,14 @@ export const getMyProfile = async (req: AuthRequest, res: Response) => {
         name: true,
         email: true,
         role: true,
-        student: true, // Include student-specific details if they exist
-        teacher: true, // Include teacher-specific details if they exist
+        student: { // Use 'select' to specify which student fields to include
+          select: {
+            rollNumber: true,
+            admissionDate: true,
+            photoUrl: true // <-- This is the crucial addition
+          }
+        },
+        teacher: true, // Teacher profile doesn't have a photo yet, so 'true' is fine
       },
     });
 

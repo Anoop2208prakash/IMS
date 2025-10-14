@@ -1,31 +1,15 @@
-// src/layouts/MainLayout.tsx
-import { Outlet, useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import Sidebar from '../components/layout/Sidebar'; // <-- Import Sidebar
-import styles from './MainLayout.module.scss'; // <-- We'll create this file
+import { Outlet } from 'react-router-dom';
+import Sidebar from '../components/layout/Sidebar';
+import ProfileDropdown from '../components/layout/ProfileDropdown'; // <-- Import the new component
+import styles from './MainLayout.module.scss';
 
 const MainLayout = () => {
-  const { user, logout } = useAuth();
-  const navigate = useNavigate();
-
-  const handleLogout = () => {
-    logout();
-    navigate('/login');
-  };
-
   return (
     <div className={styles.layout}>
-      <Sidebar /> {/* <-- Add the Sidebar component */}
+      <Sidebar />
       <div className={styles.mainContent}>
         <header className={styles.header}>
-          {user && (
-            <div>
-              <span>Welcome, {user.name}! (Role: {user.role})</span>
-              <button onClick={handleLogout} className={styles.logoutButton}>
-                Logout
-              </button>
-            </div>
-          )}
+          <ProfileDropdown /> {/* <-- Use the new component */}
         </header>
         <main className={styles.content}>
           <Outlet /> {/* This renders the current page */}

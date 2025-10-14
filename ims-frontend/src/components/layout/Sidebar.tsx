@@ -1,14 +1,15 @@
+
 // src/components/layout/Sidebar.tsx
 import { NavLink } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import styles from './Sidebar.module.scss';
+import logo from '../../assets/banner-logo.png';
 
 // Define the links for each role
 const navLinks = {
   STUDENT: [
     { path: '/', label: 'Dashboard' },
     { path: '/id-card', label: 'ID Card' },
-    { path: '/profile', label: 'My Profile' },
     { path: '/my-courses', label: 'My Courses' },
     { path: '/library', label: 'Library' },
     { path: '/my-loans', label: 'My Loans' },
@@ -21,7 +22,6 @@ const navLinks = {
   ],
   TEACHER: [
     { path: '/', label: 'Dashboard' },
-    { path: '/profile', label: 'My Profile' },
     { path: '/teacher/my-classes', label: 'My Classes' },
     { path: '/id-card', label: 'ID Card' },
     { path: '/library', label: 'Library' },
@@ -32,7 +32,6 @@ const navLinks = {
   ADMIN: [
     { path: '/', label: 'Dashboard' },
     { path: '/id-card', label: 'ID Card' },
-    { path: '/profile', label: 'My Profile' },
     { path: '/admin/admissions', label: 'View Admissions' },
     { path: '/admin/students', label: 'Manage Students' },
     { path: '/admin/teachers', label: 'Manage Teachers' },
@@ -40,6 +39,7 @@ const navLinks = {
     { path: '/admin/exams', label: 'Manage Exams' },
     { path: '/admin/inventory', label: 'Manage Inventory' },
     { path: '/admin/orders', label: 'View Orders' },
+    { path: '/admin/announcements', label: 'Announcements' }
   ],
   ADMIN_ADMISSION: [
     { path: '/', label: 'Dashboard' },
@@ -67,20 +67,20 @@ const navLinks = {
 
 const Sidebar = () => {
   const { user } = useAuth();
-
-  // Determine which links to show. Fallback to an empty array if role is not found.
   const linksToShow = user ? navLinks[user.role as keyof typeof navLinks] || [] : [];
 
   return (
     <aside className={styles.sidebar}>
-      <div className={styles.logo}>IMS</div>
+      <div className={styles.logo}>
+        <img src={logo} alt="Institute Logo" /> {/* <-- 2. Use the logo image */}
+      </div>
       <nav className={styles.nav}>
         {linksToShow.map((link) => (
           <NavLink
             key={link.path}
             to={link.path}
             className={({ isActive }) => (isActive ? `${styles.navLink} ${styles.active}` : styles.navLink)}
-            end={link.path === '/'} // Use 'end' only for the Dashboard link
+            end={link.path === '/'}
           >
             {link.label}
           </NavLink>

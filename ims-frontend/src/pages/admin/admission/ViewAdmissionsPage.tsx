@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import styles from '../AdminPages.module.scss'; // Reuse shared admin styles
+import toast from 'react-hot-toast';
+import styles from '../AdminPages.module.scss';
+import Spinner from '../../../components/common/Spinner';
+import EmptyState from '../../../components/common/EmptyState';
 
 interface StudentData {
   id: string;
@@ -20,26 +23,21 @@ interface StudentData {
 const ViewAdmissionsPage = () => {
   const [students, setStudents] = useState<StudentData[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
 
   useEffect(() => {
     const fetchAdmittedStudents = async () => {
       try {
         setLoading(true);
-        // This API endpoint is already secured for the correct admin roles
         const response = await axios.get('http://localhost:5000/api/students');
         setStudents(response.data);
       } catch (err: any) {
-        setError(err.response?.data?.message || 'Failed to fetch admission data.');
+        toast.error(err.response?.data?.message || 'Failed to fetch admission data.');
       } finally {
         setLoading(false);
       }
     };
     fetchAdmittedStudents();
   }, []);
-
-  if (loading) return <p>Loading admission records...</p>;
-  if (error) return <p className={styles.error}>{error}</p>;
 
   return (
     <div className={styles.container}>
@@ -55,15 +53,29 @@ const ViewAdmissionsPage = () => {
           </tr>
         </thead>
         <tbody>
-          {students.map((student) => (
-            <tr key={student.id}>
-              <td>{student.name}</td>
-              <td>{student.student?.rollNumber || 'N/A'}</td>
-              <td>{student.email}</td>
-              <td>{student.enrollments[0]?.course?.title || 'Not Enrolled'}</td>
-              <td>{new Date(student.student?.admissionDate).toLocaleDateString()}</td>
+          {loading ? (
+            <tr>
+              <td colSpan={5} className={styles.spinnerCell}>
+                <Spinner />
+              </td>
             </tr>
-          ))}
+          ) : students.length === 0 ? (
+            <tr>
+              <td colSpan={5}>
+                <EmptyState message="No students have been admitted yet." icon="🎓" />
+              </td>
+            </tr>
+          ) : (
+            students.map((student) => (
+              <tr key={student.id}>
+                <td>{student.name}</td>
+                <td>{student.student?.rollNumber || 'N/A'}</td>
+                <td>{student.email}</td>
+                <td>{student.enrollments[0]?.course?.title || 'Not Enrolled'}</td>
+                <td>{new Date(student.student?.admissionDate).toLocaleDateString()}</td>
+              </tr>
+            ))
+          )}
         </tbody>
       </table>
     </div>

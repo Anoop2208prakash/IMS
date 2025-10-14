@@ -1,0 +1,23 @@
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+
+  th, td {
+    border: 1px solid #ddd;
+    padding: 12px;
+    text-align: left;
+  }
+
+  thead {
+    background-color: #f8f9fa;
+  }
+}
+
+// New class for the empty state cell
+.noDataCell {
+  text-align: center;
+  padding: 40px;
+  font-style: italic;
+  color: #6c757d;
+}

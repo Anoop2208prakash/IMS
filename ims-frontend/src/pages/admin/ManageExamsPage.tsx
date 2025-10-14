@@ -1,6 +1,9 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import toast from 'react-hot-toast';
 import styles from './AdminPages.module.scss';
+import Spinner from '../../components/common/Spinner';
+import EmptyState from '../../components/common/EmptyState';
 import AddExamForm from './AddExamForm';
 import EditExamModal from './EditExamModal';
 
@@ -14,7 +17,6 @@ interface ExamData {
 const ManageExamsPage = () => {
   const [exams, setExams] = useState<ExamData[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingExam, setEditingExam] = useState<ExamData | null>(null);
 
@@ -23,39 +25,50 @@ const ManageExamsPage = () => {
     try {
       const response = await axios.get('http://localhost:5000/api/exams');
       setExams(response.data);
-      setError('');
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Failed to fetch exams.');
+      toast.error(err.response?.data?.message || 'Failed to fetch exams.');
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => { fetchExams(); }, []);
+  useEffect(() => {
+    fetchExams();
+  }, []);
 
-  const handleExamAdded = () => { setShowAddForm(false); fetchExams(); };
-  const handleExamUpdated = () => { setEditingExam(null); fetchExams(); };
+  const handleExamAdded = () => {
+    setShowAddForm(false);
+    fetchExams();
+    toast.success('Exam created successfully!');
+  };
+
+  const handleExamUpdated = () => {
+    setEditingExam(null);
+    fetchExams();
+    toast.success('Exam updated successfully!');
+  };
+
   const handleDelete = async (examId: string) => {
     if (!window.confirm('Are you sure you want to delete this exam?')) return;
     try {
       await axios.delete(`http://localhost:5000/api/exams/${examId}`);
       setExams(current => current.filter(e => e.id !== examId));
-    } catch (err: any) { setError(err.response?.data?.message || 'Failed to delete exam.'); }
+      toast.success('Exam deleted successfully!');
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || 'Failed to delete exam.');
+    }
   };
-
-  if (loading) return <p>Loading exams...</p>;
 
   return (
     <div className={styles.container}>
       <div className={styles.header}>
         <h2>Manage Exams</h2>
-        <button onClick={() => setShowAddForm(!showAddForm)}>
+        <button onClick={() => setShowAddForm(true)}>
           {showAddForm ? 'Cancel' : 'Add New Exam'}
         </button>
       </div>
 
       {showAddForm && <AddExamForm onExamAdded={handleExamAdded} onCancel={() => setShowAddForm(false)} />}
-      {error && <p className={styles.error}>{error}</p>}
 
       <table className={styles.table}>
         <thead>
@@ -67,17 +80,31 @@ const ManageExamsPage = () => {
           </tr>
         </thead>
         <tbody>
-          {exams.map((exam) => (
-            <tr key={exam.id}>
-              <td>{exam.name}</td>
-              <td>{new Date(exam.date).toLocaleDateString()}</td>
-              <td>{exam.totalMarks}</td>
-              <td>
-                <button onClick={() => setEditingExam(exam)} className={`${styles.button} ${styles.editButton}`}>Edit</button>
-                <button onClick={() => handleDelete(exam.id)} className={`${styles.button} ${styles.deleteButton}`}>Delete</button>
+          {loading ? (
+            <tr>
+              <td colSpan={4} className={styles.spinnerCell}>
+                <Spinner />
               </td>
             </tr>
-          ))}
+          ) : exams.length === 0 ? (
+            <tr>
+              <td colSpan={4}>
+                <EmptyState message="No exams found. Click 'Add New Exam' to get started." icon="📝" />
+              </td>
+            </tr>
+          ) : (
+            exams.map((exam) => (
+              <tr key={exam.id}>
+                <td>{exam.name}</td>
+                <td>{new Date(exam.date).toLocaleDateString()}</td>
+                <td>{exam.totalMarks}</td>
+                <td>
+                  <button onClick={() => setEditingExam(exam)} className={`${styles.button} ${styles.editButton}`}>Edit</button>
+                  <button onClick={() => handleDelete(exam.id)} className={`${styles.button} ${styles.deleteButton}`}>Delete</button>
+                </td>
+              </tr>
+            ))
+          )}
         </tbody>
       </table>
 

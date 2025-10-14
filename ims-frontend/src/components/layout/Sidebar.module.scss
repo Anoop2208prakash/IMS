@@ -9,13 +9,13 @@
   position: fixed; /* Fix sidebar to the left */
 }
 
-.logo {
-  padding: 20px;
-  font-size: 24px;
-  font-weight: bold;
-  text-align: center;
-  background-color: #34495e;
-}
+// .logo {
+//   padding: 20px;
+//   font-size: 24px;
+//   font-weight: bold;
+//   text-align: center;
+//   background-color: #34495e;
+// }
 
 .nav {
   display: flex;
@@ -38,5 +38,16 @@
     background-color: #1abc9c;
     color: white;
     font-weight: bold;
+  }
+}
+.logo {
+  // padding: 20px;
+  text-align: center;
+  background-color: #a9b5c2;
+  border-bottom: 1px solid #4a627a; // Add a subtle separator
+
+  img {
+    max-width: 90%; // Control the logo size
+    height: 70px; // Maintain aspect ratio
   }
 }
