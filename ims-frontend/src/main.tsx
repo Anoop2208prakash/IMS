@@ -1,15 +1,19 @@
-// src/main.tsx
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
 import { BrowserRouter } from 'react-router-dom';
-import { AuthProvider } from './context/AuthContext'; // <-- Import
-import './index.css';
+import { AuthProvider } from './context/AuthContext';
+import setupLocatorUI from "@locator/runtime";
+
+// This check ensures LocatorJS only runs in your development environment
+if (import.meta.env.DEV) {
+  setupLocatorUI();
+}
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <BrowserRouter>
-      <AuthProvider> {/* <-- Wrap App */}
+      <AuthProvider>
         <App />
       </AuthProvider>
     </BrowserRouter>

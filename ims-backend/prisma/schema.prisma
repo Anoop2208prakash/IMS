@@ -43,6 +43,17 @@ enum OrderStatus {
   CANCELLED
 }
 
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+}
+
+enum MaritalStatus {
+  SINGLE
+  MARRIED
+}
+
 // --- Main Models ---
 model User {
   id                   String              @id @default(cuid())
@@ -52,8 +63,7 @@ model User {
   role                 Role                @default(STUDENT)
   createdAt            DateTime            @default(now())
   updatedAt            DateTime            @updatedAt
-
-  // Password Reset Fields
+  
   passwordResetToken   String?             @unique
   passwordResetExpires DateTime?
 
@@ -71,14 +81,30 @@ model User {
   payments             FeePayment[]
   inventoryIssuances   InventoryIssuance[]
   orders               Order[]
+  announcements        Announcement[] // New
 }
 
 model Student {
-  id            String   @id @default(cuid())
-  userId        String   @unique
-  rollNumber    String   @unique
-  admissionDate DateTime
-  user          User     @relation(fields: [userId], references: [id])
+  id               String        @id @default(cuid())
+  userId           String        @unique
+  user             User          @relation(fields: [userId], references: [id])
+  rollNumber       String        @unique
+  admissionDate    DateTime
+
+  fatherName       String?
+  motherName       String?
+  dateOfBirth      DateTime?
+  gender           Gender?
+  presentAddress   String?       @db.Text
+  permanentAddress String?       @db.Text
+  religion         String?
+  nationality      String?
+  phoneNumber      String?       @unique
+  nidNumber        String?       @unique
+  bloodGroup       String?
+  occupation       String?
+  maritalStatus    MaritalStatus?
+  photoUrl         String?
 }
 
 model Teacher {
@@ -304,4 +330,15 @@ model OrderItem {
   item                  InventoryItem @relation(fields: [itemId], references: [id])
   quantity              Int
   priceAtTimeOfPurchase Float
+}
+
+model Announcement {
+  id        String   @id @default(cuid())
+  title     String
+  content   String   @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  authorId  String
+  author    User     @relation(fields: [authorId], references: [id])
 }
