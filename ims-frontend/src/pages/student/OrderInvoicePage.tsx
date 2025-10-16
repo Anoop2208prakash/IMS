@@ -1,7 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import axios from 'axios';
+import toast from 'react-hot-toast';
 import styles from './OrderInvoicePage.module.scss';
+import Spinner from '../../components/common/Spinner';
 
 // --- Interfaces for the invoice data structure ---
 interface OrderItem {
@@ -27,24 +29,26 @@ const OrderInvoicePage = () => {
   const { orderId } = useParams<{ orderId: string }>();
   const [invoice, setInvoice] = useState<InvoiceData | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
 
   useEffect(() => {
     if (orderId) {
       setLoading(true);
       axios.get(`http://localhost:5000/api/orders/${orderId}`)
         .then(res => setInvoice(res.data))
-        .catch(err => {
+        .catch((err) => {
           console.error(err);
-          setError(err.response?.data?.message || 'Failed to load invoice.');
+          if (axios.isAxiosError(err) && err.response) {
+            toast.error(err.response.data.message || 'Failed to load invoice.');
+          } else {
+            toast.error('An unexpected error occurred.');
+          }
         })
         .finally(() => setLoading(false));
     }
   }, [orderId]);
 
-  if (loading) return <p>Loading invoice...</p>;
-  if (error) return <p style={{ color: 'red' }}>{error}</p>;
-  if (!invoice) return <p>No invoice data found.</p>;
+  if (loading) return <Spinner />;
+  if (!invoice) return <p style={{ textAlign: 'center', marginTop: '40px' }}>Could not load invoice data.</p>;
 
   return (
     <div className={styles.pageContainer}>
@@ -74,14 +78,16 @@ const OrderInvoicePage = () => {
               <tr key={item.id}>
                 <td>{item.item.name}</td>
                 <td>{item.quantity}</td>
-                <td>${item.priceAtTimeOfPurchase.toFixed(2)}</td>
-                <td>${(item.quantity * item.priceAtTimeOfPurchase).toFixed(2)}</td>
+                {/* Changed currency to Rupees */}
+                <td>₹{item.priceAtTimeOfPurchase.toFixed(2)}</td>
+                <td>₹{(item.quantity * item.priceAtTimeOfPurchase).toFixed(2)}</td>
               </tr>
             ))}
           </tbody>
         </table>
         <div className={styles.totalSection}>
-          <strong>Total: ${invoice.totalAmount.toFixed(2)}</strong>
+          {/* Changed currency to Rupees */}
+          <strong>Total: ₹{invoice.totalAmount.toFixed(2)}</strong>
         </div>
       </div>
       <div className={styles.buttonRow}>

@@ -1,6 +1,10 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import axios from 'axios';
+import toast from 'react-hot-toast';
 import styles from './MyInvoicesPage.module.scss';
+import Spinner from '../../components/common/Spinner';
+import EmptyState from '../../components/common/EmptyState';
+import { FaFileInvoiceDollar } from 'react-icons/fa';
 
 interface Invoice {
     id: string;
@@ -16,15 +20,22 @@ const MyInvoicesPage = () => {
 
     const fetchInvoices = async () => {
         try {
+            setLoading(true);
             const response = await axios.get('http://localhost:5000/api/fees/invoices/my-invoices');
             setInvoices(response.data);
         } catch (err) {
-            console.error("Failed to fetch invoices", err);
+            if (axios.isAxiosError(err) && err.response) {
+                toast.error(err.response.data.message || 'Failed to fetch invoices.');
+            } else {
+                toast.error('An unexpected error occurred.');
+            }
+        } finally {
+            setLoading(false);
         }
     };
 
     useEffect(() => {
-        fetchInvoices().finally(() => setLoading(false));
+        fetchInvoices();
     }, []);
 
     const handlePayment = async (invoiceId: string) => {
@@ -34,9 +45,14 @@ const MyInvoicesPage = () => {
                 invoiceId,
                 method: 'Mock Payment',
             });
-            fetchInvoices(); // Refresh the list to show the 'PAID' status
-        } catch (err: any) {
-            alert(err.response?.data?.message || 'Payment failed.');
+            toast.success('Payment successful!');
+            fetchInvoices(); // Refresh the list
+        } catch (err) {
+            if (axios.isAxiosError(err) && err.response) {
+                toast.error(err.response.data.message || 'Payment failed.');
+            } else {
+                toast.error('An unexpected error occurred during payment.');
+            }
         }
     };
 
@@ -46,7 +62,43 @@ const MyInvoicesPage = () => {
             .reduce((sum, inv) => sum + inv.amount, 0);
     }, [invoices]);
 
-    if (loading) return <p>Loading your invoices...</p>;
+    // Function to render the table body based on state
+    const renderTableBody = () => {
+        if (loading) {
+            return (
+                <tr>
+                    <td colSpan={5} className={styles.spinnerCell}>
+                        <Spinner />
+                    </td>
+                </tr>
+            );
+        }
+        if (invoices.length === 0) {
+            return (
+                <tr>
+                    <td colSpan={5}>
+                        <EmptyState message="You have no invoices." icon={<FaFileInvoiceDollar size={40} />} />
+                    </td>
+                </tr>
+            );
+        }
+        return invoices.map(invoice => (
+            <tr key={invoice.id}>
+                <td>{invoice.feeStructure.name}</td>
+                {/* Changed dollar to rupee symbol here */}
+                <td>₹{invoice.amount.toFixed(2)}</td>
+                <td>{new Date(invoice.dueDate).toLocaleDateString()}</td>
+                <td><span className={`${styles.status} ${styles[invoice.status.toLowerCase()]}`}>{invoice.status}</span></td>
+                <td className={styles.actions}>
+                    {invoice.status !== 'PAID' && (
+                        <button className={styles.payButton} onClick={() => handlePayment(invoice.id)}>
+                            Pay Now
+                        </button>
+                    )}
+                </td>
+            </tr>
+        ));
+    };
 
     return (
         <div className={styles.container}>
@@ -54,7 +106,8 @@ const MyInvoicesPage = () => {
                 <h2>My Invoices</h2>
                 <div className={styles.totalDueCard}>
                     <span>Total Outstanding</span>
-                    <strong>${totalDue.toFixed(2)}</strong>
+                    {/* Changed dollar to rupee symbol here */}
+                    <strong>₹{totalDue.toFixed(2)}</strong>
                 </div>
             </div>
             <table className={styles.invoicesTable}>
@@ -68,21 +121,7 @@ const MyInvoicesPage = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {invoices.map(invoice => (
-                        <tr key={invoice.id}>
-                            <td>{invoice.feeStructure.name}</td>
-                            <td>${invoice.amount.toFixed(2)}</td>
-                            <td>{new Date(invoice.dueDate).toLocaleDateString()}</td>
-                            <td><span className={`${styles.status} ${styles[invoice.status.toLowerCase()]}`}>{invoice.status}</span></td>
-                            <td className={styles.actions}>
-                                {invoice.status !== 'PAID' && (
-                                    <button onClick={() => handlePayment(invoice.id)}>
-                                        Pay Now
-                                    </button>
-                                )}
-                            </td>
-                        </tr>
-                    ))}
+                    {renderTableBody()}
                 </tbody>
             </table>
         </div>

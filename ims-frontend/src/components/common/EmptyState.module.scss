@@ -1,19 +1,17 @@
 .emptyState {
   text-align: center;
-  padding: 50px 20px;
-  border: 2px dashed #e0e0e0;
-  border-radius: 8px;
-  margin-top: 20px;
+  padding: 20px;
 }
 
 .icon {
   font-size: 3em;
-  opacity: 0.5;
+  color: #adb5bd; // Soft gray for the icon
+  line-height: 1;
 }
 
-p {
+.emptyState p {
   margin-top: 15px;
   font-size: 1.1em;
-  color: #6c757d;
+  color: #6c757d; // Medium gray for the text
   font-weight: 500;
 }

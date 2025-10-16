@@ -1,7 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import styles from './StationaryStorePage.module.scss';
+import Spinner from '../../components/common/Spinner';
+import EmptyState from '../../components/common/EmptyState';
+import { BsCartX } from 'react-icons/bs';
 import BookingConfirmationModal from './BookingConfirmationModal';
 
 interface Item {
@@ -12,15 +16,18 @@ interface Item {
   category: 'STATIONARY' | 'UNIFORM' | 'OTHER';
 }
 
+interface Order {
+  orderId: string;
+}
+
 type Category = 'STATIONARY' | 'UNIFORM';
 
 const StationaryStorePage = () => {
   const [items, setItems] = useState<Item[]>([]);
   const [loading, setLoading] = useState(true);
-  const [message, setMessage] = useState('');
   const [activeCategory, setActiveCategory] = useState<Category>('STATIONARY');
   const [bookingItem, setBookingItem] = useState<Item | null>(null);
-  const navigate = useNavigate(); // Hook for navigation
+  const navigate = useNavigate();
 
   const fetchItems = async () => {
     try {
@@ -28,8 +35,11 @@ const StationaryStorePage = () => {
       const response = await axios.get('http://localhost:5000/api/inventory');
       setItems(response.data);
     } catch (err) {
-      console.error(err);
-      setMessage('Failed to load store items.');
+      if (axios.isAxiosError(err) && err.response) {
+        toast.error(err.response.data.message || 'Failed to load store items.');
+      } else {
+        toast.error('An unexpected error occurred.');
+      }
     } finally {
       setLoading(false);
     }
@@ -39,15 +49,44 @@ const StationaryStorePage = () => {
     fetchItems();
   }, []);
 
-  const handleBookingSuccess = (order: any) => {
-    setBookingItem(null); // Close the modal
-    // Immediately navigate to the invoice page for the new order
+  const handleBookingSuccess = (order: Order) => {
+    setBookingItem(null);
+    toast.success(`Booking successful! Order ID: ${order.orderId}`);
     navigate(`/order/${order.orderId}`);
   };
 
   const filteredItems = items.filter(item => item.category === activeCategory);
 
-  if (loading) return <p>Loading store...</p>;
+  // --- New Render Function ---
+  const renderStoreContent = () => {
+    if (loading) {
+      return (
+        <div className={styles.spinnerContainer}>
+          <Spinner />
+        </div>
+      );
+    }
+    if (filteredItems.length === 0) {
+      return (
+        <div className={styles.emptyGrid}>
+          <EmptyState message={`No ${activeCategory.toLowerCase()} items found.`} icon={<BsCartX size={40} />} />
+        </div>
+      );
+    }
+    return filteredItems.map(item => (
+      <div key={item.id} className={styles.itemCard}>
+        <h3>{item.name}</h3>
+        <p className={styles.price}>₹{item.price.toFixed(2)}</p>
+        <p className={styles.stock}>{item.quantityInStock} in stock</p>
+        <button
+          onClick={() => setBookingItem(item)}
+          disabled={item.quantityInStock === 0}
+        >
+          Book Now
+        </button>
+      </div>
+    ));
+  };
 
   return (
     <div className={styles.storeContainer}>
@@ -68,29 +107,10 @@ const StationaryStorePage = () => {
         </button>
       </div>
 
-      {message && <p className={styles.message}>{message}</p>}
-
       <div className={styles.itemsGrid}>
-        {filteredItems.length > 0 ? (
-          filteredItems.map(item => (
-            <div key={item.id} className={styles.itemCard}>
-              <h3>{item.name}</h3>
-              <p className={styles.price}>${item.price.toFixed(2)}</p>
-              <p className={styles.stock}>{item.quantityInStock} in stock</p>
-              <button
-                onClick={() => setBookingItem(item)} // This opens the booking modal
-                disabled={item.quantityInStock === 0}
-              >
-                Book Now
-              </button>
-            </div>
-          ))
-        ) : (
-          <p className={styles.noData}>Data not found!</p>
-        )}
+        {renderStoreContent()} {/* <-- Call the new render function */}
       </div>
 
-      {/* Conditionally render the booking modal */}
       {bookingItem && (
         <BookingConfirmationModal
           item={bookingItem}

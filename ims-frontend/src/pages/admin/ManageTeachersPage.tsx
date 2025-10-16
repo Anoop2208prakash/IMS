@@ -4,6 +4,7 @@ import toast from 'react-hot-toast';
 import styles from './AdminPages.module.scss';
 import Spinner from '../../components/common/Spinner';
 import EmptyState from '../../components/common/EmptyState';
+import { FaChalkboardTeacher } from 'react-icons/fa'; // 1. Import a suitable icon
 import AddTeacherForm from './AddTeacherForm';
 import EditTeacherModal from './EditTeacherModal';
 
@@ -29,8 +30,12 @@ const ManageTeachersPage = () => {
     try {
       const response = await axios.get('http://localhost:5000/api/teachers');
       setTeachers(response.data);
-    } catch (err: any) {
-      toast.error(err.response?.data?.message || 'Failed to fetch teachers.');
+    } catch (err) { // 2. Fix 'any' type error
+      if (axios.isAxiosError(err) && err.response) {
+        toast.error(err.response.data.message || 'Failed to fetch teachers.');
+      } else {
+        toast.error('An unexpected error occurred.');
+      }
     } finally {
       setLoading(false);
     }
@@ -58,9 +63,51 @@ const ManageTeachersPage = () => {
       await axios.delete(`http://localhost:5000/api/teachers/${teacherId}`);
       setTeachers(current => current.filter(t => t.id !== teacherId));
       toast.success('Teacher deleted successfully!');
-    } catch (err: any) {
-      toast.error(err.response?.data?.message || 'Failed to delete teacher.');
+    } catch (err) { // 2. Fix 'any' type error
+      if (axios.isAxiosError(err) && err.response) {
+        toast.error(err.response.data.message || 'Failed to delete teacher.');
+      } else {
+        toast.error('An unexpected error occurred while deleting.');
+      }
     }
+  };
+
+  // 3. New render function to simplify the table body logic
+  const renderTableBody = () => {
+    if (loading) {
+      return (
+        <tr>
+          <td colSpan={6} className={styles.spinnerCell}>
+            <Spinner />
+          </td>
+        </tr>
+      );
+    }
+    if (teachers.length === 0) {
+      return (
+        <tr>
+          <td colSpan={6}>
+            <EmptyState 
+              message="No teachers found. Click 'Add New Teacher' to get started." 
+              icon={<FaChalkboardTeacher size={40} />} 
+            />
+          </td>
+        </tr>
+      );
+    }
+    return teachers.map((teacher) => (
+      <tr key={teacher.id}>
+        <td>{teacher.name}</td>
+        <td>{teacher.email}</td>
+        <td>{teacher.teacher.employeeId}</td>
+        <td>{teacher.teacher.department}</td>
+        <td>{new Date(teacher.teacher.dateJoined).toLocaleDateString()}</td>
+        <td>
+          <button onClick={() => setEditingTeacher(teacher)} className={`${styles.button} ${styles.editButton}`}>Edit</button>
+          <button onClick={() => handleDelete(teacher.id)} className={`${styles.button} ${styles.deleteButton}`}>Delete</button>
+        </td>
+      </tr>
+    ));
   };
 
   return (
@@ -86,33 +133,7 @@ const ManageTeachersPage = () => {
           </tr>
         </thead>
         <tbody>
-          {loading ? (
-            <tr>
-              <td colSpan={6} className={styles.spinnerCell}>
-                <Spinner />
-              </td>
-            </tr>
-          ) : teachers.length === 0 ? (
-            <tr>
-              <td colSpan={6}>
-                <EmptyState message="No teachers found. Click 'Add New Teacher' to get started." icon="👨‍🏫" />
-              </td>
-            </tr>
-          ) : (
-            teachers.map((teacher) => (
-              <tr key={teacher.id}>
-                <td>{teacher.name}</td>
-                <td>{teacher.email}</td>
-                <td>{teacher.teacher.employeeId}</td>
-                <td>{teacher.teacher.department}</td>
-                <td>{new Date(teacher.teacher.dateJoined).toLocaleDateString()}</td>
-                <td>
-                  <button onClick={() => setEditingTeacher(teacher)} className={`${styles.button} ${styles.editButton}`}>Edit</button>
-                  <button onClick={() => handleDelete(teacher.id)} className={`${styles.button} ${styles.deleteButton}`}>Delete</button>
-                </td>
-              </tr>
-            ))
-          )}
+          {renderTableBody()} {/* 4. Call the new render function */}
         </tbody>
       </table>
       

@@ -1,7 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect, ChangeEvent, FormEvent } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import styles from './ManageAnnouncementsPage.module.scss';
+import Spinner from '../../components/common/Spinner';
+import EmptyState from '../../components/common/EmptyState';
+import { BsMegaphone } from 'react-icons/bs';
 
 interface Announcement {
   id: string;
@@ -17,11 +20,16 @@ const ManageAnnouncementsPage = () => {
   const [loading, setLoading] = useState(true);
 
   const fetchAnnouncements = async () => {
+    setLoading(true);
     try {
       const response = await axios.get('http://localhost:5000/api/announcements');
       setAnnouncements(response.data);
-    } catch (error) {
-      toast.error('Failed to fetch announcements.');
+    } catch (err) {
+      if (axios.isAxiosError(err) && err.response) {
+        toast.error(err.response.data.message || 'Failed to fetch announcements.');
+      } else {
+        toast.error('An unexpected error occurred.');
+      }
     } finally {
       setLoading(false);
     }
@@ -31,11 +39,11 @@ const ManageAnnouncementsPage = () => {
     fetchAnnouncements();
   }, []);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setNewAnnouncement(prev => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!newAnnouncement.title || !newAnnouncement.content) {
       toast.error('Title and content are required.');
@@ -44,10 +52,14 @@ const ManageAnnouncementsPage = () => {
     try {
       await axios.post('http://localhost:5000/api/announcements', newAnnouncement);
       toast.success('Announcement posted successfully!');
-      setNewAnnouncement({ title: '', content: '' }); // Clear form
-      fetchAnnouncements(); // Refresh the list
-    } catch (error) {
-      toast.error('Failed to post announcement.');
+      setNewAnnouncement({ title: '', content: '' });
+      fetchAnnouncements();
+    } catch (err) {
+      if (axios.isAxiosError(err) && err.response) {
+        toast.error(err.response.data.message || 'Failed to post announcement.');
+      } else {
+        toast.error('An unexpected error occurred.');
+      }
     }
   };
   
@@ -55,14 +67,36 @@ const ManageAnnouncementsPage = () => {
     if (!window.confirm('Are you sure you want to delete this announcement?')) return;
     try {
       await axios.delete(`http://localhost:5000/api/announcements/${id}`);
+      setAnnouncements(current => current.filter(ann => ann.id !== id));
       toast.success('Announcement deleted.');
-      fetchAnnouncements(); // Refresh the list
-    } catch (error) {
-      toast.error('Failed to delete announcement.');
+    } catch (err) {
+      if (axios.isAxiosError(err) && err.response) {
+        toast.error(err.response.data.message || 'Failed to delete announcement.');
+      } else {
+        toast.error('An unexpected error occurred.');
+      }
     }
   };
 
-  if (loading) return <p>Loading announcements...</p>;
+  // --- New Render Function ---
+  const renderContent = () => {
+    if (loading) {
+      return <Spinner />;
+    }
+    if (announcements.length === 0) {
+      return <EmptyState message="No announcements posted yet." icon={<BsMegaphone size={40} />} />;
+    }
+    return announcements.map(ann => (
+      <div key={ann.id} className={styles.announcementCard}>
+        <h3>{ann.title}</h3>
+        <p>{ann.content}</p>
+        <div className={styles.meta}>
+          <span>Posted by {ann.author.name} on {new Date(ann.createdAt).toLocaleDateString()}</span>
+          <button onClick={() => handleDelete(ann.id)}>Delete</button>
+        </div>
+      </div>
+    ));
+  };
 
   return (
     <div className={styles.container}>
@@ -91,16 +125,7 @@ const ManageAnnouncementsPage = () => {
       {/* --- Existing Announcements List --- */}
       <div className={styles.listContainer}>
         <h2>Recent Announcements</h2>
-        {announcements.map(ann => (
-          <div key={ann.id} className={styles.announcementCard}>
-            <h3>{ann.title}</h3>
-            <p>{ann.content}</p>
-            <div className={styles.meta}>
-              <span>Posted by {ann.author.name} on {new Date(ann.createdAt).toLocaleDateString()}</span>
-              <button onClick={() => handleDelete(ann.id)}>Delete</button>
-            </div>
-          </div>
-        ))}
+        {renderContent()} {/* <-- Call the new render function */}
       </div>
     </div>
   );

@@ -1,6 +1,10 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import toast from 'react-hot-toast';
 import styles from '../AdminPages.module.scss';
+import Spinner from '../../../components/common/Spinner';
+import EmptyState from '../../../components/common/EmptyState';
+import { FaFileInvoiceDollar } from 'react-icons/fa'; // Import an icon
 import AddFeeStructureForm from './AddFeeStructureForm';
 import EditFeeStructureModal from './EditFeeStructureModal';
 
@@ -8,14 +12,13 @@ interface FeeStructureData {
     id: string;
     name: string;
     amount: number;
-    courseId: string; // Needed for the Edit Modal
+    courseId: string;
     course: { title: string; };
 }
 
 const ManageFeeStructuresPage = () => {
     const [structures, setStructures] = useState<FeeStructureData[]>([]);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState('');
     const [showAddForm, setShowAddForm] = useState(false);
     const [editingStructure, setEditingStructure] = useState<FeeStructureData | null>(null);
 
@@ -24,9 +27,12 @@ const ManageFeeStructuresPage = () => {
         try {
             const response = await axios.get('http://localhost:5000/api/fees/structures');
             setStructures(response.data);
-            setError('');
-        } catch (err: any) {
-            setError(err.response?.data?.message || 'Failed to fetch fee structures.');
+        } catch (err) {
+            if (axios.isAxiosError(err) && err.response) {
+                toast.error(err.response.data.message || 'Failed to fetch fee structures.');
+            } else {
+                toast.error('An unexpected error occurred.');
+            }
         } finally {
             setLoading(false);
         }
@@ -39,11 +45,13 @@ const ManageFeeStructuresPage = () => {
     const handleStructureAdded = () => {
         setShowAddForm(false);
         fetchStructures();
+        toast.success('Fee structure added successfully!');
     };
 
     const handleStructureUpdated = () => {
         setEditingStructure(null);
         fetchStructures();
+        toast.success('Fee structure updated successfully!');
     };
 
     const handleDelete = async (structureId: string) => {
@@ -51,25 +59,63 @@ const ManageFeeStructuresPage = () => {
         try {
             await axios.delete(`http://localhost:5000/api/fees/structures/${structureId}`);
             setStructures(current => current.filter(s => s.id !== structureId));
-        } catch (err: any) {
-            setError(err.response?.data?.message || 'Failed to delete fee structure.');
+            toast.success('Fee structure deleted successfully!');
+        } catch (err) {
+            if (axios.isAxiosError(err) && err.response) {
+                toast.error(err.response.data.message || 'Failed to delete fee structure.');
+            } else {
+                toast.error('An unexpected error occurred while deleting.');
+            }
         }
     };
 
-    if (loading) return <p>Loading fee structures...</p>;
+    const renderTableBody = () => {
+        if (loading) {
+            return (
+                <tr>
+                    <td colSpan={4} className={styles.spinnerCell}>
+                        <Spinner />
+                    </td>
+                </tr>
+            );
+        }
+        if (structures.length === 0) {
+            return (
+                <tr>
+                    <td colSpan={4}>
+                        <EmptyState 
+                            message="No fee structures found. Click 'Add New Structure' to begin." 
+                            icon={<FaFileInvoiceDollar size={40} />} 
+                        />
+                    </td>
+                </tr>
+            );
+        }
+        return structures.map((structure) => (
+            <tr key={structure.id}>
+                <td>{structure.name}</td>
+                <td>{structure.course.title}</td>
+                {/* Changed dollar to rupee symbol here */}
+                <td>₹{structure.amount.toFixed(2)}</td>
+                <td>
+                    <button onClick={() => setEditingStructure(structure)} className={`${styles.button} ${styles.editButton}`}>Edit</button>
+                    <button onClick={() => handleDelete(structure.id)} className={`${styles.button} ${styles.deleteButton}`}>Delete</button>
+                </td>
+            </tr>
+        ));
+    };
 
     return (
         <div className={styles.container}>
             <div className={styles.header}>
                 <h2>Manage Fee Structures</h2>
-                <button onClick={() => setShowAddForm(!showAddForm)}>
+                <button onClick={() => setShowAddForm(true)}>
                     {showAddForm ? 'Cancel' : 'Add New Structure'}
                 </button>
             </div>
 
             {showAddForm && <AddFeeStructureForm onFeeStructureAdded={handleStructureAdded} onCancel={() => setShowAddForm(false)} />}
-            {error && <p className={styles.error}>{error}</p>}
-
+            
             <table className={styles.table}>
                 <thead>
                     <tr>
@@ -80,17 +126,7 @@ const ManageFeeStructuresPage = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {structures.map((structure) => (
-                        <tr key={structure.id}>
-                            <td>{structure.name}</td>
-                            <td>{structure.course.title}</td>
-                            <td>${structure.amount.toFixed(2)}</td>
-                            <td>
-                                <button onClick={() => setEditingStructure(structure)} className={`${styles.button} ${styles.editButton}`}>Edit</button>
-                                <button onClick={() => handleDelete(structure.id)} className={`${styles.button} ${styles.deleteButton}`}>Delete</button>
-                            </td>
-                        </tr>
-                    ))}
+                    {renderTableBody()}
                 </tbody>
             </table>
 

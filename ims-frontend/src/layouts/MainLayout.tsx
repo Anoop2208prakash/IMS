@@ -1,6 +1,6 @@
 import { Outlet } from 'react-router-dom';
 import Sidebar from '../components/layout/Sidebar';
-import ProfileDropdown from '../components/layout/ProfileDropdown'; // <-- Import the new component
+import ProfileDropdown from '../components/layout/ProfileDropdown';
 import styles from './MainLayout.module.scss';
 
 const MainLayout = () => {
@@ -9,10 +9,10 @@ const MainLayout = () => {
       <Sidebar />
       <div className={styles.mainContent}>
         <header className={styles.header}>
-          <ProfileDropdown /> {/* <-- Use the new component */}
+          <ProfileDropdown />
         </header>
         <main className={styles.content}>
-          <Outlet /> {/* This renders the current page */}
+          <Outlet />
         </main>
       </div>
     </div>

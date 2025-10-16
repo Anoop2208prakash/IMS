@@ -5,7 +5,7 @@ import { authMiddleware, roleMiddleware } from '../middleware/auth.middleware';
 const router = Router();
 
 // For a Teacher to submit marks
-router.post('/', [authMiddleware, roleMiddleware(['TEACH-ER'])], submitMarks);
+router.post('/', [authMiddleware, roleMiddleware(['TEACHER'])], submitMarks);
 
 // For a Student to get their own exam results
 router.get(
