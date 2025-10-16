@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import styles from './IDCardPage.module.scss';
+import Spinner from '../components/common/Spinner'; // <-- 1. Import Spinner
 
 interface ProfileData {
   id: string; name: string; email: string; role: string;
@@ -40,7 +41,11 @@ const IDCardPage = () => {
     fetchProfile();
   }, []);
 
-  if (loading) return <p>Loading ID Card...</p>;
+  // 2. Update the loading state check to use the Spinner
+  if (loading) {
+    return <Spinner />;
+  }
+  
   if (!profile) return <p>Could not load profile data.</p>;
 
   return (

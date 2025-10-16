@@ -1,10 +1,17 @@
-.container { /* Similar to MyLoansPage container */ }
+.container {
+  background-color: #fff;
+  padding: 20px 30px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
 .summaryGrid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 20px;
   margin-bottom: 30px;
 }
+
 .summaryCard {
   background: #f8f9fa;
   padding: 20px;
@@ -12,6 +19,7 @@
   text-align: center;
   font-size: 1.1em;
   color: #495057;
+
   span {
     display: block;
     font-size: 2.5em;
@@ -19,8 +27,54 @@
     color: #343a40;
   }
 }
-.attendanceTable { /* Same as .loansTable from MyLoansPage */ }
-.status { /* Same as .status from MyLoansPage */ }
-.present { background-color: #28a745; } // Green
-.absent { background-color: #e74c3c; } // Red
-.late { background-color: #ffc107; color: #333; } // Yellow
+
+.attendanceTable {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+
+  th, td {
+    border-bottom: 1px solid #ddd;
+    padding: 12px 15px;
+    text-align: left;
+    vertical-align: middle;
+  }
+
+  thead th {
+    background-color: #f8f9fa;
+    font-weight: bold;
+    color: #343a40;
+    border-bottom-width: 2px;
+  }
+}
+
+// This styles the cell that holds the EmptyState component
+td > div[class*="emptyState"] {
+  border: 2px dashed #e9ecef;
+  border-radius: 8px;
+  padding: 40px;
+}
+
+// --- Status Badge Styles ---
+.status {
+  padding: 5px 10px;
+  border-radius: 12px;
+  font-size: 0.8em;
+  font-weight: bold;
+  color: white;
+  display: inline-block;
+}
+
+.present, .completed {
+  background-color: #28a745; // Green
+}
+.absent, .overdue, .pending {
+  background-color: #e74c3c; // Red
+}
+.late {
+  background-color: #ffc107; // Yellow
+  color: #333;
+}
+.returned, .cancelled {
+  background-color: #6c757d; // Gray
+}

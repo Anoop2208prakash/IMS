@@ -4,6 +4,7 @@ import toast from 'react-hot-toast';
 import styles from './AdminPages.module.scss';
 import Spinner from '../../components/common/Spinner';
 import EmptyState from '../../components/common/EmptyState';
+import { BsPencilSquare } from 'react-icons/bs'; // Import a suitable icon
 import AddExamForm from './AddExamForm';
 import EditExamModal from './EditExamModal';
 
@@ -25,8 +26,12 @@ const ManageExamsPage = () => {
     try {
       const response = await axios.get('http://localhost:5000/api/exams');
       setExams(response.data);
-    } catch (err: any) {
-      toast.error(err.response?.data?.message || 'Failed to fetch exams.');
+    } catch (err) {
+      if (axios.isAxiosError(err) && err.response) {
+        toast.error(err.response.data.message || 'Failed to fetch exams.');
+      } else {
+        toast.error('An unexpected error occurred.');
+      }
     } finally {
       setLoading(false);
     }
@@ -54,9 +59,49 @@ const ManageExamsPage = () => {
       await axios.delete(`http://localhost:5000/api/exams/${examId}`);
       setExams(current => current.filter(e => e.id !== examId));
       toast.success('Exam deleted successfully!');
-    } catch (err: any) {
-      toast.error(err.response?.data?.message || 'Failed to delete exam.');
+    } catch (err) {
+      if (axios.isAxiosError(err) && err.response) {
+        toast.error(err.response.data.message || 'Failed to delete exam.');
+      } else {
+        toast.error('An unexpected error occurred while deleting.');
+      }
     }
+  };
+
+  // --- New Render Function for the Table Body ---
+  const renderTableBody = () => {
+    if (loading) {
+      return (
+        <tr>
+          <td colSpan={4} className={styles.spinnerCell}>
+            <Spinner />
+          </td>
+        </tr>
+      );
+    }
+    if (exams.length === 0) {
+      return (
+        <tr>
+          <td colSpan={4}>
+            <EmptyState 
+              message="No exams found. Click 'Add New Exam' to get started." 
+              icon={<BsPencilSquare size={40} />} 
+            />
+          </td>
+        </tr>
+      );
+    }
+    return exams.map((exam) => (
+      <tr key={exam.id}>
+        <td>{exam.name}</td>
+        <td>{new Date(exam.date).toLocaleDateString()}</td>
+        <td>{exam.totalMarks}</td>
+        <td>
+          <button onClick={() => setEditingExam(exam)} className={`${styles.button} ${styles.editButton}`}>Edit</button>
+          <button onClick={() => handleDelete(exam.id)} className={`${styles.button} ${styles.deleteButton}`}>Delete</button>
+        </td>
+      </tr>
+    ));
   };
 
   return (
@@ -80,31 +125,7 @@ const ManageExamsPage = () => {
           </tr>
         </thead>
         <tbody>
-          {loading ? (
-            <tr>
-              <td colSpan={4} className={styles.spinnerCell}>
-                <Spinner />
-              </td>
-            </tr>
-          ) : exams.length === 0 ? (
-            <tr>
-              <td colSpan={4}>
-                <EmptyState message="No exams found. Click 'Add New Exam' to get started." icon="📝" />
-              </td>
-            </tr>
-          ) : (
-            exams.map((exam) => (
-              <tr key={exam.id}>
-                <td>{exam.name}</td>
-                <td>{new Date(exam.date).toLocaleDateString()}</td>
-                <td>{exam.totalMarks}</td>
-                <td>
-                  <button onClick={() => setEditingExam(exam)} className={`${styles.button} ${styles.editButton}`}>Edit</button>
-                  <button onClick={() => handleDelete(exam.id)} className={`${styles.button} ${styles.deleteButton}`}>Delete</button>
-                </td>
-              </tr>
-            ))
-          )}
+          {renderTableBody()}
         </tbody>
       </table>
 

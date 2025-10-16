@@ -16,7 +16,7 @@
     cursor: pointer;
     color: #6c757d;
     border-bottom: 2px solid transparent;
-    margin-bottom: -2px; // Align with the container's border
+    margin-bottom: -2px; // Aligns the active border with the container's border
 
     &.active {
       color: #007bff;
@@ -59,7 +59,7 @@
   h3 {
     margin-top: 0;
     margin-bottom: 10px;
-    flex-grow: 1;
+    flex-grow: 1; // Pushes content below it down
   }
 
   .price {
@@ -85,7 +85,7 @@
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    margin-top: auto;
+    margin-top: auto; // Pushes button to the bottom
     transition: background-color 0.2s;
 
     &:hover:not(:disabled) {
@@ -99,60 +99,13 @@
   }
 }
 
-.noData {
-  grid-column: 1 / -1; // Span across all columns
-  text-align: center;
-  color: #6c757d;
-  padding: 40px;
-}
-// --- New Layout Styles ---
-.pageLayout {
-  display: grid;
-  grid-template-columns: 3fr 1fr; // Store takes 3/4 of space, cart takes 1/4
-  gap: 30px;
-}
-
-.cartContainer {
-  background: #fff;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  align-self: start; // Makes the cart stick to the top
-}
-
-.cartItem {
+.spinnerContainer {
+  grid-column: 1 / -1; // Makes the container span the full width of the grid
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px 0;
-  border-bottom: 1px solid #eee;
+  justify-content: center;
+  padding: 50px;
 }
 
-.itemInfo {
-  display: flex;
-  flex-direction: column;
-  span:last-child {
-    font-size: 0.9em;
-    color: #6c757d;
-  }
-}
-
-.removeButton {
-  background: none;
-  border: none;
-  color: #e74c3c;
-  font-size: 1.5em;
-  cursor: pointer;
-}
-
-.cartTotal {
-  margin-top: 20px;
-  text-align: right;
-  font-size: 1.2em;
-}
-
-
-// --- Existing Styles (no changes needed) ---
-.storeContainer, .tabContainer, .message, .itemsGrid, .itemCard {
-  // ... keep all the previous styles for these classes
+.emptyGrid {
+  grid-column: 1 / -1; // Makes the empty state span the full width of the grid
 }

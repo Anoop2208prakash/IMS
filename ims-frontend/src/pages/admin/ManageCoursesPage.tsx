@@ -4,9 +4,11 @@ import toast from 'react-hot-toast';
 import styles from './AdminPages.module.scss';
 import Spinner from '../../components/common/Spinner';
 import EmptyState from '../../components/common/EmptyState';
+import { BsJournalBookmarkFill } from 'react-icons/bs';
 import AddCourseForm from './AddCourseForm';
 import EditCourseModal from './EditCourseModal';
 import AssignTeacherModal from './AssignTeacherModal';
+
 interface CourseData {
   id: string;
   title: string;
@@ -26,8 +28,12 @@ const ManageCoursesPage = () => {
     try {
       const response = await axios.get('http://localhost:5000/api/courses');
       setCourses(response.data);
-    } catch (err: any) {
-      toast.error(err.response?.data?.message || 'Failed to fetch courses.');
+    } catch (err) {
+      if (axios.isAxiosError(err) && err.response) {
+        toast.error(err.response.data.message || 'Failed to fetch courses.');
+      } else {
+        toast.error('An unexpected error occurred.');
+      }
     } finally {
       setLoading(false);
     }
@@ -55,9 +61,50 @@ const ManageCoursesPage = () => {
       await axios.delete(`http://localhost:5000/api/courses/${courseId}`);
       setCourses(current => current.filter(c => c.id !== courseId));
       toast.success('Course deleted successfully!');
-    } catch (err: any) {
-      toast.error(err.response?.data?.message || 'Failed to delete course.');
+    } catch (err) {
+      if (axios.isAxiosError(err) && err.response) {
+        toast.error(err.response.data.message || 'Failed to delete course.');
+      } else {
+        toast.error('An unexpected error occurred while deleting.');
+      }
     }
+  };
+
+  // Dedicated function to render the table body based on the current state
+  const renderTableBody = () => {
+    if (loading) {
+      return (
+        <tr>
+          <td colSpan={4} className={styles.spinnerCell}>
+            <Spinner />
+          </td>
+        </tr>
+      );
+    }
+    if (courses.length === 0) {
+      return (
+        <tr>
+          <td colSpan={4}>
+            <EmptyState 
+              message="No courses found. Click 'Add New Course' to get started." 
+              icon={<BsJournalBookmarkFill size={40} />} 
+            />
+          </td>
+        </tr>
+      );
+    }
+    return courses.map((course) => (
+      <tr key={course.id}>
+        <td>{course.title}</td>
+        <td>{course.courseCode}</td>
+        <td>{course.credits}</td>
+        <td>
+          <button onClick={() => setAssigningCourse(course)} className={`${styles.button} ${styles.assignButton}`}>Assign</button>
+          <button onClick={() => setEditingCourse(course)} className={`${styles.button} ${styles.editButton}`}>Edit</button>
+          <button onClick={() => handleDelete(course.id)} className={`${styles.button} ${styles.deleteButton}`}>Delete</button>
+        </td>
+      </tr>
+    ));
   };
 
   return (
@@ -70,10 +117,7 @@ const ManageCoursesPage = () => {
       </div>
 
       {showAddForm && (
-        <AddCourseForm
-          onCourseAdded={handleCourseAdded}
-          onCancel={() => setShowAddForm(false)}
-        />
+        <AddCourseForm onCourseAdded={handleCourseAdded} onCancel={() => setShowAddForm(false)} />
       )}
 
       <table className={styles.table}>
@@ -86,47 +130,7 @@ const ManageCoursesPage = () => {
           </tr>
         </thead>
         <tbody>
-          {loading ? (
-            <tr>
-              <td colSpan={4} className={styles.spinnerCell}>
-                <Spinner />
-              </td>
-            </tr>
-          ) : courses.length === 0 ? (
-            <tr>
-              <td colSpan={4}>
-                <EmptyState message="No courses found. Click 'Add New Course' to get started." icon="📚" />
-              </td>
-            </tr>
-          ) : (
-            courses.map((course) => (
-              <tr key={course.id}>
-                <td>{course.title}</td>
-                <td>{course.courseCode}</td>
-                <td>{course.credits}</td>
-                <td>
-                  <button
-                    onClick={() => setAssigningCourse(course)}
-                    className={`${styles.button} ${styles.assignButton}`}
-                  >
-                    Assign
-                  </button>
-                  <button
-                    onClick={() => setEditingCourse(course)}
-                    className={`${styles.button} ${styles.editButton}`}
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => handleDelete(course.id)}
-                    className={`${styles.button} ${styles.deleteButton}`}
-                  >
-                    Delete
-                  </button>
-                </td>
-              </tr>
-            ))
-          )}
+          {renderTableBody()}
         </tbody>
       </table>
 

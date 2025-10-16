@@ -1,42 +1,96 @@
 .container {
   background-color: #fff;
-  padding: 20px;
+  padding: 20px 30px;
   border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
+
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
 }
+
 .totalDueCard {
   background: #fff3cd;
   border: 1px solid #ffeeba;
   padding: 15px 25px;
   border-radius: 8px;
   text-align: right;
+
   span {
     display: block;
     color: #856404;
     font-size: 0.9em;
   }
+  
   strong {
     font-size: 1.8em;
     color: #856404;
   }
 }
-.invoicesTable { /* Use styles from .loansTable or .attendanceTable */ }
-.status { /* Use styles from MyLoansPage.module.scss */ }
-.pending, .overdue { background-color: #e74c3c; } // Red for pending/overdue
-.paid { background-color: #28a745; } // Green for paid
+
+.invoicesTable {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+
+  th, td {
+    border: 1px solid #ddd; /* <-- This line creates the full grid border */
+    padding: 12px 15px;
+    text-align: left;
+    vertical-align: middle;
+  }
+
+  thead th {
+    background-color: #f8f9fa;
+    font-weight: bold;
+    color: #343a40;
+  }
+
+  tbody tr:hover {
+    background-color: #f1f3f5;
+  }
+}
+
+.status {
+  padding: 5px 10px;
+  border-radius: 12px;
+  font-size: 0.8em;
+  font-weight: bold;
+  color: white;
+  display: inline-block;
+}
+
+.pending, .overdue {
+  background-color: #e74c3c; // Red
+}
+
+.paid {
+  background-color: #28a745; // Green
+}
 
 .actions {
-  button {
-    padding: 5px 10px;
-    background-color: #28a745;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
+  text-align: center;
+}
+
+.payButton {
+  padding: 6px 12px;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.2s;
+
+  &:hover {
+    background-color: #218838;
   }
+}
+
+.spinnerCell {
+  padding: 40px;
+  text-align: center;
 }

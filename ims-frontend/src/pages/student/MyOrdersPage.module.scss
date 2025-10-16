@@ -1,6 +1,6 @@
 .container {
   background-color: #fff;
-  padding: 20px;
+  padding: 20px 30px;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
@@ -11,28 +11,54 @@
   margin-top: 20px;
 
   th, td {
-    border-bottom: 1px solid #ddd;
-    padding: 12px;
+    border: 1px solid #ddd; /* This creates a full grid border */
+    padding: 12px 15px;
     text-align: left;
     vertical-align: middle;
   }
 
-  thead {
+  thead th {
     background-color: #f8f9fa;
+    font-weight: bold;
+    color: #343a40;
+  }
+
+  tbody tr:hover {
+    background-color: #f1f3f5;
   }
 }
 
+// Style for the cell containing the EmptyState component
+td > div[class*="emptyState"] {
+  border: 2px dashed #e9ecef;
+  border-radius: 8px;
+  padding: 40px;
+}
+
+.spinnerCell {
+  text-align: center;
+  padding: 40px;
+}
+
 .status {
-  padding: 4px 8px;
+  padding: 5px 10px;
   border-radius: 12px;
   font-size: 0.8em;
   font-weight: bold;
   color: white;
+  display: inline-block;
 }
 
-.pending { background-color: #ffc107; color: #333; } // Yellow
-.completed { background-color: #28a745; } // Green
-.cancelled { background-color: #6c757d; } // Gray
+.pending { 
+  background-color: #ffc107; // Yellow
+  color: #333; 
+} 
+.completed { 
+  background-color: #28a745; // Green
+} 
+.cancelled { 
+  background-color: #6c757d; // Gray
+}
 
 .viewButton {
   padding: 5px 10px;

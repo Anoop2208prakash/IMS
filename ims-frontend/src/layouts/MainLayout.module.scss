@@ -1,8 +1,6 @@
-// src/layouts/MainLayout.module.scss
-html,body{
-    margin: 0;
-    padding: 0;
-    font-family: Arial, sans-serif;
+html, body {
+  margin: 0;
+  padding: 0;
 }
 
 .layout {
@@ -12,16 +10,20 @@ html,body{
 .mainContent {
   margin-left: 240px; /* Same as sidebar width */
   flex-grow: 1;
-  display: flex;
-  flex-direction: column;
-  width: calc(100% - 240px); /* Fill remaining space */
+  width: calc(100% - 240px);
 }
 
 .header {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: calc(100% - 240px); // Makes it span the content area
+  z-index: 1000; // Ensures it stays on top
+
   display: flex;
-  justify-content: flex-end; /* Align items to the right */
+  justify-content: flex-end;
   align-items: center;
-  padding: 10px 20px;
+  padding: 10px 30px;
   background: #fff;
   border-bottom: 1px solid #e0e0e0;
   height: 60px;
@@ -31,20 +33,6 @@ html,body{
 .content {
   padding: 20px;
   background-color: #f4f7f6;
-  flex-grow: 1;
-  height: calc(100vh - 60px); /* Full height minus header */
-}
-
-.logoutButton {
-  margin-left: 15px;
-  padding: 8px 12px;
-  border: none;
-  background-color: #e74c3c;
-  color: white;
-  border-radius: 4px;
-  cursor: pointer;
-  
-  &:hover {
-    background-color: #c0392b;
-  }
+  margin-top: 60px; // Pushes content down below the fixed header
+  min-height: calc(100vh - 60px); // Ensures content area fills the viewport height
 }
