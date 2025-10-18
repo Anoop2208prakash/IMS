@@ -1,65 +1,62 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import styles from './EditTeacherModal.module.scss'; // Reuse styles
+import toast from 'react-hot-toast';
+import styles from './EditModal.module.scss'; // Reuse modal styles
 
-interface CourseData { id: string; title: string; /* ... */ }
-interface TeacherData { id: string; name: string; /* ... */ }
+interface SubjectData { id: string; title: string; }
+interface TeacherData { id: string; name: string; }
 
 interface AssignTeacherModalProps {
-  course: CourseData;
+  subject: SubjectData;
   onClose: () => void;
   onTeacherAssigned: () => void;
 }
 
-const AssignTeacherModal = ({ course, onClose, onTeacherAssigned }: AssignTeacherModalProps) => {
+const AssignTeacherModal = ({ subject, onClose, onTeacherAssigned }: AssignTeacherModalProps) => {
   const [teachers, setTeachers] = useState<TeacherData[]>([]);
   const [selectedTeacherId, setSelectedTeacherId] = useState('');
-  const [error, setError] = useState('');
 
+  // Fetch all available teachers for the dropdown
   useEffect(() => {
-    const fetchTeachers = async () => {
-      try {
-        const response = await axios.get('http://localhost:5000/api/teachers');
-        setTeachers(response.data);
-        if (response.data.length > 0) {
-          setSelectedTeacherId(response.data[0].id);
+    axios.get('http://localhost:5000/api/teachers')
+      .then(res => {
+        setTeachers(res.data);
+        if (res.data.length > 0) {
+          setSelectedTeacherId(res.data[0].id); // Default to the first teacher
         }
-      } catch (err) {
-        setError('Failed to load teachers.');
-      }
-    };
-    fetchTeachers();
+      })
+      .catch(() => toast.error('Failed to load teachers.'));
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
+    if (!selectedTeacherId) {
+      toast.error('Please select a teacher.');
+      return;
+    }
     try {
       await axios.post(
-        `http://localhost:5000/api/courses/${course.id}/assign-teacher`,
+        `http://localhost:5000/api/subjects/${subject.id}/assign-teacher`,
         { teacherId: selectedTeacherId }
       );
+      toast.success('Teacher assigned successfully!');
       onTeacherAssigned();
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Failed to assign teacher.');
+      toast.error(err.response?.data?.message || 'Failed to assign teacher.');
     }
   };
 
   return (
     <div className={styles.modalBackdrop}>
       <div className={styles.modalContent}>
-        <h2>Assign Teacher to "{course.title}"</h2>
+        <h2>Assign Teacher to "{subject.title}"</h2>
         <form onSubmit={handleSubmit}>
           <label>Select Teacher</label>
-          <select 
-            value={selectedTeacherId} 
-            onChange={(e) => setSelectedTeacherId(e.target.value)}
-          >
+          <select value={selectedTeacherId} onChange={(e) => setSelectedTeacherId(e.target.value)}>
             {teachers.map(teacher => (
               <option key={teacher.id} value={teacher.id}>{teacher.name}</option>
             ))}
           </select>
-          {error && <p className={styles.error}>{error}</p>}
           <div className={styles.buttonGroup}>
             <button type="submit">Assign</button>
             <button type="button" onClick={onClose}>Cancel</button>

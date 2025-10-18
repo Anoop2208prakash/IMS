@@ -1,0 +1,84 @@
+.formContainer {
+  background: #f9f9f9;
+  padding: 20px;
+  margin-bottom: 20px;
+  border-radius: 8px;
+  border: 1px solid #eee;
+
+  h3 {
+    margin-top: 0;
+    margin-bottom: 15px;
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  label {
+    display: block;
+    margin-bottom: -10px;
+    font-size: 0.9em;
+    font-weight: 600;
+  }
+
+  input,
+  select {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1em;
+  }
+}
+
+// --- NEW STYLES ---
+.generatedField {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #e9ecef;
+  padding: 10px;
+  border-radius: 4px;
+  font-size: 1em;
+  color: #495057;
+
+  strong {
+    font-size: 1.2em;
+    color: #000;
+  }
+
+  .loadingName {
+    font-style: italic;
+  }
+}
+// --- END NEW STYLES ---
+
+.buttonGroup {
+  display: flex;
+  gap: 10px;
+  margin-top: 5px;
+
+  button {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+
+    &[type="submit"] {
+      background-color: #28a745;
+      color: white;
+
+      &:disabled {
+        background-color: #ccc;
+        cursor: not-allowed;
+      }
+    }
+
+    &[type="button"] {
+      background-color: #6c757d;
+      color: white;
+    }
+  }
+}

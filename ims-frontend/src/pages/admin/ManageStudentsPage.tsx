@@ -4,10 +4,10 @@ import toast from 'react-hot-toast';
 import styles from './AdminPages.module.scss';
 import Spinner from '../../components/common/Spinner';
 import EmptyState from '../../components/common/EmptyState';
-import { FaUserGraduate } from 'react-icons/fa'; // 1. Import a suitable icon
-import AddStudentForm from './AddStudentForm';
+import { FaUserGraduate } from 'react-icons/fa';
 import EditStudentModal from './EditStudentModal';
 
+// 1. Updated interface to match the new API response
 interface StudentData {
   id: string;
   name: string;
@@ -16,17 +16,12 @@ interface StudentData {
     rollNumber: string;
     admissionDate: string;
   };
-  enrollments: Array<{
-    course: {
-      title: string;
-    };
-  }>;
+  programName: string; // <-- This field comes from the updated API
 }
 
 const ManageStudentsPage = () => {
   const [students, setStudents] = useState<StudentData[]>([]);
   const [loading, setLoading] = useState(true);
-  const [showAddForm, setShowAddForm] = useState(false);
   const [editingStudent, setEditingStudent] = useState<StudentData | null>(null);
 
   const fetchStudents = async () => {
@@ -34,7 +29,7 @@ const ManageStudentsPage = () => {
     try {
       const response = await axios.get('http://localhost:5000/api/students');
       setStudents(response.data);
-    } catch (err) { // 2. Fix 'any' type error
+    } catch (err) {
       if (axios.isAxiosError(err) && err.response) {
         toast.error(err.response.data.message || 'Failed to fetch students.');
       } else {
@@ -49,12 +44,6 @@ const ManageStudentsPage = () => {
     fetchStudents();
   }, []);
 
-  const handleStudentAdded = () => {
-    setShowAddForm(false);
-    fetchStudents();
-    toast.success('Student added successfully!');
-  };
-
   const handleStudentUpdated = () => {
     setEditingStudent(null);
     fetchStudents();
@@ -67,7 +56,7 @@ const ManageStudentsPage = () => {
       await axios.delete(`http://localhost:5000/api/students/${studentId}`);
       setStudents(current => current.filter(s => s.id !== studentId));
       toast.success('Student deleted successfully!');
-    } catch (err) { // 2. Fix 'any' type error
+    } catch (err) {
       if (axios.isAxiosError(err) && err.response) {
         toast.error(err.response.data.message || 'Failed to delete student.');
       } else {
@@ -92,7 +81,7 @@ const ManageStudentsPage = () => {
         <tr>
           <td colSpan={6}>
             <EmptyState 
-              message="No students found. Click 'Add New Student' to get started." 
+              message="No students found. Use the 'New Admission' page to add students." 
               icon={<FaUserGraduate size={40} />} 
             />
           </td>
@@ -104,7 +93,7 @@ const ManageStudentsPage = () => {
         <td>{student.name}</td>
         <td>{student.email}</td>
         <td>{student.student?.rollNumber}</td>
-        <td>{student.enrollments[0]?.course?.title || 'N/A'}</td>
+        <td>{student.programName}</td> {/* 4. Use the new programName field */}
         <td>{new Date(student.student?.admissionDate).toLocaleDateString()}</td>
         <td>
           <button
@@ -128,17 +117,8 @@ const ManageStudentsPage = () => {
     <div className={styles.container}>
       <div className={styles.header}>
         <h2>Manage Students</h2>
-        <button onClick={() => setShowAddForm(true)}>
-          {showAddForm ? 'Cancel' : 'Add New Student'}
-        </button>
+        {/* Button to add students is removed, as it's now on its own page */}
       </div>
-
-      {showAddForm && (
-        <AddStudentForm
-          onStudentAdded={handleStudentAdded}
-          onCancel={() => setShowAddForm(false)}
-        />
-      )}
 
       <table className={styles.table}>
         <thead>
@@ -146,13 +126,13 @@ const ManageStudentsPage = () => {
             <th>Name</th>
             <th>Email</th>
             <th>Roll Number</th>
-            <th>Course</th>
+            <th>Program</th> {/* 5. Updated table header */}
             <th>Admission Date</th>
             <th>Actions</th>
           </tr>
         </thead>
         <tbody>
-          {renderTableBody()} {/* 4. Call the new render function */}
+          {renderTableBody()}
         </tbody>
       </table>
 

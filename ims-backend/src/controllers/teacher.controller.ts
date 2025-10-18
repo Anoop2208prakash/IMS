@@ -1,4 +1,3 @@
-// src/controllers/teacher.controller.ts
 import { Response } from 'express';
 import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcrypt';
@@ -72,32 +71,6 @@ export const addTeacher = async (req: AuthRequest, res: Response) => {
   }
 };
 
-// This function deletes a teacher by their ID.
-export const deleteTeacher = async (req: AuthRequest, res: Response) => {
-  const { id } = req.params;
-
-  try {
-    const user = await prisma.user.findUnique({ where: { id } });
-    if (!user || user.role !== 'TEACHER') {
-      return res.status(404).json({ message: 'Teacher not found.' });
-    }
-    
-    await prisma.$transaction([
-      prisma.enrollment.deleteMany({ where: { userId: id } }),
-      prisma.teacher.delete({ where: { userId: id } }),
-      prisma.user.delete({ where: { id: id } })
-    ]);
-
-    res.status(204).send();
-
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Failed to delete teacher.' });
-  }
-};
-
-// v-- This entire function is new --v
-
 // This function updates a teacher's details.
 export const updateTeacher = async (req: AuthRequest, res: Response) => {
   const { id } = req.params;
@@ -137,18 +110,62 @@ export const updateTeacher = async (req: AuthRequest, res: Response) => {
   }
 };
 
-export const getMyAssignedCourses = async (req: AuthRequest, res: Response) => {
+// This function deletes a teacher by their ID.
+export const deleteTeacher = async (req: AuthRequest, res: Response) => {
+  const { id } = req.params;
+
+  try {
+    const user = await prisma.user.findUnique({ where: { id } });
+    if (!user || user.role !== 'TEACHER') {
+      return res.status(404).json({ message: 'Teacher not found.' });
+    }
+    
+    // Updated transaction to include all relations from the new schema
+    await prisma.$transaction([
+      prisma.subjectAssignment.deleteMany({ where: { teacherId: id } }),
+      prisma.attendance.deleteMany({ where: { markedById: id } }),
+      prisma.examResult.deleteMany({ where: { enteredById: id } }),
+      prisma.teacher.delete({ where: { userId: id } }),
+      prisma.user.delete({ where: { id: id } })
+    ]);
+
+    res.status(204).send();
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Failed to delete teacher.' });
+  }
+};
+
+// GET subjects assigned to the logged-in teacher
+export const getMyAssignedSubjects = async (req: AuthRequest, res: Response) => {
   const teacherId = req.user?.id;
   if (!teacherId) return res.status(401).json({ message: 'Not authenticated.' });
 
   try {
-    const assignments = await prisma.courseAssignment.findMany({
+    const assignments = await prisma.subjectAssignment.findMany({
       where: { teacherId },
-      include: { course: true },
+      include: { 
+        subject: { 
+          include: {
+            semester: { 
+              include: {
+                program: { select: { title: true } }
+              }
+            }
+          }
+        } 
+      },
     });
-    const courses = assignments.map(a => a.course);
-    res.status(200).json(courses);
+    
+    // Remap to a cleaner array of subjects
+    const subjects = assignments.map(a => ({
+      ...a.subject,
+      programTitle: a.subject.semester.program.title,
+    }));
+    
+    res.status(200).json(subjects);
   } catch (error) {
-    res.status(500).json({ message: 'Failed to fetch assigned courses.' });
+    res.status(500).json({ message: 'Failed to fetch assigned subjects.' });
   }
 };

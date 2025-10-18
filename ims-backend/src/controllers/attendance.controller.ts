@@ -11,26 +11,28 @@ interface AttendanceRecord {
 // For a Teacher to submit attendance records
 export const submitAttendance = async (req: AuthRequest, res: Response) => {
   const teacherId = req.user?.id;
-  const { courseId, date, records } = req.body as {
-    courseId: string;
+  // 1. Changed courseId to subjectId
+  const { subjectId, date, records } = req.body as {
+    subjectId: string;
     date: string;
     records: AttendanceRecord[];
   };
 
-  if (!teacherId || !courseId || !date || !records) {
+  if (!teacherId || !subjectId || !date || !records) {
     return res.status(400).json({ message: 'Missing required fields.' });
   }
 
   try {
     const upsertOperations = records.map(record => 
       prisma.attendance.upsert({
-        where: { date_studentId_courseId: { date: new Date(date), studentId: record.studentId, courseId } },
+        // 2. Updated the unique where clause
+        where: { date_studentId_subjectId: { date: new Date(date), studentId: record.studentId, subjectId } },
         update: { status: record.status },
         create: {
           date: new Date(date),
           status: record.status,
           studentId: record.studentId,
-          courseId: courseId,
+          subjectId: subjectId, // 3. Use subjectId here
           markedById: teacherId,
         },
       })
@@ -52,7 +54,7 @@ export const getMyAttendance = async (req: AuthRequest, res: Response) => {
     const attendanceRecords = await prisma.attendance.findMany({
       where: { studentId },
       include: {
-        course: { select: { title: true } }, // Include the course title
+        subject: { select: { title: true } }, // 4. Changed course to subject
       },
       orderBy: { date: 'desc' },
     });

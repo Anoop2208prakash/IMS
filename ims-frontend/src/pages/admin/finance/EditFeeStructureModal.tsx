@@ -1,87 +1,96 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, ChangeEvent, FormEvent } from 'react';
 import axios from 'axios';
-import styles from '../EditTeacherModal.module.scss'; // Reuse styles
+import toast from 'react-hot-toast';
+import styles from '../EditModal.module.scss'; // Reuse generic modal style
 
-interface Course { id: string; title: string; }
+interface Program { id: string; title: string; }
 
+// This interface must match the data from the parent page
 interface FeeStructureData {
-    id: string;
-    name: string;
-    amount: number;
-    courseId: string;
+  id: string;
+  name: string;
+  amount: number;
+  programId: string; // <-- This was 'courseId'
 }
 
 interface EditFeeStructureModalProps {
-    structure: FeeStructureData;
-    onClose: () => void;
-    onFeeStructureUpdated: () => void;
+  structure: FeeStructureData;
+  onClose: () => void;
+  onFeeStructureUpdated: () => void;
 }
 
 const EditFeeStructureModal = ({ structure, onClose, onFeeStructureUpdated }: EditFeeStructureModalProps) => {
-    const [formData, setFormData] = useState({ name: '', amount: 0, courseId: '' });
-    const [courses, setCourses] = useState<Course[]>([]);
-    const [error, setError] = useState('');
+  const [formData, setFormData] = useState({ name: '', amount: 0, programId: '' });
+  const [programs, setPrograms] = useState<Program[]>([]);
+  const [error, setError] = useState('');
 
-    // Fetch all courses for the dropdown menu
-    useEffect(() => {
-        axios.get('http://localhost:5000/api/courses')
-            .then(res => setCourses(res.data))
-            .catch(() => setError('Could not load courses.'));
-    }, []);
+  // Fetch all programs for the dropdown
+  useEffect(() => {
+    axios.get('http://localhost:5000/api/programs') // <-- Fetch programs, not courses
+      .then(res => setPrograms(res.data))
+      .catch(() => toast.error('Could not load programs.'));
+  }, []);
 
-    // Pre-fill the form with the structure's data when the modal opens
-    useEffect(() => {
-        if (structure) {
-            setFormData({
-                name: structure.name,
-                amount: structure.amount,
-                courseId: structure.courseId,
-            });
-        }
-    }, [structure]);
+  // Pre-fill the form with the existing data
+  useEffect(() => {
+    if (structure) {
+      setFormData({
+        name: structure.name,
+        amount: structure.amount,
+        programId: structure.programId, // <-- This was 'courseId'
+      });
+    }
+  }, [structure]);
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-        const { name, value, type } = e.target;
-        setFormData(prev => ({
-            ...prev,
-            [name]: type === 'number' ? parseFloat(value) || 0 : value,
-        }));
-    };
+  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value, type } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: type === 'number' ? parseFloat(value) || 0 : value,
+    }));
+  };
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setError('');
-        try {
-            await axios.put(`http://localhost:5000/api/fees/structures/${structure.id}`, formData);
-            onFeeStructureUpdated();
-        } catch (err: any) {
-            setError(err.response?.data?.message || 'Failed to update fee structure.');
-        }
-    };
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    setError('');
+    try {
+      await axios.put(`http://localhost:5000/api/fees/structures/${structure.id}`, formData);
+      onFeeStructureUpdated();
+    } catch (err) {
+      if (axios.isAxiosError(err) && err.response) {
+        toast.error(err.response.data.message || 'Failed to update fee structure.');
+      } else {
+        toast.error('An unexpected error occurred.');
+      }
+    }
+  };
 
-    return (
-        <div className={styles.modalBackdrop}>
-            <div className={styles.modalContent}>
-                <h2>Edit Fee Structure</h2>
-                <form onSubmit={handleSubmit}>
-                    <label>Fee Name</label>
-                    <input type="text" name="name" value={formData.name} onChange={handleChange} required />
-                    <label>Amount</label>
-                    <input type="number" name="amount" value={formData.amount} min="0" step="0.01" onChange={handleChange} required />
-                    <label>Associated Course</label>
-                    <select name="courseId" value={formData.courseId} onChange={handleChange} required>
-                        <option value="" disabled>-- Select a Course --</option>
-                        {courses.map(course => <option key={course.id} value={course.id}>{course.title}</option>)}
-                    </select>
-                    {error && <p className={styles.error}>{error}</p>}
-                    <div className={styles.buttonGroup}>
-                        <button type="submit">Save Changes</button>
-                        <button type="button" onClick={onClose}>Cancel</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    );
+  return (
+    <div className={styles.modalBackdrop}>
+      <div className={styles.modalContent}>
+        <h2>Edit Fee Structure</h2>
+        <form onSubmit={handleSubmit}>
+          <label>Fee Name</label>
+          <input type="text" name="name" value={formData.name} onChange={handleChange} required />
+
+          <label>Amount (₹)</label>
+          <input type="number" name="amount" value={formData.amount} min="0" step="0.01" onChange={handleChange} required />
+
+          <label>Associated Program</label>
+          <select name="programId" value={formData.programId} onChange={handleChange} required>
+            <option value="" disabled>-- Select a Program --</option>
+            {programs.map(program => <option key={program.id} value={program.id}>{program.title}</option>)}
+          </select>
+
+          {error && <p className={styles.error}>{error}</p>}
+          <div className={styles.buttonGroup}>
+            <button type="submit">Save Changes</button>
+            <button type="button" onClick={onClose}>Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
 };
 
 export default EditFeeStructureModal;

@@ -6,7 +6,6 @@ import authRoutes from './routes/auth.routes';
 import staffRoutes from './routes/staff.routes';
 import teacherRoutes from './routes/teacher.routes';
 import studentRoutes from './routes/student.routes';
-import courseRoutes from './routes/course.routes'; 
 import profileRoutes from './routes/profile.routes';
 import enrollmentRoutes from './routes/enrollment.routes';
 import bookRoutes from './routes/book.routes';
@@ -19,6 +18,9 @@ import feeRoutes from './routes/fee.routes';
 import inventoryRoutes from './routes/inventory.routes';
 import orderRoutes from './routes/order.routes';
 import announcementRoutes from './routes/announcement.routes';
+import programRoutes from './routes/program.routes';
+import semesterRoutes from './routes/semester.routes';
+import subjectRoutes from './routes/subject.routes';
 
 dotenv.config();
 
@@ -41,7 +43,6 @@ app.use('/api/auth', authRoutes);
 app.use('/api/staff', staffRoutes);
 app.use('/api/teachers', teacherRoutes);
 app.use('/api/students', studentRoutes);
-app.use('/api/courses', courseRoutes); 
 app.use('/api/profile', profileRoutes);
 app.use('/api/enrollments', enrollmentRoutes);
 app.use('/api/books', bookRoutes);
@@ -54,6 +55,9 @@ app.use('/api/fees', feeRoutes);
 app.use('/api/inventory', inventoryRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/announcements', announcementRoutes);
+app.use('/api/programs', programRoutes);
+app.use('/api/semesters', semesterRoutes);
+app.use('/api/subjects', subjectRoutes);
 
 app.listen(PORT, () => {
   console.log(`🚀 Server running on http://localhost:${5000}`);

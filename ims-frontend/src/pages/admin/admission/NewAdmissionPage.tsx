@@ -1,9 +1,10 @@
-import React, { useState, useEffect, ChangeEvent, FormEvent } from 'react';
+import { useState, useEffect, ChangeEvent, FormEvent } from 'react';
 import axios from 'axios';
+import toast from 'react-hot-toast';
 import styles from './NewAdmissionPage.module.scss';
-import logo from '../../../assets/logo.png'; // Make sure you have a logo file in your assets
+import logo from '../../../assets/logo.png'; // Make sure you have a logo file here
 
-interface Course {
+interface Program {
   id: string;
   title: string;
 }
@@ -27,36 +28,33 @@ const NewAdmissionPage = () => {
 
     // Other Info
     religion: '',
-    nationality: 'Indian', // Default value
+    nationality: 'Indian',
     phoneNumber: '',
     email: '',
     nidNumber: '',
     bloodGroup: '',
     occupation: '',
     maritalStatus: 'SINGLE',
-    courseId: '',
-    password: '123', // Add a temporary password if needed for the backend
+    programId: '', // Changed from courseId
+    password: '',
   });
   
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-
-  const [courses, setCourses] = useState<Course[]>([]);
-  const [message, setMessage] = useState('');
-  const [error, setError] = useState('');
+  const [programs, setPrograms] = useState<Program[]>([]);
 
   useEffect(() => {
-    // Fetch available courses for the dropdown
-    const fetchCourses = async () => {
+    // Fetch available programs for the dropdown
+    const fetchPrograms = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/courses');
-        setCourses(response.data);
+        const response = await axios.get('http://localhost:5000/api/programs');
+        setPrograms(response.data);
       } catch (err) {
-        setError('Failed to load courses. Please try again.');
+        toast.error('Failed to load programs.');
         console.error(err);
       }
     };
-    fetchCourses();
+    fetchPrograms();
   }, []);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
@@ -73,44 +71,50 @@ const NewAdmissionPage = () => {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    setMessage('');
-    setError('');
 
     if (!imageFile) {
-      setError('Please upload a student photo.');
+      toast.error('Please upload a student photo.');
       return;
     }
 
     const submissionData = new FormData();
-    // Consolidate addresses for easier backend processing if needed
-    submissionData.append('presentAddress', `${formData.presentAddressDetails}, ${formData.presentAddressDistrict}, ${formData.presentAddressDivision}`);
-    submissionData.append('permanentAddress', `${formData.permanentAddressDetails}, ${formData.permanentAddressDistrict}, ${formData.permanentAddressDivision}`);
     
-    // Append all other text fields
-    Object.entries(formData).forEach(([key, value]) => {
-      // Avoid appending the separate address fields again
-      if (!key.toLowerCase().includes('addressd')) {
-         submissionData.append(key, value);
-      }
-    });
-
+    // Append the uploaded image file
     submissionData.append('image', imageFile);
 
-    try {
-      await axios.post('http://localhost:5000/api/students', submissionData);
-      
-      setMessage(`Student "${formData.fullName}" admitted successfully!`);
-      // Optionally reset the form here
+    // Append all other text fields from formData
+    submissionData.append('fullName', formData.fullName);
+    submissionData.append('fatherName', formData.fatherName);
+    submissionData.append('motherName', formData.motherName);
+    submissionData.append('dateOfBirth', formData.dateOfBirth);
+    submissionData.append('gender', formData.gender);
+    submissionData.append('presentAddress', `${formData.presentAddressDetails}, ${formData.presentAddressDistrict}, ${formData.presentAddressDivision}`);
+    submissionData.append('permanentAddress', `${formData.permanentAddressDetails}, ${formData.permanentAddressDistrict}, ${formData.permanentAddressDivision}`);
+    submissionData.append('religion', formData.religion);
+    submissionData.append('nationality', formData.nationality);
+    submissionData.append('phoneNumber', formData.phoneNumber);
+    submissionData.append('email', formData.email);
+    submissionData.append('nidNumber', formData.nidNumber);
+    submissionData.append('bloodGroup', formData.bloodGroup);
+    submissionData.append('occupation', formData.occupation);
+    submissionData.append('maritalStatus', formData.maritalStatus);
+    submissionData.append('programId', formData.programId);
+    submissionData.append('password', formData.password);
 
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Failed to admit student.');
-    }
+    const promise = axios.post('http://localhost:5000/api/students', submissionData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    });
+
+    toast.promise(promise, {
+      loading: 'Admitting student...',
+      success: `Student "${formData.fullName}" admitted successfully!`,
+      error: (err) => err.response?.data?.message || 'Failed to admit student.',
+    });
   };
 
   return (
     <div className={styles.pageWrapper}>
       <form onSubmit={handleSubmit} className={styles.admissionForm}>
-        {/* Angled Header */}
         <div className={styles.header}>
           <div className={styles.headerContent}>
             <div className={styles.logoArea}>
@@ -123,19 +127,14 @@ const NewAdmissionPage = () => {
             <div className={styles.photoBox} onClick={() => document.getElementById('photoUpload')?.click()}>
               {imagePreview ? <img src={imagePreview} alt="Student Preview" /> : 'PHOTO'}
               <input 
-                id="photoUpload"
-                type="file" 
-                accept="image/png, image/jpeg" 
-                onChange={handleImageChange}
-                style={{ display: 'none' }}
-                required
+                id="photoUpload" type="file" accept="image/png, image/jpeg" 
+                onChange={handleImageChange} style={{ display: 'none' }}
               />
             </div>
           </div>
           <h2>ADMISSION FORM</h2>
         </div>
 
-        {/* Form Body */}
         <div className={styles.formBody}>
           <div className={styles.formRow}>
             <div className={styles.formGroup}><label>Student's Name</label><input type="text" name="fullName" onChange={handleChange} required /></div>
@@ -155,30 +154,24 @@ const NewAdmissionPage = () => {
             </div>
           </div>
 
-          {/* Address Sections */}
           <fieldset className={styles.addressFieldset}>
             <legend>Present Address</legend>
+            <div className={styles.formRow}><div className={styles.formGroup}><label>Address</label><input type="text" name="presentAddressDetails" onChange={handleChange} required /></div></div>
             <div className={styles.formRow}>
               <div className={styles.formGroup}><label>Division</label><input type="text" name="presentAddressDivision" onChange={handleChange} /></div>
               <div className={styles.formGroup}><label>District</label><input type="text" name="presentAddressDistrict" onChange={handleChange} /></div>
-            </div>
-            <div className={styles.formRow}>
-              <div className={styles.formGroup}><label>Address</label><input type="text" name="presentAddressDetails" onChange={handleChange} required /></div>
             </div>
           </fieldset>
 
           <fieldset className={styles.addressFieldset}>
             <legend>Permanent Address</legend>
+            <div className={styles.formRow}><div className={styles.formGroup}><label>Address</label><input type="text" name="permanentAddressDetails" onChange={handleChange} /></div></div>
             <div className={styles.formRow}>
               <div className={styles.formGroup}><label>Division</label><input type="text" name="permanentAddressDivision" onChange={handleChange} /></div>
               <div className={styles.formGroup}><label>District</label><input type="text" name="permanentAddressDistrict" onChange={handleChange} /></div>
             </div>
-            <div className={styles.formRow}>
-              <div className={styles.formGroup}><label>Address</label><input type="text" name="permanentAddressDetails" onChange={handleChange} /></div>
-            </div>
           </fieldset>
-
-          {/* Other Info */}
+          
           <div className={styles.formRow}>
             <div className={styles.formGroup}><label>Religion</label><input type="text" name="religion" onChange={handleChange} /></div>
             <div className={styles.formGroup}><label>Nationality</label><input type="text" name="nationality" value={formData.nationality} onChange={handleChange} /></div>
@@ -201,42 +194,35 @@ const NewAdmissionPage = () => {
               </div>
             </div>
           </div>
+          
           <div className={styles.formRow}>
             <div className={styles.formGroup}>
-              <label>Course Name</label>
-              <select name="courseId" value={formData.courseId} onChange={handleChange} required>
-                <option value="" disabled>-- Select a Course --</option>
-                {courses.map(course => <option key={course.id} value={course.id}>{course.title}</option>)}
+              <label>Program Name</label>
+              <select name="programId" value={formData.programId} onChange={handleChange} required>
+                <option value="" disabled>-- Select a Program --</option>
+                {programs.map(program => <option key={program.id} value={program.id}>{program.title}</option>)}
               </select>
             </div>
           </div>
 
-          {/* -- Password Field (THIS BLOCK WAS ADDED) -- */}
           <div className={styles.formRow}>
             <div className={styles.formGroup}>
               <label>Temporary Password</label>
-              <input type="password" name="password" value={formData.password} onChange={handleChange} required />
+              <input type="password" name="password" onChange={handleChange} required />
             </div>
           </div>
-
-          {/* Declaration */}
+        </div>
+        
+        <div className={styles.footer}>
           <div className={styles.declaration}>
             <h3>DECLARATION</h3>
             <p>I hereby, declaring that I will obey all the rules and regulations of the institution and be fully responsible for violating the rules.</p>
           </div>
-
-          {/* Signatures */}
           <div className={styles.signatures}>
             <div className={styles.signatureBox}><label>Student's Signature</label></div>
             <div className={styles.signatureBox}><label>Authorized's Signature</label></div>
           </div>
-        </div>
-        
-        {/* Submission & Footer */}
-        <div className={styles.footer}>
           <div className={styles.submissionArea}>
-            {message && <p className={styles.successMessage}>{message}</p>}
-            {error && <p className={styles.errorMessage}>{error}</p>}
             <button type="submit" className={styles.submitButton}>Admit Student</button>
           </div>
         </div>

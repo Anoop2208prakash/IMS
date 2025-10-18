@@ -1,113 +1,121 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, FormEvent } from 'react';
 import axios from 'axios';
+import toast from 'react-hot-toast';
 import styles from './EnterMarksPage.module.scss';
+import Spinner from '../../components/common/Spinner';
 
-// --- Interfaces for our data structures ---
-interface Course { id: string; title: string; }
+// --- Interfaces ---
+interface Subject { 
+  id: string; 
+  title: string;
+  programTitle: string; // This comes from our updated backend
+}
 interface Exam { id: string; name: string; totalMarks: number; }
 interface Student { id: string; name: string; student: { rollNumber: string; } }
 
 const EnterMarksPage = () => {
-  // --- State Management ---
-  const [myCourses, setMyCourses] = useState<Course[]>([]);
+  const [mySubjects, setMySubjects] = useState<Subject[]>([]);
   const [exams, setExams] = useState<Exam[]>([]);
   const [students, setStudents] = useState<Student[]>([]);
-  const [selectedCourseId, setSelectedCourseId] = useState('');
+  const [selectedSubjectId, setSelectedSubjectId] = useState('');
   const [selectedExamId, setSelectedExamId] = useState('');
-  const [marks, setMarks] = useState<Record<string, string>>({}); // Store marks as strings for input flexibility
+  const [marks, setMarks] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState('');
 
-  // --- Data Fetching ---
-
-  // 1. Fetch the teacher's courses and all available exams when the page loads
+  // 1. Fetch teacher's subjects and all exams on load
   useEffect(() => {
     const fetchInitialData = async () => {
       try {
-        const [coursesRes, examsRes] = await Promise.all([
-          axios.get('http://localhost:5000/api/teachers/my-courses'),
+        const [subjectsRes, examsRes] = await Promise.all([
+          axios.get('http://localhost:5000/api/teachers/my-subjects'),
           axios.get('http://localhost:5000/api/exams')
         ]);
-        setMyCourses(coursesRes.data);
+        setMySubjects(subjectsRes.data);
         setExams(examsRes.data);
       } catch (error) {
-        setMessage('Failed to load initial data.');
+        toast.error('Failed to load initial data.');
         console.error(error);
       }
     };
     fetchInitialData();
   }, []);
 
-  // 2. Fetch the student roster whenever a course is selected
+  // 2. Fetch students when a SUBJECT is selected
   useEffect(() => {
-    if (selectedCourseId) {
+    if (selectedSubjectId) {
       setLoading(true);
-      setStudents([]); // Clear previous student list
-      setMarks({});   // Clear previous marks
-      axios.get(`http://localhost:5000/api/courses/${selectedCourseId}/students`)
+      setStudents([]);
+      setMarks({});
+      axios.get(`http://localhost:5000/api/subjects/${selectedSubjectId}/students`)
         .then(res => setStudents(res.data))
         .catch(err => {
-          setMessage('Failed to load student roster.');
-          console.error(err);
+          if (axios.isAxiosError(err) && err.response) {
+            toast.error(err.response.data.message || 'Failed to load students.');
+          } else {
+            toast.error('An unexpected error occurred.');
+          }
         })
         .finally(() => setLoading(false));
     }
-  }, [selectedCourseId]);
-
-  // --- Handlers ---
+  }, [selectedSubjectId]);
 
   const handleMarkChange = (studentId: string, value: string) => {
     setMarks(prev => ({ ...prev, [studentId]: value }));
   };
-
-  const handleSubmit = async (e: React.FormEvent) => {
+  
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    if (!selectedCourseId || !selectedExamId || students.length === 0) {
-      setMessage('Please select a course and exam.');
+    if (!selectedSubjectId || !selectedExamId || students.length === 0) {
+      toast.error('Please select a subject and an exam.');
       return;
     }
 
     const results = students.map(student => ({
       studentId: student.id,
-      marksObtained: parseFloat(marks[student.id]) || 0, // Default to 0 if empty
+      marksObtained: parseFloat(marks[student.id]) || 0,
     }));
 
-    try {
-      const response = await axios.post('http://localhost:5000/api/exam-results', {
-        courseId: selectedCourseId,
-        examId: selectedExamId,
-        results,
-      });
-      setMessage(response.data.message);
-    } catch (err: any) {
-      setMessage(err.response?.data?.message || 'Failed to submit marks.');
-    }
+    const promise = axios.post('http://localhost:5000/api/exam-results', {
+      subjectId: selectedSubjectId, // 3. Send subjectId
+      examId: selectedExamId,
+      results,
+    });
+    
+    toast.promise(promise, {
+      loading: 'Submitting marks...',
+      success: 'Marks submitted successfully!',
+      error: (err) => err.response?.data?.message || 'Failed to submit marks.',
+    });
   };
+
+  const selectedExam = exams.find(e => e.id === selectedExamId);
 
   return (
     <div className={styles.container}>
       <h2>Enter Marks</h2>
       <div className={styles.controls}>
-        <select onChange={e => setSelectedCourseId(e.target.value)} value={selectedCourseId}>
-          <option value="" disabled>-- Select a Course --</option>
-          {myCourses.map(course => <option key={course.id} value={course.id}>{course.title}</option>)}
+        <select onChange={e => setSelectedSubjectId(e.target.value)} value={selectedSubjectId}>
+          <option value="">-- Select a Subject --</option>
+          {mySubjects.map(sub => (
+            <option key={sub.id} value={sub.id}>{sub.programTitle} - {sub.title}</option>
+          ))}
         </select>
         <select onChange={e => setSelectedExamId(e.target.value)} value={selectedExamId}>
-          <option value="" disabled>-- Select an Exam --</option>
+          <option value="">-- Select an Exam --</option>
           {exams.map(exam => <option key={exam.id} value={exam.id}>{exam.name}</option>)}
         </select>
       </div>
 
-      {loading && <p>Loading students...</p>}
+      {loading && <Spinner />}
 
-      {students.length > 0 && selectedExamId && (
+      {!loading && students.length > 0 && selectedExamId && (
         <form onSubmit={handleSubmit}>
           <table className={styles.marksTable}>
             <thead>
               <tr>
                 <th>Student Name</th>
                 <th>Roll Number</th>
-                <th>Marks Obtained (out of {exams.find(e => e.id === selectedExamId)?.totalMarks || 100})</th>
+                <th>Marks Obtained (out of {selectedExam?.totalMarks || 100})</th>
               </tr>
             </thead>
             <tbody>
@@ -120,7 +128,7 @@ const EnterMarksPage = () => {
                       type="number"
                       className={styles.marksInput}
                       min="0"
-                      max={exams.find(e => e.id === selectedExamId)?.totalMarks || 100}
+                      max={selectedExam?.totalMarks || 100}
                       value={marks[student.id] || ''}
                       onChange={e => handleMarkChange(student.id, e.target.value)}
                       required
@@ -133,8 +141,6 @@ const EnterMarksPage = () => {
           <button type="submit" className={styles.submitButton}>Submit Marks</button>
         </form>
       )}
-      
-      {message && <p className={styles.message}>{message}</p>}
     </div>
   );
 };

@@ -4,12 +4,13 @@ import toast from 'react-hot-toast';
 import styles from './MyAttendancePage.module.scss';
 import Spinner from '../../components/common/Spinner';
 import DataTable, { Column } from '../../components/common/DataTable';
+import { BsCalendarCheck } from 'react-icons/bs';
 
 interface AttendanceRecord {
   id: string;
   date: string;
   status: string;
-  course: { title: string; };
+  subject: { title: string; }; // <-- Changed from 'course'
 }
 
 const MyAttendancePage = () => {
@@ -39,8 +40,8 @@ const MyAttendancePage = () => {
 
   const columns: Column<AttendanceRecord>[] = [
     {
-      header: 'Course',
-      accessor: (row) => row.course.title
+      header: 'Subject', // <-- Changed from 'Course'
+      accessor: (row) => row.subject.title // <-- Changed from 'course'
     },
     {
       header: 'Date',
@@ -67,6 +68,7 @@ const MyAttendancePage = () => {
         <div className={styles.summaryCard}><span>{summary.percentage}%</span> Overall</div>
       </div>
       
+      {/* This DataTable component will now correctly display the data */}
       <DataTable columns={columns} data={records} />
     </div>
   );

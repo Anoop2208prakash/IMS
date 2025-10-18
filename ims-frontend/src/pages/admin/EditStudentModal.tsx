@@ -1,18 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, ChangeEvent, FormEvent } from 'react';
 import axios from 'axios';
-// We can reuse the same modal styles from the teacher edit modal
-import styles from './EditTeacherModal.module.scss'; 
+import toast from 'react-hot-toast';
+import styles from './EditModal.module.scss'; // Use the generic EditModal style
 
-// This interface should match the one in ManageStudentsPage.tsx
+// 1. Update the interface to match the data from the parent page
 interface StudentData {
   id: string;
   name: string;
   email: string;
   student: {
     rollNumber: string;
-    admissionDate: string;
   };
-  enrollments: Array<{ course: { title: string; } }>;
+  programName: string; // This is just for display, not editing
 }
 
 interface EditStudentModalProps {
@@ -27,10 +26,8 @@ const EditStudentModal = ({ student, onClose, onStudentUpdated }: EditStudentMod
     email: '',
     rollNumber: '',
   });
-  const [error, setError] = useState('');
 
-  // This effect runs when the component receives a new 'student' prop,
-  // pre-filling the form with their current data.
+  // 2. Pre-fill the form with the correct data structure
   useEffect(() => {
     if (student) {
       setFormData({
@@ -41,18 +38,23 @@ const EditStudentModal = ({ student, onClose, onStudentUpdated }: EditStudentMod
     }
   }, [student]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    setError('');
     try {
+      // 3. Send the updated data to the API
       await axios.put(`http://localhost:5000/api/students/${student.id}`, formData);
-      onStudentUpdated(); // Notify parent to refresh and close
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Failed to update student.');
+      toast.success('Student updated successfully!');
+      onStudentUpdated();
+    } catch (err) {
+      if (axios.isAxiosError(err) && err.response) {
+        toast.error(err.response.data.message || 'Failed to update student.');
+      } else {
+        toast.error('An unexpected error occurred.');
+      }
     }
   };
 
@@ -63,14 +65,13 @@ const EditStudentModal = ({ student, onClose, onStudentUpdated }: EditStudentMod
         <form onSubmit={handleSubmit}>
           <label>Name</label>
           <input type="text" name="name" value={formData.name} onChange={handleChange} required />
-
+          
           <label>Email</label>
           <input type="email" name="email" value={formData.email} onChange={handleChange} required />
           
           <label>Roll Number</label>
           <input type="text" name="rollNumber" value={formData.rollNumber} onChange={handleChange} required />
-          
-          {error && <p className={styles.error}>{error}</p>}
+
           <div className={styles.buttonGroup}>
             <button type="submit">Save Changes</button>
             <button type="button" onClick={onClose}>Cancel</button>

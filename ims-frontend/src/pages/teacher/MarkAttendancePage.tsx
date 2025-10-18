@@ -1,74 +1,103 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, FormEvent } from 'react';
 import axios from 'axios';
+import toast from 'react-hot-toast';
 import styles from './MarkAttendancePage.module.scss';
+import Spinner from '../../components/common/Spinner';
 
-interface Course { id: string; title: string; }
-interface Student { id: string; name: string; student: { rollNumber: string; } }
+// 1. Updated interface to 'Subject'
+interface Subject { 
+  id: string; 
+  title: string;
+  programTitle: string; // We get this from the backend now
+}
+interface Student { 
+  id: string; 
+  name: string; 
+  student: { rollNumber: string; };
+}
 type AttendanceStatus = 'PRESENT' | 'ABSENT' | 'LATE';
 
 const MarkAttendancePage = () => {
-  const [myCourses, setMyCourses] = useState<Course[]>([]);
-  const [selectedCourseId, setSelectedCourseId] = useState('');
+  const [mySubjects, setMySubjects] = useState<Subject[]>([]);
+  const [selectedSubjectId, setSelectedSubjectId] = useState('');
   const [students, setStudents] = useState<Student[]>([]);
   const [attendance, setAttendance] = useState<Record<string, AttendanceStatus>>({});
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
-  const [message, setMessage] = useState('');
+  const [loading, setLoading] = useState(false); // For loading students
 
-  // 1. Fetch the teacher's assigned courses on load
+  // 1. Fetch the teacher's assigned SUBJECTS on load
   useEffect(() => {
-    axios.get('http://localhost:5000/api/teachers/my-courses')
-      .then(res => setMyCourses(res.data))
-      .catch(err => console.error(err));
+    axios.get('http://localhost:5000/api/teachers/my-subjects')
+      .then(res => setMySubjects(res.data))
+      .catch(err => toast.error('Failed to load assigned subjects.'));
   }, []);
 
-  // 2. Fetch students when a course is selected
+  // 2. Fetch students when a SUBJECT is selected
   useEffect(() => {
-    if (selectedCourseId) {
-      axios.get(`http://localhost:5000/api/courses/${selectedCourseId}/students`)
+    if (selectedSubjectId) {
+      setLoading(true);
+      setStudents([]); // Clear previous students
+      axios.get(`http://localhost:5000/api/subjects/${selectedSubjectId}/students`)
         .then(res => {
           setStudents(res.data);
           // Default all students to PRESENT
-          const initialAttendance = res.data.reduce((acc: any, student: Student) => {
+          const initialAttendance = res.data.reduce((acc: Record<string, AttendanceStatus>, student: Student) => {
             acc[student.id] = 'PRESENT';
             return acc;
           }, {});
           setAttendance(initialAttendance);
         })
-        .catch(err => console.error(err));
+        .catch(err => {
+          if (axios.isAxiosError(err) && err.response) {
+            toast.error(err.response.data.message || 'Failed to load students.');
+          } else {
+            toast.error('An unexpected error occurred.');
+          }
+        })
+        .finally(() => setLoading(false));
     }
-  }, [selectedCourseId]);
+  }, [selectedSubjectId]);
 
   const handleStatusChange = (studentId: string, status: AttendanceStatus) => {
     setAttendance(prev => ({ ...prev, [studentId]: status }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     const records = Object.entries(attendance).map(([studentId, status]) => ({ studentId, status }));
-    try {
-      const response = await axios.post('http://localhost:5000/api/attendance', {
-        courseId: selectedCourseId,
-        date,
-        records,
-      });
-      setMessage(response.data.message);
-    } catch (err: any) {
-      setMessage(err.response?.data?.message || 'Failed to submit.');
-    }
+
+    const promise = axios.post('http://localhost:5000/api/attendance', {
+      subjectId: selectedSubjectId, // 3. Send subjectId, not courseId
+      date,
+      records,
+    });
+
+    toast.promise(promise, {
+      loading: 'Submitting attendance...',
+      success: 'Attendance submitted successfully!',
+      error: (err) => err.response?.data?.message || 'Failed to submit.'
+    });
   };
 
   return (
     <div className={styles.container}>
       <h2>Mark Attendance</h2>
       <div className={styles.controls}>
-        <select onChange={e => setSelectedCourseId(e.target.value)} value={selectedCourseId}>
-          <option value="">-- Select a Course --</option>
-          {myCourses.map(course => <option key={course.id} value={course.id}>{course.title}</option>)}
+        <select onChange={e => setSelectedSubjectId(e.target.value)} value={selectedSubjectId}>
+          <option value="">-- Select a Subject --</option>
+          {/* 4. Map over subjects and show program title */}
+          {mySubjects.map(sub => (
+            <option key={sub.id} value={sub.id}>
+              {sub.programTitle} - {sub.title}
+            </option>
+          ))}
         </select>
         <input type="date" value={date} onChange={e => setDate(e.target.value)} />
       </div>
 
-      {students.length > 0 && (
+      {loading && <Spinner />}
+      
+      {!loading && students.length > 0 && (
         <form onSubmit={handleSubmit}>
           <div className={styles.studentList}>
             {students.map(student => (
@@ -90,7 +119,6 @@ const MarkAttendancePage = () => {
             ))}
           </div>
           <button type="submit" className={styles.submitButton}>Submit Attendance</button>
-          {message && <p>{message}</p>}
         </form>
       )}
     </div>
