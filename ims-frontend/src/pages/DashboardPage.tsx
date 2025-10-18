@@ -17,7 +17,7 @@ interface Order { id: string; orderId: string; totalAmount: number; }
 interface Loan { id: string; dueDate: string; book: { title: string; }; }
 
 interface AdminData {
-  studentCount: number; teacherCount: number; courseCount: number; booksOnLoan: number;
+  studentCount: number; teacherCount: number; programCount: number; booksOnLoan: number;
   announcements: Announcement[];
 }
 interface StudentData {
@@ -33,7 +33,7 @@ const AdminDashboard = ({ data }: { data: AdminData }) => (
   <div className={styles.dashboardGrid}>
     <StatCard title="Total Students" value={data.studentCount} icon={<FaUserGraduate />} />
     <StatCard title="Total Teachers" value={data.teacherCount} icon={<FaChalkboardTeacher />} />
-    <StatCard title="Total Courses" value={data.courseCount} icon={<BsJournalBookmarkFill />} />
+    <StatCard title="Total Programs" value={data.programCount} icon={<BsJournalBookmarkFill />} />
     <StatCard title="Books on Loan" value={data.booksOnLoan} icon={<BsBookHalf />} />
   </div>
 );
@@ -54,7 +54,7 @@ const StudentDashboard = ({ data }: { data: StudentData }) => (
             {data.recentOrders.map((order) => (
               <li key={order.id}>
                 <span>{order.orderId}</span>
-                <span>${order.totalAmount.toFixed(2)}</span>
+                <span>₹{order.totalAmount.toFixed(2)}</span>
                 <Link to={`/order/${order.orderId}`} className={styles.viewLink}>View</Link>
               </li>
             ))}

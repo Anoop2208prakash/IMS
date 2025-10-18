@@ -4,7 +4,7 @@ import toast from 'react-hot-toast';
 import styles from '../AdminPages.module.scss';
 import Spinner from '../../../components/common/Spinner';
 import EmptyState from '../../../components/common/EmptyState';
-import { FaFileInvoiceDollar } from 'react-icons/fa'; // Import an icon
+import { FaFileInvoiceDollar } from 'react-icons/fa';
 import AddFeeStructureForm from './AddFeeStructureForm';
 import EditFeeStructureModal from './EditFeeStructureModal';
 
@@ -12,8 +12,8 @@ interface FeeStructureData {
     id: string;
     name: string;
     amount: number;
-    courseId: string;
-    course: { title: string; };
+    programId: string; // Changed from courseId
+    program: { title: string; }; // Changed from course
 }
 
 const ManageFeeStructuresPage = () => {
@@ -94,8 +94,7 @@ const ManageFeeStructuresPage = () => {
         return structures.map((structure) => (
             <tr key={structure.id}>
                 <td>{structure.name}</td>
-                <td>{structure.course.title}</td>
-                {/* Changed dollar to rupee symbol here */}
+                <td>{structure.program.title}</td>
                 <td>₹{structure.amount.toFixed(2)}</td>
                 <td>
                     <button onClick={() => setEditingStructure(structure)} className={`${styles.button} ${styles.editButton}`}>Edit</button>
@@ -120,7 +119,7 @@ const ManageFeeStructuresPage = () => {
                 <thead>
                     <tr>
                         <th>Fee Name</th>
-                        <th>Associated Course</th>
+                        <th>Associated Program</th>
                         <th>Amount</th>
                         <th>Actions</th>
                     </tr>

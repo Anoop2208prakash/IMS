@@ -20,53 +20,84 @@ export const getAllStudents = async (req: Request, res: Response) => {
             admissionDate: true,
           },
         },
-        enrollments: {
+        enrollments: { // Updated query to find the program title
+          take: 1, // We only need one subject to find the program
           select: {
-            course: {
+            subject: {
               select: {
-                title: true,
+                semester: {
+                  select: {
+                    program: {
+                      select: {
+                        title: true,
+                      },
+                    },
+                  },
+                },
               },
             },
           },
         },
       },
     });
-    res.status(200).json(students);
+
+    // Re-map the data to be easier for the frontend to read
+    const formattedStudents = students.map(s => ({
+      ...s,
+      // Access the program title through the nested relations
+      programName: s.enrollments[0]?.subject?.semester?.program?.title || 'N/A',
+    }));
+    
+    res.status(200).json(formattedStudents);
   } catch (error) {
     res.status(500).json({ message: 'Failed to fetch students.' });
   }
 };
 
-// CREATE A NEW STUDENT (UPDATED FOR DETAILED FORM)
+// CREATE A NEW STUDENT (Refactored for Program/Subject Enrollment)
 export const addStudent = async (req: Request, res: Response) => {
-  // Destructure all fields from the form body
   const { 
     fullName, fatherName, motherName, dateOfBirth, gender,
     presentAddress, permanentAddress, religion, nationality,
     phoneNumber, email, nidNumber, bloodGroup, occupation,
-    maritalStatus, courseId, password 
+    maritalStatus, 
+    programId, // <-- Changed from courseId
+    password 
   } = req.body;
 
-  // 1. Check if the image file was uploaded by multer
   if (!req.file) {
     return res.status(400).json({ message: 'Student photo is required.' });
   }
-  const photoUrl = `/uploads/${req.file.filename}`; // Create the path to be saved in the DB
+  const photoUrl = `/uploads/${req.file.filename}`;
+
+  if (!programId) {
+    return res.status(400).json({ message: 'Program selection is required.' });
+  }
 
   try {
-    // 2. Add more robust validation
     const existingUser = await prisma.user.findUnique({ where: { email } });
-    if (existingUser) {
-      return res.status(409).json({ message: 'Email is already in use.' });
-    }
+    if (existingUser) return res.status(409).json({ message: 'Email is already in use.' });
     if (phoneNumber) {
         const existingPhone = await prisma.student.findUnique({ where: { phoneNumber } });
-        if (existingPhone) {
-            return res.status(409).json({ message: 'Phone number is already in use.' });
-        }
+        if (existingPhone) return res.status(409).json({ message: 'Phone number is already in use.' });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
+
+    // --- New Enrollment Logic ---
+    const firstSemester = await prisma.semester.findFirst({
+      where: { programId, name: 'Semester 1' },
+      include: { subjects: { select: { id: true } } }
+    });
+
+    if (!firstSemester || firstSemester.subjects.length === 0) {
+      return res.status(400).json({ message: `This program has no subjects in Semester 1. Please add subjects first.` });
+    }
+
+    const enrollmentData = firstSemester.subjects.map(subject => ({
+      subjectId: subject.id,
+    }));
+    // --- End of New Logic ---
 
     const newUser = await prisma.user.create({
       data: {
@@ -74,25 +105,22 @@ export const addStudent = async (req: Request, res: Response) => {
         email,
         password: hashedPassword,
         role: 'STUDENT',
-        enrollments: { create: { courseId } },
+        enrollments: { 
+          create: enrollmentData, // Enroll in all subjects
+        },
         student: {
           create: {
             rollNumber: `STUDENT-${Date.now()}`,
             admissionDate: new Date(),
-            fatherName,
-            motherName,
+            fatherName, motherName,
             dateOfBirth: new Date(dateOfBirth),
             gender: gender as Gender,
             presentAddress,
             permanentAddress: permanentAddress || presentAddress,
-            religion,
-            nationality,
-            phoneNumber,
-            nidNumber,
-            bloodGroup,
-            occupation,
+            religion, nationality, phoneNumber, nidNumber,
+            bloodGroup, occupation,
             maritalStatus: maritalStatus as MaritalStatus,
-            photoUrl, // 3. Save the path to the photo
+            photoUrl,
           },
         },
       },
@@ -107,7 +135,7 @@ export const addStudent = async (req: Request, res: Response) => {
 // UPDATE A STUDENT
 export const updateStudent = async (req: Request, res: Response) => {
   const { id } = req.params;
-  const { name, email, rollNumber } = req.body; // This can be expanded to update other fields
+  const { name, email, rollNumber } = req.body;
   if (!name || !email || !rollNumber) {
     return res.status(400).json({ message: 'Name, email, and roll number are required.' });
   }
@@ -118,8 +146,7 @@ export const updateStudent = async (req: Request, res: Response) => {
     const updatedUser = await prisma.user.update({
       where: { id },
       data: {
-        name,
-        email,
+        name, email,
         student: { update: { rollNumber } },
       },
     });
@@ -137,13 +164,15 @@ export const deleteStudent = async (req: Request, res: Response) => {
     const user = await prisma.user.findUnique({ where: { id } });
     if (!user || user.role !== 'STUDENT') return res.status(404).json({ message: 'Student not found.' });
 
-    // This transaction needs to be updated to delete all related data
     await prisma.$transaction([
       prisma.enrollment.deleteMany({ where: { userId: id } }),
       prisma.loan.deleteMany({ where: { userId: id } }),
       prisma.attendance.deleteMany({ where: { studentId: id } }),
       prisma.examResult.deleteMany({ where: { studentId: id } }),
-      // ... and so on for other relations
+      prisma.feeInvoice.deleteMany({ where: { userId: id } }),
+      prisma.feePayment.deleteMany({ where: { userId: id } }),
+      prisma.order.deleteMany({ where: { userId: id } }),
+      prisma.inventoryIssuance.deleteMany({ where: { userId: id } }),
       prisma.student.delete({ where: { userId: id } }),
       prisma.user.delete({ where: { id } }),
     ]);

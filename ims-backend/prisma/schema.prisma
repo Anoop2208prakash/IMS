@@ -67,11 +67,10 @@ model User {
   passwordResetToken   String?             @unique
   passwordResetExpires DateTime?
 
-  // Relations
   student              Student?
   teacher              Teacher?
   enrollments          Enrollment[]
-  assignments          CourseAssignment[]  @relation("TeacherAssignments")
+  assignments          SubjectAssignment[] @relation("TeacherAssignments")
   loans                Loan[]
   studentAttendance    Attendance[]        @relation("StudentAttendance")
   markedAttendance     Attendance[]        @relation("TeacherAttendance")
@@ -81,7 +80,7 @@ model User {
   payments             FeePayment[]
   inventoryIssuances   InventoryIssuance[]
   orders               Order[]
-  announcements        Announcement[] // New
+  announcements        Announcement[]
 }
 
 model Student {
@@ -116,44 +115,115 @@ model Teacher {
   user        User     @relation(fields: [userId], references: [id])
 }
 
-model Course {
-  id                String             @id @default(cuid())
-  title             String             @unique
-  description       String?            @db.Text
-  courseCode        String             @unique
-  credits           Int
-  createdAt         DateTime           @default(now())
-  updatedAt         DateTime           @updatedAt
+// --- Academic Structure ---
+model Program {
+  id            String         @id @default(cuid())
+  title         String         @unique // e.g., "BTech Computer Science"
+  description   String?        @db.Text
+  durationYears Int            
   
-  enrollments       Enrollment[]
-  assignments       CourseAssignment[]
-  attendanceRecords Attendance[]
-  examResults       ExamResult[]
-  feeStructures     FeeStructure[]
+  semesters     Semester[]
+  feeStructures FeeStructure[]
 }
 
+model Semester {
+  id         String    @id @default(cuid())
+  name       String    // e.g., "Semester 1"
+  programId  String
+  program    Program   @relation(fields: [programId], references: [id])
+  
+  subjects   Subject[]
+  @@unique([programId, name])
+}
+
+model Subject {
+  id                String              @id @default(cuid())
+  title             String              // e.g., "Data Structures"
+  subjectCode       String              @unique
+  credits           Int
+  semesterId        String
+  semester          Semester            @relation(fields: [semesterId], references: [id])
+  
+  enrollments       Enrollment[]
+  assignments       SubjectAssignment[]
+  attendanceRecords Attendance[]
+  examResults       ExamResult[]
+}
+
+// --- Refactored Relations ---
 model Enrollment {
   id         String   @id @default(cuid())
   userId     String
-  courseId   String
+  user       User     @relation(fields: [userId], references: [id])
+  subjectId  String   // Linked to Subject
+  subject    Subject  @relation(fields: [subjectId], references: [id])
   enrolledAt DateTime @default(now())
 
-  user   User   @relation(fields: [userId], references: [id])
-  course Course @relation(fields: [courseId], references: [id])
-  @@unique([userId, courseId])
+  @@unique([userId, subjectId])
 }
 
-model CourseAssignment {
+model SubjectAssignment {
   id         String   @id @default(cuid())
   teacherId  String
-  courseId   String
+  teacher    User     @relation("TeacherAssignments", fields: [teacherId], references: [id])
+  subjectId  String   // Linked to Subject
+  subject    Subject  @relation(fields: [subjectId], references: [id])
   assignedAt DateTime @default(now())
 
-  teacher User   @relation("TeacherAssignments", fields: [teacherId], references: [id])
-  course  Course @relation(fields: [courseId], references: [id])
-  @@unique([teacherId, courseId])
+  @@unique([teacherId, subjectId])
 }
 
+model Attendance {
+  id           String           @id @default(cuid())
+  date         DateTime
+  status       AttendanceStatus
+  
+  studentId    String
+  student      User             @relation("StudentAttendance", fields: [studentId], references: [id])
+  
+  subjectId    String           // Linked to Subject
+  subject      Subject          @relation(fields: [subjectId], references: [id])
+  
+  markedById   String
+  markedBy     User             @relation("TeacherAttendance", fields: [markedById], references: [id])
+  createdAt    DateTime         @default(now())
+
+  @@unique([date, studentId, subjectId])
+}
+
+model ExamResult {
+  id            String   @id @default(cuid())
+  marksObtained Float
+  
+  studentId     String
+  student       User     @relation("StudentResults", fields: [studentId], references: [id])
+  
+  subjectId     String   // Linked to Subject
+  subject       Subject  @relation(fields: [subjectId], references: [id])
+  
+  examId        String
+  exam          Exam     @relation(fields: [examId], references: [id])
+
+  enteredById   String
+  enteredBy     User     @relation("TeacherEnteredResults", fields: [enteredById], references: [id])
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@unique([studentId, subjectId, examId])
+}
+
+model FeeStructure {
+  id        String       @id @default(cuid())
+  name      String
+  amount    Float
+  programId String       // Linked to Program
+  program   Program      @relation(fields: [programId], references: [id])
+  invoices  FeeInvoice[]
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+}
+
+// --- Library Models (Unchanged) ---
 model Book {
   id                String       @id @default(cuid())
   title             String
@@ -198,24 +268,7 @@ model Loan {
   user User @relation(fields: [userId], references: [id])
 }
 
-model Attendance {
-  id         String           @id @default(cuid())
-  date       DateTime
-  status     AttendanceStatus
-  
-  studentId  String
-  student    User             @relation("StudentAttendance", fields: [studentId], references: [id])
-  
-  courseId   String
-  course     Course           @relation(fields: [courseId], references: [id])
-  
-  markedById String
-  markedBy   User             @relation("TeacherAttendance", fields: [markedById], references: [id])
-
-  createdAt  DateTime         @default(now())
-  @@unique([date, studentId, courseId])
-}
-
+// --- Other Models (Unchanged) ---
 model Exam {
   id          String       @id @default(cuid())
   name        String       @unique
@@ -225,39 +278,6 @@ model Exam {
   updatedAt   DateTime     @updatedAt
   
   results     ExamResult[]
-}
-
-model ExamResult {
-  id            String   @id @default(cuid())
-  marksObtained Float
-  
-  studentId     String
-  student       User     @relation("StudentResults", fields: [studentId], references: [id])
-  
-  courseId      String
-  course        Course   @relation(fields: [courseId], references: [id])
-  
-  examId        String
-  exam          Exam     @relation(fields: [examId], references: [id])
-
-  enteredById   String
-  enteredBy     User     @relation("TeacherEnteredResults", fields: [enteredById], references: [id])
-
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-
-  @@unique([studentId, courseId, examId])
-}
-
-model FeeStructure {
-  id        String       @id @default(cuid())
-  name      String
-  amount    Float
-  courseId  String
-  course    Course       @relation(fields: [courseId], references: [id])
-  invoices  FeeInvoice[]
-  createdAt DateTime     @default(now())
-  updatedAt DateTime     @updatedAt
 }
 
 model FeeInvoice {

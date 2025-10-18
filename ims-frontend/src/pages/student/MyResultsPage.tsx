@@ -9,7 +9,7 @@ import { BsClipboardCheck } from 'react-icons/bs';
 interface Result {
   id: string;
   marksObtained: number;
-  course: { title: string; };
+  subject: { title: string; }; // <-- Changed from 'course'
   exam: { name: string; date: string; totalMarks: number; };
 }
 
@@ -54,7 +54,7 @@ const MyResultsPage = () => {
         <table className={styles.resultsTable}>
           <thead>
             <tr>
-              <th>Course</th>
+              <th>Subject</th>
               <th>Marks Obtained</th>
               <th>Total Marks</th>
               <th>Percentage</th>
@@ -63,7 +63,7 @@ const MyResultsPage = () => {
           <tbody>
             {examResults.map(result => (
               <tr key={result.id}>
-                <td>{result.course.title}</td>
+                <td>{result.subject.title}</td>
                 <td>{result.marksObtained}</td>
                 <td>{result.exam.totalMarks}</td>
                 <td>{((result.marksObtained / result.exam.totalMarks) * 100).toFixed(1)}%</td>

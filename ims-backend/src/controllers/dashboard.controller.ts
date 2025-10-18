@@ -14,23 +14,25 @@ const getRecentAnnouncements = () => {
 
 // Helper function for Admin/Super Admin data
 const getAdminDashboardData = async () => {
-  const [studentCount, teacherCount, courseCount, booksOnLoan, announcements] = await prisma.$transaction([
+  // Fixed: Changed courseCount to programCount
+  const [studentCount, teacherCount, programCount, booksOnLoan, announcements] = await prisma.$transaction([
     prisma.user.count({ where: { role: 'STUDENT' } }),
     prisma.user.count({ where: { role: 'TEACHER' } }),
-    prisma.course.count(),
+    prisma.program.count(), // <-- This was changed from prisma.course.count()
     prisma.loan.count({ where: { returnDate: null } }),
     getRecentAnnouncements(),
   ]);
-  return { studentCount, teacherCount, courseCount, booksOnLoan, announcements };
+  // Fixed: Return programCount
+  return { studentCount, teacherCount, programCount, booksOnLoan, announcements };
 };
 
-// Helper function for Student data (Updated)
+// Helper function for Student data
 const getStudentDashboardData = async (studentId: string) => {
   const soonDate = new Date();
   soonDate.setDate(soonDate.getDate() + 7);
 
   const [
-    enrolledCourses, 
+    enrolledSubjects, // Renamed for clarity, this counts subject enrollments
     booksOnLoan, 
     attendanceRecords,
     recentOrders,
@@ -56,24 +58,22 @@ const getStudentDashboardData = async (studentId: string) => {
     getRecentAnnouncements(),
   ]);
 
-  // --- New Detailed Attendance Calculation ---
   const totalDays = attendanceRecords.length;
   const presentDays = attendanceRecords.filter(r => r.status === 'PRESENT').length;
   const absentDays = attendanceRecords.filter(r => r.status === 'ABSENT').length;
   const lateDays = attendanceRecords.filter(r => r.status === 'LATE').length;
-  // Consider 'LATE' as present for the overall percentage
   const attendancePercentage = totalDays > 0 ? (((presentDays + lateDays) / totalDays) * 100).toFixed(1) : '100';
 
   return { 
-    enrolledCourses, 
+    enrolledSubjects, // Renamed for clarity
     booksOnLoan, 
     attendancePercentage, 
     recentOrders, 
     upcomingDueDates,
     announcements,
-    presentDays, // <-- Add this
-    absentDays,  // <-- Add this
-    lateDays     // <-- Add this
+    presentDays,
+    absentDays,
+    lateDays
   };
 };
 

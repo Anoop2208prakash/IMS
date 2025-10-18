@@ -37,7 +37,6 @@ import NewAdmissionPage from './pages/admin/admission/NewAdmissionPage';
 import ViewAdmissionsPage from './pages/admin/admission/ViewAdmissionsPage';
 import ManageStudentsPage from './pages/admin/ManageStudentsPage';
 import ManageTeachersPage from './pages/admin/ManageTeachersPage';
-import ManageCoursesPage from './pages/admin/ManageCoursesPage';
 import ManageExamsPage from './pages/admin/ManageExamsPage';
 import ManageBooksPage from './pages/admin/library/ManageBooksPage';
 import ManageLoansPage from './pages/admin/library/ManageLoansPage';
@@ -48,6 +47,10 @@ import ViewOrdersPage from './pages/admin/ViewOrdersPage';
 import BrowseBooksPage from './pages/admin/library/BrowseBooksPage';
 import MyLoansPage from './pages/admin/library/MyLoansPage';
 import ManageAnnouncementsPage from './pages/admin/ManageAnnouncementsPage';
+import ManageProgramsPage from './pages/admin/ManageProgramsPage';
+import ManageSemestersPage from './pages/admin/ManageSemestersPage';
+import ManageSubjectsPage from './pages/admin/ManageSubjectsPage';
+import MySubjectsPage from './pages/MySubjectsPage';
 
 function App() {
   return (
@@ -94,6 +97,7 @@ function App() {
             <Route element={<RoleProtectedRoute allowedRoles={['STUDENT']} />}>
               <Route path="/my-courses" element={<MyCoursesPage />} />
               <Route path="/my-attendance" element={<MyAttendancePage />} />
+              <Route path="/my-subjects" element={<MySubjectsPage />} />
               <Route path="/my-results" element={<MyResultsPage />} />
               <Route path="/my-invoices" element={<MyInvoicesPage />} />
               <Route path="/admit-card-generator" element={<AdmitCardPage />} />
@@ -127,7 +131,9 @@ function App() {
             <Route element={<RoleProtectedRoute allowedRoles={['ADMIN']} />}>
               <Route path="/admin/students" element={<ManageStudentsPage />} />
               <Route path="/admin/teachers" element={<ManageTeachersPage />} />
-              <Route path="/admin/courses" element={<ManageCoursesPage />} />
+              <Route path="/admin/programs" element={<ManageProgramsPage />} />
+              <Route path="/admin/semesters" element={<ManageSemestersPage />} />
+              <Route path="/admin/subjects" element={<ManageSubjectsPage />} />
               <Route path="/admin/exams" element={<ManageExamsPage />} />
               <Route path="/admin/inventory" element={<ManageInventoryPage />} />
               <Route path="/admin/announcements" element={<ManageAnnouncementsPage />} />
