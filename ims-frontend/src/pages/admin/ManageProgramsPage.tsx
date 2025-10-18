@@ -4,6 +4,7 @@ import toast from 'react-hot-toast';
 import styles from './AdminPages.module.scss';
 import Spinner from '../../components/common/Spinner';
 import EmptyState from '../../components/common/EmptyState';
+import DeleteModal from '../../components/common/DeleteModal'; // 1. Import DeleteModal
 import { BsJournalBookmarkFill } from 'react-icons/bs';
 import AddProgramForm from './AddProgramForm';
 import EditProgramModal from './EditProgramModal';
@@ -19,6 +20,10 @@ const ManageProgramsPage = () => {
   const [loading, setLoading] = useState(true);
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingProgram, setEditingProgram] = useState<ProgramData | null>(null);
+  
+  // 2. Add state for the delete modal
+  const [deletingProgram, setDeletingProgram] = useState<ProgramData | null>(null);
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
   const fetchPrograms = async () => {
     setLoading(true);
@@ -50,14 +55,20 @@ const ManageProgramsPage = () => {
     fetchPrograms();
   };
 
-  const handleDelete = async (programId: string) => {
-    if (!window.confirm('Are you sure you want to delete this program?')) return;
+  // 3. Update handleDelete to use the new modal state
+  const handleDelete = async () => {
+    if (!deletingProgram) return;
+    
+    setDeleteLoading(true);
     try {
-      await axios.delete(`http://localhost:5000/api/programs/${programId}`);
+      await axios.delete(`http://localhost:5000/api/programs/${deletingProgram.id}`);
       toast.success('Program deleted successfully!');
-      setPrograms(current => current.filter(p => p.id !== programId));
+      setPrograms(current => current.filter(p => p.id !== deletingProgram.id));
+      setDeletingProgram(null); // Close the modal on success
     } catch (err: any) {
       toast.error(err.response?.data?.message || 'Failed to delete program.');
+    } finally {
+      setDeleteLoading(false);
     }
   };
 
@@ -80,7 +91,8 @@ const ManageProgramsPage = () => {
         <td>{program.durationYears} years</td>
         <td>
           <button onClick={() => setEditingProgram(program)} className={`${styles.button} ${styles.editButton}`}>Edit</button>
-          <button onClick={() => handleDelete(program.id)} className={`${styles.button} ${styles.deleteButton}`}>Delete</button>
+          {/* 4. Change onClick to open the modal */}
+          <button onClick={() => setDeletingProgram(program)} className={`${styles.button} ${styles.deleteButton}`}>Delete</button>
         </td>
       </tr>
     ));
@@ -115,6 +127,17 @@ const ManageProgramsPage = () => {
           program={editingProgram}
           onClose={() => setEditingProgram(null)}
           onProgramUpdated={handleProgramUpdated}
+        />
+      )}
+
+      {/* 5. Add the DeleteModal to the JSX */}
+      {deletingProgram && (
+        <DeleteModal
+          title="Delete Program"
+          message={`Are you sure you want to delete the "${deletingProgram.title}" program? This action cannot be undone.`}
+          onClose={() => setDeletingProgram(null)}
+          onConfirm={handleDelete}
+          loading={deleteLoading}
         />
       )}
     </div>

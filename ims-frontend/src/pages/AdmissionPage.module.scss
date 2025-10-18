@@ -1,10 +1,13 @@
-// src/pages/AdmissionPage.module.scss
 .container {
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
   background-color: #f4f7f6;
+}
+
+.formWrapper {
+  position: relative;
 }
 
 .form {
@@ -45,11 +48,23 @@
   background-color: #007bff;
   color: white;
   font-size: 16px;
+  font-weight: bold;
   cursor: pointer;
   transition: background-color 0.3s ease;
 
-  &:hover {
+  // New styles to center the spinner
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 45px; // Ensures button height stays consistent
+
+  &:hover:not(:disabled) {
     background-color: #0056b3;
+  }
+
+  &:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
   }
 }
 
@@ -62,3 +77,11 @@
   margin-top: 15px;
   color: red;
 }
+
+.validationError {
+  color: #e74c3c;
+  font-size: 0.85em;
+  margin-top: 5px;
+}
+
+// The .loadingOverlay style is no longer needed

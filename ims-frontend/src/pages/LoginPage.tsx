@@ -1,36 +1,65 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
-import toast from 'react-hot-toast'; // <-- 1. Import toast
-import styles from './AdmissionPage.module.scss'; // Reusing styles
+import toast from 'react-hot-toast';
+import styles from './AdmissionPage.module.scss';
+import ButtonSpinner from '../components/common/ButtonSpinner';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  // const [error, setError] = useState(''); // <-- This is no longer needed
+  const [formErrors, setFormErrors] = useState({ email: '', password: '' });
+  
   const { login } = useAuth();
   const navigate = useNavigate();
 
+  // This function validates the form and calls setFormErrors
+  const validate = () => {
+    const errors = { email: '', password: '' };
+    let isValid = true;
+
+    // Email validation
+    if (!email) {
+      errors.email = 'Email address is required.';
+      isValid = false;
+    } else if (!/\S+@\S+\.\S+/.test(email)) {
+      errors.email = 'Email address is invalid.';
+      isValid = false;
+    }
+
+    // Password validation
+    if (!password) {
+      errors.password = 'Password is required.';
+      isValid = false;
+    } else if (password.length < 3) {
+      errors.password = 'Password must be at least 6 characters.';
+      isValid = false;
+    }
+
+    setFormErrors(errors); // <-- This is where setFormErrors is used
+    return isValid;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
+    setFormErrors({ email: '', password: '' }); // Clear old errors
 
+    // Run validation before submitting
+    if (!validate()) {
+      return;
+    }
+    
+    setLoading(true);
     try {
       const response = await axios.post('http://localhost:5000/api/auth/login', { email, password });
       login(response.data.token, response.data.user);
-
-      // 2. Show a success toast
       toast.success('Login successful!');
-
-      // Navigate after a short delay to let the user see the toast
       setTimeout(() => navigate('/'), 1000);
-
     } catch (err: any) {
-      // 3. Show an error toast
       toast.error(err.response?.data?.message || 'Login failed.');
-      setLoading(false); // Make sure to stop loading on error
+      setLoading(false);
     }
   };
 
@@ -40,11 +69,25 @@ const LoginPage = () => {
         <h2>Login</h2>
         <div className={styles.formGroup}>
           <label htmlFor="email">Email Address</label>
-          <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required disabled={loading} />
+          <input 
+            type="email" 
+            value={email} 
+            onChange={(e) => setEmail(e.target.value)} 
+            required 
+            disabled={loading} 
+          />
+          {formErrors.email && <p className={styles.validationError}>{formErrors.email}</p>}
         </div>
         <div className={styles.formGroup}>
           <label htmlFor="password">Password</label>
-          <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required disabled={loading} />
+          <input 
+            type="password" 
+            value={password} 
+            onChange={(e) => setPassword(e.target.value)} 
+            required 
+            disabled={loading} 
+          />
+          {formErrors.password && <p className={styles.validationError}>{formErrors.password}</p>}
         </div>
         
         <div style={{ textAlign: 'right', marginBottom: '15px', fontSize: '0.9em' }}>
@@ -52,9 +95,8 @@ const LoginPage = () => {
         </div>
         
         <button type="submit" className={styles.submitButton} disabled={loading}>
-          {loading ? 'Logging in...' : 'Login'}
+          {loading ? <ButtonSpinner /> : 'Login'}
         </button>
-        {/* The old error message is removed from here */}
       </form>
     </div>
   );
