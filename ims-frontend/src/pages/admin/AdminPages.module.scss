@@ -11,6 +11,10 @@
   align-items: center;
   margin-bottom: 20px;
 
+  h2 {
+    margin: 0;
+  }
+
   button {
     padding: 10px 15px;
     background-color: #007bff;
@@ -20,23 +24,47 @@
     cursor: pointer;
     transition: background-color 0.2s ease-in-out;
 
-    &:hover {
+    &:hover:not(:disabled) {
       background-color: #0056b3;
+    }
+
+    &:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+      opacity: 0.7;
     }
   }
 }
 
-.error {
-  color: #e74c3c;
-  font-weight: bold;
-  background-color: #fdd;
-  border: 1px solid #fbb;
-  padding: 10px;
-  border-radius: 4px;
-  margin-bottom: 20px;
+// Wrapper for multiple controls in the header
+.headerActions {
+  display: flex;
+  gap: 15px;
+  align-items: center;
 }
 
-// --- Updated Table Styles ---
+// Dropdown filter for program/semester
+.filterDropdown {
+  padding: 10px 15px;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 0.9em;
+  font-family: Arial, sans-serif;
+}
+
+// Container for the search bar below the header
+.searchContainer {
+  margin-bottom: 20px;
+
+  // Target the Searchbar component's wrapper
+  // :global() is used to style a child component's class
+  :global(.searchWrapper) {
+    width: 100%;
+    max-width: 600px;
+  }
+}
+
 .table {
   width: 100%;
   border-collapse: collapse;
@@ -44,7 +72,7 @@
 
   th, td {
     border: 1px solid #ddd;
-    padding: 12px 15px; // Standardized padding
+    padding: 12px 15px;
     text-align: left;
     vertical-align: middle;
   }
@@ -57,20 +85,27 @@
   tbody tr:hover {
     background-color: #e9ecef;
   }
+
+  // --- This rule creates the fixed height for empty/loading rows ---
+  td[colSpan] {
+    height: 200px;
+    text-align: center;
+    vertical-align: middle;
+    padding: 0;
+  }
 }
 
-// Style for the cell holding the spinner
+// This styles the cell holding the spinner
 .spinnerCell {
-  text-align: center;
-  padding: 80px; // Increased padding for a taller box
+  // Styles are now handled by td[colSpan]
 }
 
-// Style for the cell holding the empty state component
+// This styles the *inner* dashed box for the empty state
 td > div[class*="emptyState"] {
   border: 2px dashed #e9ecef;
   border-radius: 8px;
-  padding-top: 80px; // Increased padding
-  padding-bottom: 80px;
+  padding: 40px;
+  display: inline-block; // Allows box to center
 }
 
 // --- Button Styles ---

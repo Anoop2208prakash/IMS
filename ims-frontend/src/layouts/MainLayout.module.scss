@@ -1,8 +1,3 @@
-html, body {
-  margin: 0;
-  padding: 0;
-}
-
 .layout {
   display: flex;
 }
@@ -17,17 +12,34 @@ html, body {
   position: fixed;
   top: 0;
   right: 0;
-  width: calc(100% - 240px); // Makes it span the content area
+  width: 100%; // <-- This is the fix (was 100%)
   z-index: 1000; // Ensures it stays on top
 
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
   align-items: center;
   padding: 10px 30px;
   background: #fff;
   border-bottom: 1px solid #e0e0e0;
   height: 60px;
   box-sizing: border-box;
+}
+
+// Style for the logo in the header
+.logo {
+  height: 55px; // Adjusted for a 60px header
+  
+  img {
+    height: 100%;
+    width: auto;
+  }
+}
+
+// Wrapper for controls on the right (Theme Toggle, Profile Dropdown)
+.headerControls {
+  display: flex;
+  align-items: center;
+  gap: 15px;
 }
 
 .content {

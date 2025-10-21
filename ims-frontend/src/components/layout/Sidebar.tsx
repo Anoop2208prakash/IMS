@@ -1,9 +1,7 @@
-
-// src/components/layout/Sidebar.tsx
 import { NavLink } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import styles from './Sidebar.module.scss';
-import logo from '../../assets/banner-logo.png';
+// The logo is no longer imported here
 
 // Define the links for each role
 const navLinks = {
@@ -22,7 +20,6 @@ const navLinks = {
   ],
   TEACHER: [
     { path: '/', label: 'Dashboard' },
-    { path: '/teacher/my-classes', label: 'My Classes' },
     { path: '/id-card', label: 'ID Card' },
     { path: '/library', label: 'Library' },
     { path: '/my-loans', label: 'My Loans' },
@@ -55,34 +52,32 @@ const navLinks = {
     { path: '/admin/finance/structures', label: 'Fee Structures' },
     { path: '/admin/finance/invoices/generate', label: 'Generate Invoices' },
     { path: '/admin/orders', label: 'View Orders' },
-    // Future finance links go here
   ],
   ADMIN_LIBRARY: [
     { path: '/', label: 'Dashboard' },
     { path: '/id-card', label: 'ID Card' },
     { path: '/admin/library/books', label: 'Manage Books' },
     { path: '/admin/library/loans', label: 'Manage Loans' },
-    // Future library links go here
   ],
   SUPER_ADMIN: [], // Can be defined later
 };
 
 const Sidebar = () => {
   const { user } = useAuth();
+
+  // Determine which links to show.
   const linksToShow = user ? navLinks[user.role as keyof typeof navLinks] || [] : [];
 
   return (
     <aside className={styles.sidebar}>
-      <div className={styles.logo}>
-        <img src={logo} alt="Institute Logo" /> {/* <-- 2. Use the logo image */}
-      </div>
+      {/* The logo div has been removed from here */}
       <nav className={styles.nav}>
         {linksToShow.map((link) => (
           <NavLink
             key={link.path}
             to={link.path}
             className={({ isActive }) => (isActive ? `${styles.navLink} ${styles.active}` : styles.navLink)}
-            end={link.path === '/'}
+            end={link.path === '/'} // Ensures only the Dashboard link is active on the root path
           >
             {link.label}
           </NavLink>

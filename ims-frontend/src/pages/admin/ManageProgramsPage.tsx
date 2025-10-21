@@ -1,10 +1,12 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, ChangeEvent } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import styles from './AdminPages.module.scss';
 import Spinner from '../../components/common/Spinner';
 import EmptyState from '../../components/common/EmptyState';
-import DeleteModal from '../../components/common/DeleteModal'; // 1. Import DeleteModal
+import Pagination from '../../components/common/Pagination';
+import DeleteModal from '../../components/common/DeleteModal';
+import Searchbar from '../../components/common/Searchbar'; // 1. Import Searchbar
 import { BsJournalBookmarkFill } from 'react-icons/bs';
 import AddProgramForm from './AddProgramForm';
 import EditProgramModal from './EditProgramModal';
@@ -20,10 +22,14 @@ const ManageProgramsPage = () => {
   const [loading, setLoading] = useState(true);
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingProgram, setEditingProgram] = useState<ProgramData | null>(null);
-  
-  // 2. Add state for the delete modal
   const [deletingProgram, setDeletingProgram] = useState<ProgramData | null>(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
+  
+  // 2. Add state for search
+  const [searchTerm, setSearchTerm] = useState('');
+  
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
 
   const fetchPrograms = async () => {
     setLoading(true);
@@ -55,43 +61,69 @@ const ManageProgramsPage = () => {
     fetchPrograms();
   };
 
-  // 3. Update handleDelete to use the new modal state
   const handleDelete = async () => {
     if (!deletingProgram) return;
-    
     setDeleteLoading(true);
     try {
       await axios.delete(`http://localhost:5000/api/programs/${deletingProgram.id}`);
       toast.success('Program deleted successfully!');
       setPrograms(current => current.filter(p => p.id !== deletingProgram.id));
-      setDeletingProgram(null); // Close the modal on success
-    } catch (err: any) {
-      toast.error(err.response?.data?.message || 'Failed to delete program.');
+      setDeletingProgram(null);
+    } catch (err) {
+      if (axios.isAxiosError(err) && err.response) {
+        toast.error(err.response.data.message || 'Failed to delete program.');
+      } else {
+        toast.error('An unexpected error occurred.');
+      }
     } finally {
       setDeleteLoading(false);
     }
+  };
+
+  // 3. Filtering and Pagination Logic
+  const filteredPrograms = programs.filter(program =>
+    program.title.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const currentItems = filteredPrograms.slice(
+    page * rowsPerPage,
+    page * rowsPerPage + rowsPerPage
+  );
+
+  const handleRowsPerPageChange = (event: ChangeEvent<HTMLSelectElement>) => {
+    setRowsPerPage(Number.parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
+  const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
+    setPage(0); // Reset page on search
   };
 
   const renderTableBody = () => {
     if (loading) {
       return <tr><td colSpan={3} className={styles.spinnerCell}><Spinner /></td></tr>;
     }
-    if (programs.length === 0) {
+    // 4. Update check to use filtered data
+    if (filteredPrograms.length === 0) {
       return (
         <tr>
           <td colSpan={3}>
-            <EmptyState message="No programs found. Click 'Add New Program' to begin." icon={<BsJournalBookmarkFill size={40} />} />
+            <EmptyState 
+              message={searchTerm ? `No programs match "${searchTerm}"` : "No programs found. Click 'Add New Program' to begin."} 
+              icon={<BsJournalBookmarkFill size={40} />} 
+            />
           </td>
         </tr>
       );
     }
-    return programs.map((program) => (
+    // 5. Map over 'currentItems' for pagination
+    return currentItems.map((program) => (
       <tr key={program.id}>
         <td>{program.title}</td>
         <td>{program.durationYears} years</td>
         <td>
           <button onClick={() => setEditingProgram(program)} className={`${styles.button} ${styles.editButton}`}>Edit</button>
-          {/* 4. Change onClick to open the modal */}
           <button onClick={() => setDeletingProgram(program)} className={`${styles.button} ${styles.deleteButton}`}>Delete</button>
         </td>
       </tr>
@@ -102,9 +134,18 @@ const ManageProgramsPage = () => {
     <div className={styles.container}>
       <div className={styles.header}>
         <h2>Manage Programs</h2>
-        <button onClick={() => setShowAddForm(!showAddForm)}>
+        <button onClick={() => setShowAddForm(prev => !prev)}>
           {showAddForm ? 'Cancel' : 'Add New Program'}
         </button>
+      </div>
+
+      {/* 6. Add the Searchbar */}
+      <div className={styles.searchContainer}>
+        <Searchbar
+          value={searchTerm}
+          onChange={handleSearchChange}
+          placeholder="Search by program title..."
+        />
       </div>
 
       {showAddForm && <AddProgramForm onProgramAdded={handleProgramAdded} onCancel={() => setShowAddForm(false)} />}
@@ -122,6 +163,15 @@ const ManageProgramsPage = () => {
         </tbody>
       </table>
 
+      {/* 7. Update count to use filtered data */}
+      <Pagination
+        count={filteredPrograms.length}
+        page={page}
+        rowsPerPage={rowsPerPage}
+        onPageChange={setPage}
+        onRowsPerPageChange={handleRowsPerPageChange}
+      />
+
       {editingProgram && (
         <EditProgramModal
           program={editingProgram}
@@ -130,7 +180,6 @@ const ManageProgramsPage = () => {
         />
       )}
 
-      {/* 5. Add the DeleteModal to the JSX */}
       {deletingProgram && (
         <DeleteModal
           title="Delete Program"

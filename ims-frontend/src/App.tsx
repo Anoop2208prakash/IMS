@@ -1,5 +1,6 @@
 import { Routes, Route } from 'react-router-dom';
-import { Toaster } from 'react-hot-toast'; // <-- 1. Import Toaster
+import { Toaster } from 'react-hot-toast';
+import { ThemeProvider } from './context/ThemeContext'; // 1. Import ThemeProvider
 
 // --- Layout and Auth Imports ---
 import MainLayout from './layouts/MainLayout';
@@ -12,7 +13,7 @@ import StaffRegisterPage from './pages/StaffRegisterPage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
 
-// --- Shared Page Imports ---
+// --- Shared Page Imports (for all logged-in users) ---
 import DashboardPage from './pages/DashboardPage';
 import ProfilePage from './pages/ProfilePage';
 import ChangePasswordPage from './pages/ChangePasswordPage';
@@ -20,7 +21,7 @@ import IDCardPage from './pages/IDCardPage';
 import OrderInvoicePage from './pages/student/OrderInvoicePage';
 
 // --- Student-Only Imports ---
-import MyCoursesPage from './pages/MyCoursesPage';
+import MySubjectsPage from './pages/MySubjectsPage';
 import MyAttendancePage from './pages/student/MyAttendancePage';
 import MyResultsPage from './pages/student/MyResultsPage';
 import MyInvoicesPage from './pages/student/MyInvoicesPage';
@@ -37,6 +38,9 @@ import NewAdmissionPage from './pages/admin/admission/NewAdmissionPage';
 import ViewAdmissionsPage from './pages/admin/admission/ViewAdmissionsPage';
 import ManageStudentsPage from './pages/admin/ManageStudentsPage';
 import ManageTeachersPage from './pages/admin/ManageTeachersPage';
+import ManageProgramsPage from './pages/admin/ManageProgramsPage';
+import ManageSemestersPage from './pages/admin/ManageSemestersPage';
+import ManageSubjectsPage from './pages/admin/ManageSubjectsPage';
 import ManageExamsPage from './pages/admin/ManageExamsPage';
 import ManageBooksPage from './pages/admin/library/ManageBooksPage';
 import ManageLoansPage from './pages/admin/library/ManageLoansPage';
@@ -44,33 +48,19 @@ import ManageFeeStructuresPage from './pages/admin/finance/ManageFeeStructuresPa
 import GenerateInvoicesPage from './pages/admin/finance/GenerateInvoicesPage';
 import ManageInventoryPage from './pages/admin/inventory/ManageInventoryPage';
 import ViewOrdersPage from './pages/admin/ViewOrdersPage';
+import ManageAnnouncementsPage from './pages/admin/ManageAnnouncementsPage';
 import BrowseBooksPage from './pages/admin/library/BrowseBooksPage';
 import MyLoansPage from './pages/admin/library/MyLoansPage';
-import ManageAnnouncementsPage from './pages/admin/ManageAnnouncementsPage';
-import ManageProgramsPage from './pages/admin/ManageProgramsPage';
-import ManageSemestersPage from './pages/admin/ManageSemestersPage';
-import ManageSubjectsPage from './pages/admin/ManageSubjectsPage';
-import MySubjectsPage from './pages/MySubjectsPage';
 
 function App() {
   return (
-    <>
-      {/* 2. Add the Toaster component for sitewide notifications */}
+    // 2. Wrap the entire app in the ThemeProvider
+    <ThemeProvider>
       <Toaster 
         position="top-right"
         toastOptions={{
-          success: {
-            style: {
-              background: '#28a745',
-              color: 'white',
-            },
-          },
-          error: {
-            style: {
-              background: '#e74c3c',
-              color: 'white',
-            },
-          },
+          success: { style: { background: '#28a745', color: 'white' } },
+          error: { style: { background: '#e74c3c', color: 'white' } },
         }}
       />
 
@@ -95,9 +85,8 @@ function App() {
 
             {/* Student-Only Routes */}
             <Route element={<RoleProtectedRoute allowedRoles={['STUDENT']} />}>
-              <Route path="/my-courses" element={<MyCoursesPage />} />
-              <Route path="/my-attendance" element={<MyAttendancePage />} />
               <Route path="/my-subjects" element={<MySubjectsPage />} />
+              <Route path="/my-attendance" element={<MyAttendancePage />} />
               <Route path="/my-results" element={<MyResultsPage />} />
               <Route path="/my-invoices" element={<MyInvoicesPage />} />
               <Route path="/admit-card-generator" element={<AdmitCardPage />} />
@@ -111,7 +100,7 @@ function App() {
               <Route path="/teacher/marks" element={<EnterMarksPage />} />
             </Route>
             
-            {/* Admin-Only Routes */}
+            {/* Admin-Only Routes (Consolidated) */}
             <Route element={<RoleProtectedRoute allowedRoles={['ADMIN', 'ADMIN_ADMISSION']} />}>
               <Route path="/admin/admissions" element={<ViewAdmissionsPage />} />
               <Route path="/admin/admission/new" element={<NewAdmissionPage />} />
@@ -141,7 +130,7 @@ function App() {
           </Route>
         </Route>
       </Routes>
-    </>
+    </ThemeProvider>
   );
 }
 

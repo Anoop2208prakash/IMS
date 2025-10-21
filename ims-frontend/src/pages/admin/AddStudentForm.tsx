@@ -1,86 +1,63 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, ChangeEvent, FormEvent } from 'react';
 import axios from 'axios';
-import styles from './AddTeacherForm.module.scss';
+import toast from 'react-hot-toast';
+import styles from './AddForm.module.scss';
 
-interface Course {
-  id: string;
-  title: string;
-}
+interface Program { id: string; title: string; }
 
-interface AddStudentFormProps {
-  onStudentAdded: () => void;
+interface AddSemesterFormProps {
+  onSemesterAdded: () => void;
   onCancel: () => void;
+  programId: string; // <-- 1. Accept programId as a prop
 }
 
-const AddStudentForm = ({ onStudentAdded, onCancel }: AddStudentFormProps) => {
-  const [formData, setFormData] = useState({
-    fullName: '',
-    email: '',
-    password: '',
-    courseId: '', // Will hold the ID of the selected course
-  });
-  const [courses, setCourses] = useState<Course[]>([]); // State to hold the list of courses
-  const [error, setError] = useState('');
+const AddSemesterForm = ({ onSemesterAdded, onCancel, programId }: AddSemesterFormProps) => {
+  const [formData, setFormData] = useState({ name: '', programId: programId || '' });
+  const [programs, setPrograms] = useState<Program[]>([]);
 
-  // 1. Fetch courses when the component mounts
   useEffect(() => {
-    const fetchCourses = async () => {
-      try {
-        const response = await axios.get('http://localhost:5000/api/courses');
-        setCourses(response.data);
-        // Set the default selection to the first course if available
-        if (response.data.length > 0) {
-          setFormData(prev => ({ ...prev, courseId: response.data[0].id }));
-        }
-      } catch (err) {
-        console.error("Failed to fetch courses", err);
-        setError("Could not load courses for selection.");
-      }
-    };
-    fetchCourses();
-  }, []); // Empty array ensures this runs only once
+    // Fetch programs to populate the (disabled) dropdown
+    axios.get('http://localhost:5000/api/programs')
+      .then(res => setPrograms(res.data))
+      .catch(() => toast.error('Failed to load programs.'));
+  }, []);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+  // 2. Sync form state if the prop changes
+  useEffect(() => {
+    setFormData(prev => ({ ...prev, programId: programId }));
+  }, [programId]);
+
+  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    setError('');
-    if (!formData.courseId) {
-      setError('Please select a course.');
-      return;
-    }
     try {
-      await axios.post('http://localhost:5000/api/students', formData);
-      onStudentAdded();
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Failed to add student.');
+      await axios.post('http://localhost:5000/api/semesters', formData);
+      toast.success('Semester created successfully!');
+      onSemesterAdded();
+    } catch (err) {
+      if (axios.isAxiosError(err) && err.response) {
+        toast.error(err.response.data.message || 'Failed to create semester.');
+      } else {
+        toast.error('An unexpected error occurred.');
+      }
     }
   };
 
   return (
     <div className={styles.formContainer}>
-      <h3>Add New Student</h3>
+      <h3>Add New Semester</h3>
       <form onSubmit={handleSubmit}>
-        <input type="text" name="fullName" placeholder="Full Name" onChange={handleChange} required />
-        <input type="email" name="email" placeholder="Email" onChange={handleChange} required />
-        <input type="password" name="password" placeholder="Temporary Password" onChange={handleChange} required />
-        
-        {/* 2. Replace text input with a dropdown menu */}
-        <select name="courseId" value={formData.courseId} onChange={handleChange} required>
-          <option value="" disabled>-- Select a Course --</option>
-          {/* 3. Dynamically create an option for each course */}
-          {courses.map(course => (
-            <option key={course.id} value={course.id}>
-              {course.title}
-            </option>
-          ))}
+        <input type="text" name="name" placeholder="Semester Name (e.g., Semester 1)" value={formData.name} onChange={handleChange} required />
+        <select name="programId" value={formData.programId} onChange={handleChange} required disabled>
+          {/* 3. The dropdown is now disabled */}
+          <option value="" disabled>-- Select a Program --</option>
+          {programs.map(p => <option key={p.id} value={p.id}>{p.title}</option>)}
         </select>
-        
-        {error && <p className={styles.error}>{error}</p>}
         <div className={styles.buttonGroup}>
-          <button type="submit">Add Student</button>
+          <button type="submit">Add Semester</button>
           <button type="button" onClick={onCancel}>Cancel</button>
         </div>
       </form>
@@ -88,4 +65,4 @@ const AddStudentForm = ({ onStudentAdded, onCancel }: AddStudentFormProps) => {
   );
 };
 
-export default AddStudentForm;
+export default AddSemesterForm;

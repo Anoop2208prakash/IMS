@@ -4,10 +4,15 @@ import toast from 'react-hot-toast';
 import styles from './AddForm.module.scss';
 
 interface Program { id: string; title: string; }
-interface AddSemesterFormProps { onSemesterAdded: () => void; onCancel: () => void; }
 
-const AddSemesterForm = ({ onSemesterAdded, onCancel }: AddSemesterFormProps) => {
-  const [formData, setFormData] = useState({ name: '', programId: '' });
+interface AddSemesterFormProps {
+  onSemesterAdded: () => void;
+  onCancel: () => void;
+  programId: string; // <-- 1. Accept programId as a prop
+}
+
+const AddSemesterForm = ({ onSemesterAdded, onCancel, programId }: AddSemesterFormProps) => {
+  const [formData, setFormData] = useState({ name: '', programId: programId || '' });
   const [programs, setPrograms] = useState<Program[]>([]);
 
   useEffect(() => {
@@ -15,6 +20,11 @@ const AddSemesterForm = ({ onSemesterAdded, onCancel }: AddSemesterFormProps) =>
       .then(res => setPrograms(res.data))
       .catch(() => toast.error('Failed to load programs.'));
   }, []);
+
+  // 2. Update the form's state if the programId prop changes
+  useEffect(() => {
+    setFormData(prev => ({ ...prev, programId: programId }));
+  }, [programId]);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
@@ -40,7 +50,8 @@ const AddSemesterForm = ({ onSemesterAdded, onCancel }: AddSemesterFormProps) =>
       <h3>Add New Semester</h3>
       <form onSubmit={handleSubmit}>
         <input type="text" name="name" placeholder="Semester Name (e.g., Semester 1)" value={formData.name} onChange={handleChange} required />
-        <select name="programId" value={formData.programId} onChange={handleChange} required>
+        <select name="programId" value={formData.programId} onChange={handleChange} required disabled>
+          {/* 3. The dropdown is now disabled because the program is selected on the main page */}
           <option value="" disabled>-- Select a Program --</option>
           {programs.map(p => <option key={p.id} value={p.id}>{p.title}</option>)}
         </select>

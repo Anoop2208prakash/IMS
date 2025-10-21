@@ -1,0 +1,30 @@
+/* Default (Light) Theme */
+:root {
+  --color-background: #f4f7f6;
+  --color-surface: #ffffff;
+  --color-text-primary: #212529;
+  --color-text-secondary: #6c757d;
+  --color-border: #dee2e6;
+  --color-primary: #007bff;
+  --color-sidebar-bg: #2c3e50;
+  --color-sidebar-text: #ecf0f1;
+  --color-sidebar-active: #1abc9c;
+}
+
+/* Dark Theme */
+[data-theme="dark"] {
+  --color-background: #121212;
+  --color-surface: #1e1e1e;
+  --color-text-primary: #f0f0f0;
+  --color-text-secondary: #adb5bd;
+  --color-border: #4a4a4a;
+  --color-primary: #007bff;
+  --color-sidebar-bg: #1e1e1e;
+  --color-sidebar-text: #f0f0f0;
+  --color-sidebar-active: #007bff;
+}
+
+/* Apply a smooth transition to color changes */
+body, .header, .sidebar, .statCard, .container {
+  transition: background-color 0.3s ease, color 0.3s ease;
+}

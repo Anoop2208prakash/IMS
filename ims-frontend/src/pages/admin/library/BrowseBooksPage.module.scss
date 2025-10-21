@@ -9,41 +9,21 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 25px;
-}
-
-.searchWrapper {
-  display: flex;
-  align-items: center;
-  border: 1px solid #ccc;
-  border-radius: 20px; // Rounded search bar
-  overflow: hidden;
-}
-
-.searchInput {
-  padding: 10px 15px;
-  border: none;
-  flex-grow: 1;
-  font-size: 1em;
-
-  &:focus {
-    outline: none;
+  margin-bottom: 15px; // Reduced margin
+  
+  h2 {
+    margin: 0;
   }
 }
 
-.searchButton {
-  background: none;
-  border: none;
-  padding: 0 15px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #6c757d;
-  transition: color 0.2s;
+// New style for the search bar's container
+.searchContainer {
+  margin-bottom: 25px;
 
-  &:hover {
-    color: #007bff;
+  // Target the Searchbar component's wrapper
+  :global(.searchWrapper) {
+    width: 100%;
+    max-width: 600px;
   }
 }
 
@@ -65,19 +45,19 @@
   }
 
   tbody tr:hover {
-    background-color: #f1f3f5; // Added for better user feedback
+    background-color: #f1f3f5;
   }
 }
 
 .spinnerCell {
   text-align: center;
-  padding: 40px;
+  padding: 80px;
 }
 
 td > div[class*="emptyState"] {
   border: 2px dashed #e9ecef;
   border-radius: 8px;
-  padding: 40px;
+  padding: 80px 40px;
 }
 
 .available, .unavailable {

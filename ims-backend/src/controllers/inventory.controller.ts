@@ -3,10 +3,23 @@ import { PrismaClient, ItemCategory } from '@prisma/client';
 import { AuthRequest } from '../middleware/auth.middleware';
 const prisma = new PrismaClient();
 
-// GET all items (for Admins and Students)
+// GET all items (UPDATED with category filter)
 export const getAllItems = async (req: Request, res: Response) => {
+  const { category } = req.query;
+
+  // Build a where clause for the query
+  let whereClause = {};
+  if (category && category !== 'all') {
+    whereClause = {
+      category: category as ItemCategory,
+    };
+  }
+
   try {
-    const items = await prisma.inventoryItem.findMany({ orderBy: { createdAt: 'desc' } });
+    const items = await prisma.inventoryItem.findMany({
+      where: whereClause, // Apply the filter
+      orderBy: { createdAt: 'desc' }
+    });
     res.status(200).json(items);
   } catch (error) {
     res.status(500).json({ message: 'Failed to fetch inventory items.' });
@@ -61,10 +74,18 @@ export const updateItem = async (req: Request, res: Response) => {
 export const deleteItem = async (req: Request, res: Response) => {
   const { id } = req.params;
   try {
+    // Check for associated orders first
+    const orderItemCount = await prisma.orderItem.count({ where: { itemId: id } });
+    if (orderItemCount > 0) {
+      return res.status(400).json({ message: `Cannot delete: this item is part of ${orderItemCount} order(s).` });
+    }
+    
+    // Kept the old issuance check just in case
     const issuanceCount = await prisma.inventoryIssuance.count({ where: { itemId: id } });
     if (issuanceCount > 0) {
       return res.status(400).json({ message: `Cannot delete: this item has been issued ${issuanceCount} time(s).` });
     }
+
     await prisma.inventoryItem.delete({ where: { id } });
     res.status(204).send();
   } catch (error) {
@@ -72,7 +93,8 @@ export const deleteItem = async (req: Request, res: Response) => {
   }
 };
 
-// PURCHASE an item (for Students)
+// This function is no longer used, as purchases are handled by order.controller.ts
+// We are keeping it here just in case, but it can be safely removed.
 export const purchaseItem = async (req: AuthRequest, res: Response) => {
   const studentId = req.user?.id;
   const { itemId, quantity } = req.body;
@@ -92,7 +114,6 @@ export const purchaseItem = async (req: AuthRequest, res: Response) => {
       return res.status(400).json({ message: 'Item not found or insufficient stock.' });
     }
 
-    // Use a transaction to create the issuance record and update stock
     const [, issuance] = await prisma.$transaction([
       prisma.inventoryItem.update({
         where: { id: itemId },
