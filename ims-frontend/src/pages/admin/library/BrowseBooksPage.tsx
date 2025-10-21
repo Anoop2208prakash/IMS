@@ -1,10 +1,11 @@
-import { useState, useEffect, KeyboardEvent, ChangeEvent } from 'react';
+import { useState, useEffect, ChangeEvent } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import styles from './BrowseBooksPage.module.scss';
-import { BsBookHalf, BsSearch } from 'react-icons/bs';
-import EmptyState from '../../../components/common/EmptyState';
+import { BsBookHalf } from 'react-icons/bs';
 import Spinner from '../../../components/common/Spinner';
+import EmptyState from '../../../components/common/EmptyState';
+import Searchbar from '../../../components/common/Searchbar';
 import Pagination from '../../../components/common/Pagination';
 
 interface Book {
@@ -17,11 +18,9 @@ interface Book {
 const BrowseBooksPage = () => {
   const [books, setBooks] = useState<Book[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
-  const [filterQuery, setFilterQuery] = useState('');
   const [loading, setLoading] = useState(true);
   
-  // --- New Pagination State ---
-  const [page, setPage] = useState(0); // 0-indexed page for easier calculations
+  const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
   useEffect(() => {
@@ -44,29 +43,23 @@ const BrowseBooksPage = () => {
   }, []);
 
   const filteredBooks = books.filter(book =>
-    book.title.toLowerCase().includes(filterQuery.toLowerCase())
+    book.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    book.isbn.includes(searchTerm)
   );
   
-  // --- Pagination Logic ---
   const currentItems = filteredBooks.slice(
     page * rowsPerPage,
     page * rowsPerPage + rowsPerPage
   );
 
-  const handleSearch = () => {
-    setFilterQuery(searchTerm);
-    setPage(0); // Reset to first page on new search
-  };
-
-  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      handleSearch();
-    }
+  const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
+    setPage(0);
   };
 
   const handleRowsPerPageChange = (event: ChangeEvent<HTMLSelectElement>) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0); // Reset to first page when rows per page changes
+    setRowsPerPage(Number.parseInt(event.target.value, 10));
+    setPage(0);
   };
 
   const renderTableBody = () => {
@@ -82,7 +75,7 @@ const BrowseBooksPage = () => {
         <tr>
           <td colSpan={3}>
             <EmptyState 
-              message={filterQuery ? `No books found for "${filterQuery}"` : "The library catalog is empty."} 
+              message={searchTerm ? `No books found for "${searchTerm}"` : "The library catalog is empty."} 
               icon={<BsBookHalf size={40} />} 
             />
           </td>
@@ -106,19 +99,15 @@ const BrowseBooksPage = () => {
     <div className={styles.browseContainer}>
       <div className={styles.header}>
         <h2>Library Catalog</h2>
-        <div className={styles.searchWrapper}>
-          <input
-            type="text"
-            placeholder="Search by title..."
-            className={styles.searchInput}
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            onKeyDown={handleKeyDown}
-          />
-          <button className={styles.searchButton} onClick={handleSearch}>
-            <BsSearch size={18} />
-          </button>
-        </div>
+      </div>
+
+      {/* 2. Add a new wrapper for the search bar */}
+      <div className={styles.searchContainer}>
+        <Searchbar
+          value={searchTerm}
+          onChange={handleSearchChange}
+          placeholder="Search by title or ISBN..."
+        />
       </div>
 
       <table className={styles.booksTable}>
@@ -134,7 +123,6 @@ const BrowseBooksPage = () => {
         </tbody>
       </table>
 
-      {/* Render the new Pagination component */}
       <Pagination
         count={filteredBooks.length}
         page={page}

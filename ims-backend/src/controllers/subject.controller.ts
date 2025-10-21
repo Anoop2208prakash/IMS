@@ -3,14 +3,22 @@ import { PrismaClient } from '@prisma/client';
 import { AuthRequest } from '../middleware/auth.middleware';
 const prisma = new PrismaClient();
 
-// GET all subjects (optionally filter by semester)
+// GET all subjects (optionally filter by program or semester)
 export const getAllSubjects = async (req: Request, res: Response) => {
-  const { semesterId } = req.query;
+  const { semesterId, programId } = req.query;
+  let whereClause = {}; // Default: no filter, get all
+
+  if (semesterId) {
+    // If a specific semester is requested
+    whereClause = { semesterId: String(semesterId) };
+  } else if (programId) {
+    // If a program is requested, find all subjects in all semesters of that program
+    whereClause = { semester: { programId: String(programId) } };
+  }
+
   try {
     const subjects = await prisma.subject.findMany({
-      where: {
-        semesterId: semesterId ? String(semesterId) : undefined,
-      },
+      where: whereClause,
       include: { semester: { include: { program: true } } },
     });
     res.status(200).json(subjects);
@@ -57,20 +65,17 @@ export const updateSubject = async (req: Request, res: Response) => {
 export const deleteSubject = async (req: Request, res: Response) => {
   const { id } = req.params;
   try {
-    // Safety check: ensure no enrollments, assignments, etc. are linked
     const enrollments = await prisma.enrollment.count({ where: { subjectId: id } });
     if (enrollments > 0) {
       return res.status(400).json({ message: `Cannot delete: ${enrollments} student(s) are enrolled.` });
     }
-    // You would add more checks here for attendance, results, etc.
+    // You can add more safety checks here for attendance, results, etc.
     await prisma.subject.delete({ where: { id } });
     res.status(204).send();
   } catch (error) {
     res.status(500).json({ message: 'Failed to delete subject.' });
   }
 };
-
-// --- Refactored Functions ---
 
 // ASSIGN a teacher to a subject
 export const assignTeacherToSubject = async (req: AuthRequest, res: Response) => {

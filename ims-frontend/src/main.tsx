@@ -4,6 +4,7 @@ import App from './App';
 import { BrowserRouter } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import setupLocatorUI from "@locator/runtime";
+import './theme.scss';
 
 // This check ensures LocatorJS only runs in your development environment
 if (import.meta.env.DEV) {

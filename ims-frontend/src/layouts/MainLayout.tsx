@@ -1,6 +1,8 @@
 import { Outlet } from 'react-router-dom';
 import Sidebar from '../components/layout/Sidebar';
 import ProfileDropdown from '../components/layout/ProfileDropdown';
+import ThemeToggleButton from '../components/layout/ThemeToggleButton'; // <-- Import
+import logo from '../assets/banner-logo.png';
 import styles from './MainLayout.module.scss';
 
 const MainLayout = () => {
@@ -9,7 +11,13 @@ const MainLayout = () => {
       <Sidebar />
       <div className={styles.mainContent}>
         <header className={styles.header}>
-          <ProfileDropdown />
+          <div className={styles.logo}>
+            <img src={logo} alt="Institute Logo" />
+          </div>
+          <div className={styles.headerControls}> {/* <-- Add a wrapper */}
+            <ThemeToggleButton /> {/* <-- Add the button */}
+            <ProfileDropdown />
+          </div>
         </header>
         <main className={styles.content}>
           <Outlet />

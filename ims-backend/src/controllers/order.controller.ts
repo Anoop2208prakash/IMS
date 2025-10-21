@@ -81,14 +81,13 @@ export const getOrderInvoice = async (req: AuthRequest, res: Response) => {
   if (!user) return res.status(401).json({ message: 'Not authenticated.' });
 
   try {
-    // Build a flexible query based on the user's role
     const whereClause: any = { orderId };
     if (user.role === 'STUDENT') {
-      whereClause.userId = user.id; // Students can only see their own orders
+      whereClause.userId = user.id;
     }
 
     const order = await prisma.order.findFirst({
-      where: whereClause, // Use the flexible where clause
+      where: whereClause,
       include: {
         user: { select: { name: true } },
         items: {
@@ -123,7 +122,7 @@ export const getAllOrders = async (req: AuthRequest, res: Response) => {
   }
 };
 
-// UPDATE an order's status (for Admins)
+// UPDATE an order's status (for Admins) - WITH RESTOCK LOGIC
 export const updateOrderStatus = async (req: AuthRequest, res: Response) => {
   const { orderId } = req.params;
   const { status } = req.body as { status: OrderStatus };
@@ -133,12 +132,54 @@ export const updateOrderStatus = async (req: AuthRequest, res: Response) => {
   }
 
   try {
-    const updatedOrder = await prisma.order.update({
-      where: { id: orderId },
-      data: { status },
+    const updatedOrder = await prisma.$transaction(async (tx) => {
+      const order = await tx.order.findUnique({
+        where: { id: orderId },
+        include: { items: true },
+      });
+
+      if (!order) {
+        throw new Error('Order not found.');
+      }
+
+      const currentStatus = order.status;
+
+      // If a PENDING order is now CANCELLED, restock the items
+      if (status === 'CANCELLED' && currentStatus !== 'CANCELLED') {
+        for (const item of order.items) {
+          await tx.inventoryItem.update({
+            where: { id: item.itemId },
+            data: { quantityInStock: { increment: item.quantity } },
+          });
+        }
+      }
+
+      // If a CANCELLED order is moved back to PENDING, de-stock the items
+      if (status !== 'CANCELLED' && currentStatus === 'CANCELLED') {
+        for (const item of order.items) {
+          const dbItem = await tx.inventoryItem.findUnique({ where: { id: item.itemId } });
+          if (!dbItem || dbItem.quantityInStock < item.quantity) {
+            throw new Error(`Insufficient stock for ${dbItem?.name} to un-cancel order.`);
+          }
+        }
+        
+        for (const item of order.items) {
+          await tx.inventoryItem.update({
+            where: { id: item.itemId },
+            data: { quantityInStock: { decrement: item.quantity } },
+          });
+        }
+      }
+
+      // Finally, update the order's status
+      return tx.order.update({
+        where: { id: orderId },
+        data: { status },
+      });
     });
+
     res.status(200).json(updatedOrder);
-  } catch (error) {
-    res.status(500).json({ message: 'Failed to update order status.' });
+  } catch (error: any) {
+    res.status(400).json({ message: error.message || 'Failed to update order status.' });
   }
 };

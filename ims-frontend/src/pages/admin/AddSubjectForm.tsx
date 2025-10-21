@@ -1,20 +1,40 @@
-import React, { useState, useEffect, ChangeEvent, FormEvent } from 'react';
+import { useState, useEffect, ChangeEvent, FormEvent } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import styles from './AddForm.module.scss';
 
-interface Semester { id: string; name: string; program: { title: string; } }
-interface AddSubjectFormProps { onSubjectAdded: () => void; onCancel: () => void; }
+interface Semester {
+  id: string;
+  name: string;
+  program: { title: string; };
+}
 
-const AddSubjectForm = ({ onSubjectAdded, onCancel }: AddSubjectFormProps) => {
-  const [formData, setFormData] = useState({ title: '', subjectCode: '', credits: '', semesterId: '' });
+interface AddSubjectFormProps {
+  onSubjectAdded: () => void;
+  onCancel: () => void;
+  selectedSemesterId: string; // This prop is passed from the parent page
+}
+
+const AddSubjectForm = ({ onSubjectAdded, onCancel, selectedSemesterId }: AddSubjectFormProps) => {
+  const [formData, setFormData] = useState({
+    title: '',
+    subjectCode: '',
+    credits: '',
+    semesterId: selectedSemesterId || '' // Use the prop to set initial state
+  });
   const [semesters, setSemesters] = useState<Semester[]>([]);
 
   useEffect(() => {
+    // Fetch all semesters to populate the dropdown
     axios.get('http://localhost:5000/api/semesters')
       .then(res => setSemesters(res.data))
       .catch(() => toast.error('Failed to load semesters.'));
   }, []);
+
+  // Sync form state if the prop changes
+  useEffect(() => {
+    setFormData(prev => ({ ...prev, semesterId: selectedSemesterId }));
+  }, [selectedSemesterId]);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
@@ -42,12 +62,15 @@ const AddSubjectForm = ({ onSubjectAdded, onCancel }: AddSubjectFormProps) => {
         <input type="text" name="title" placeholder="Subject Title (e.g., Data Structures)" value={formData.title} onChange={handleChange} required />
         <input type="text" name="subjectCode" placeholder="Subject Code (e.g., CS101)" value={formData.subjectCode} onChange={handleChange} required />
         <input type="number" name="credits" placeholder="Credits" value={formData.credits} min="1" onChange={handleChange} required />
-        <select name="semesterId" value={formData.semesterId} onChange={handleChange} required>
+        
+        {/* The dropdown is now disabled because the semester is selected on the main page */}
+        <select name="semesterId" value={formData.semesterId} onChange={handleChange} required disabled>
           <option value="" disabled>-- Select a Semester --</option>
           {semesters.map(s => (
             <option key={s.id} value={s.id}>{s.program.title} - {s.name}</option>
           ))}
         </select>
+
         <div className={styles.buttonGroup}>
           <button type="submit">Add Subject</button>
           <button type="button" onClick={onCancel}>Cancel</button>
