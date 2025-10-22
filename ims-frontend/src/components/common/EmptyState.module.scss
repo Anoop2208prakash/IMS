@@ -1,17 +1,19 @@
 .emptyState {
   text-align: center;
-  padding: 20px;
+  padding: 12px 15px;
+  
 }
 
 .icon {
   font-size: 3em;
-  color: #adb5bd; // Soft gray for the icon
+  color: var(--color-text-secondary); // Use theme variable
+  opacity: 0.6;
   line-height: 1;
 }
 
 .emptyState p {
   margin-top: 15px;
   font-size: 1.1em;
-  color: #6c757d; // Medium gray for the text
+  color: var(--color-text-secondary); // Use theme variable
   font-weight: 500;
 }

@@ -1,7 +1,10 @@
 .container {
-  background: #fff;
   padding: 20px;
   border-radius: 8px;
+  
+  // Theme Variables
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
@@ -15,8 +18,23 @@
   select, input {
     padding: 10px;
     border-radius: 5px;
-    border: 1px solid #ccc;
     font-size: 1em;
+
+    // Theme Variables
+    border: 1px solid var(--color-border);
+    background-color: var(--color-surface);
+    color: var(--color-text-primary);
+  }
+
+  // Style for the <select> dropdown
+  select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%27292.4%27%20height%3D%27292.4%27%3E%3Cpath%20fill%3D%27%236c757d%27%20d%3D%27M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.6-3.6%205.4-7.9%205.4-12.8%200-5-1.8-9.2-5.4-12.8z%27%2F%3E%3C%2Fsvg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px top 50%;
+    background-size: 10px auto;
   }
 }
 
@@ -25,25 +43,30 @@
 }
 
 .studentList {
-  border: 1px solid #ddd;
   border-radius: 5px;
   max-height: 400px;
   overflow-y: auto;
+  
+  // Theme Variables
+  border: 1px solid var(--color-border);
 }
 
 .studentItem {
   display: flex;
   align-items: center;
   padding: 12px;
-  border-bottom: 1px solid #eee;
   cursor: pointer;
+  
+  // Theme Variables
+  border-bottom: 1px solid var(--color-border-dashed);
+  color: var(--color-text-primary);
 
   &:last-child {
     border-bottom: none;
   }
 
   &:hover {
-    background-color: #f8f9fa;
+    background-color: var(--color-background);
   }
 
   input[type="checkbox"] {
@@ -56,25 +79,28 @@
 
 .selectAll {
   font-weight: bold;
-  background-color: #f1f3f5;
+  background-color: var(--color-background);
 }
 
 .submitButton {
   margin-top: 20px;
   padding: 12px 25px;
   font-size: 16px;
-  background-color: #007bff;
-  color: white;
   border: none;
   border-radius: 5px;
   cursor: pointer;
 
+  // Theme Variables
+  background-color: var(--color-primary);
+  color: var(--color-primary-contrast);
+
   &:hover {
-    background-color: #0056b3;
+    background-color: var(--color-primary-hover);
   }
 }
 
 .message {
   margin-top: 15px;
   font-weight: bold;
+  color: var(--color-text-primary);
 }

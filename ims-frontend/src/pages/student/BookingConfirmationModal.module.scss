@@ -12,7 +12,6 @@
 }
 
 .modalContent {
-  background: white;
   padding: 30px;
   border-radius: 8px;
   width: 100%;
@@ -20,19 +19,27 @@
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
   text-align: center;
 
+  // Theme Variables
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+
   h2 {
     margin-top: 0;
+    margin-bottom: 5px;
+    color: var(--color-text-primary);
   }
 
   h3 {
     font-size: 1.2em;
     font-weight: normal;
-    color: #495057;
+    color: var(--color-text-secondary);
+    margin-bottom: 10px;
   }
 
   h4 {
     font-size: 1.4em;
     margin-top: 15px;
+    color: var(--color-text-primary);
   }
 }
 
@@ -45,20 +52,29 @@
 
   label {
     font-weight: bold;
+    color: var(--color-text-primary);
   }
 
   input {
     width: 60px;
     padding: 8px;
     text-align: center;
-    border: 1px solid #ccc;
     border-radius: 4px;
     font-size: 1.1em;
+    
+    // Theme Variables
+    border: 1px solid var(--color-border);
+    background-color: var(--color-background);
+    color: var(--color-text-primary);
+
+    &:disabled {
+      opacity: 0.7;
+    }
   }
 }
 
 .error {
-  color: #e74c3c;
+  color: var(--color-btn-red); // Use variable
   font-weight: bold;
   margin-top: 15px;
 }
@@ -77,23 +93,31 @@
     font-weight: bold;
     cursor: pointer;
     transition: background-color 0.2s;
+    color: var(--color-primary-contrast); // Use variable
+
+    &:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
   }
 }
 
 .confirmButton {
-  background-color: #28a745;
-  color: white;
+  background-color: var(--color-btn-green); // Use variable
 
-  &:hover {
-    background-color: #218838;
+  &:hover:not(:disabled) {
+    background-color: #218838; // Darken green
+  }
+
+  &:disabled {
+    background-color: var(--color-btn-green);
   }
 }
 
 .cancelButton {
-  background-color: #6c757d;
-  color: white;
+  background-color: var(--color-btn-gray); // Use variable
 
-  &:hover {
-    background-color: #5a6268;
+  &:hover:not(:disabled) {
+    background-color: #5a6268; // Darken gray
   }
 }

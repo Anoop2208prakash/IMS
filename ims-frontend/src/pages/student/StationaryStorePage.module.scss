@@ -1,12 +1,13 @@
 .storeContainer {
   h2 {
     margin-bottom: 20px;
+    color: var(--color-text-primary); // Use variable
   }
 }
 
 .tabContainer {
   margin-bottom: 25px;
-  border-bottom: 2px solid #dee2e6;
+  border-bottom: 2px solid var(--color-border); // Use variable
   
   button {
     padding: 10px 20px;
@@ -14,14 +15,14 @@
     border: none;
     background: none;
     cursor: pointer;
-    color: #6c757d;
+    color: var(--color-text-secondary); // Use variable
     border-bottom: 2px solid transparent;
-    margin-bottom: -2px; // Aligns the active border with the container's border
+    margin-bottom: -2px;
 
     &.active {
-      color: #007bff;
+      color: var(--color-primary); // Use variable
       font-weight: bold;
-      border-bottom-color: #007bff;
+      border-bottom-color: var(--color-primary); // Use variable
     }
   }
 }
@@ -31,6 +32,7 @@
   margin-bottom: 20px;
   border-radius: 5px;
   font-weight: bold;
+  // Alert colors are usually kept consistent regardless of theme
   background-color: #d4edda;
   color: #155724;
   border: 1px solid #c3e6cb;
@@ -43,14 +45,17 @@
 }
 
 .itemCard {
-  background: #fff;
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  border-left: 5px solid #007bff;
   display: flex;
   flex-direction: column;
   transition: transform 0.2s ease-in-out;
+
+  // Theme Variables
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-left: 5px solid var(--color-primary);
 
   &:hover {
     transform: translateY(-5px);
@@ -59,19 +64,20 @@
   h3 {
     margin-top: 0;
     margin-bottom: 10px;
-    flex-grow: 1; // Pushes content below it down
+    flex-grow: 1;
+    color: var(--color-text-primary); // Use variable
   }
 
   .price {
     font-size: 1.6em;
     font-weight: bold;
-    color: #343a40;
+    color: var(--color-text-primary); // Use variable
     margin: 5px 0;
   }
 
   .stock {
     font-size: 0.9em;
-    color: #6c757d;
+    color: var(--color-text-secondary); // Use variable
     margin-bottom: 15px;
   }
 
@@ -80,32 +86,42 @@
     padding: 10px;
     font-size: 1em;
     font-weight: bold;
-    color: white;
-    background-color: #28a745;
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    margin-top: auto; // Pushes button to the bottom
+    margin-top: auto;
     transition: background-color 0.2s;
+    
+    // Theme Variables
+    color: var(--color-primary-contrast);
+    background-color: var(--color-btn-green);
 
     &:hover:not(:disabled) {
-      background-color: #218838;
+      background-color: #218838; // Darken green
     }
 
     &:disabled {
-      background-color: #ccc;
+      background-color: var(--color-border); // Use variable
       cursor: not-allowed;
     }
   }
 }
 
 .spinnerContainer {
-  grid-column: 1 / -1; // Makes the container span the full width of the grid
+  grid-column: 1 / -1;
   display: flex;
   justify-content: center;
   padding: 50px;
 }
 
 .emptyGrid {
-  grid-column: 1 / -1; // Makes the empty state span the full width of the grid
+  grid-column: 1 / -1;
+}
+
+// Obsolete class, handled by .emptyGrid > EmptyState
+.noData {
+  grid-column: 1 / -1;
+  text-align: center;
+  color: var(--color-text-secondary); // Use variable
+  padding: 40px;
 }

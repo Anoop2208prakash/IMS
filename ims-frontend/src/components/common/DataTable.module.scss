@@ -1,23 +1,51 @@
+.tableContainer {
+  width: 100%;
+  overflow-x: auto;
+}
+
 .table {
   width: 100%;
   border-collapse: collapse;
   margin-top: 20px;
+  color: var(--color-text-primary);
 
   th, td {
-    border: 1px solid #ddd;
-    padding: 12px;
+    border: 1px solid var(--color-border);
+    padding: 12px 15px; // <-- Updated padding
     text-align: left;
+    vertical-align: middle;
   }
 
-  thead {
-    background-color: #f8f9fa;
+  thead th {
+    background-color: var(--color-background);
+    font-weight: bold;
+  }
+
+  tbody tr:hover {
+    background-color: var(--color-background);
+  }
+
+  // This rule creates the fixed height for the empty/loading row
+  td[colSpan] {
+    height: 200px;
+    text-align: center;
+    vertical-align: middle;
+    padding: 0;
   }
 }
 
-// New class for the empty state cell
+// This styles the *inner* dashed box for the empty state
+td > div[class*="emptyState"] {
+  border: 2px dashed var(--color-border-dashed);
+  border-radius: 8px;
+  padding: 40px;
+  display: inline-block;
+}
+
+// This class is no longer directly used but kept for reference
 .noDataCell {
   text-align: center;
   padding: 40px;
   font-style: italic;
-  color: #6c757d;
+  color: var(--color-text-secondary);
 }

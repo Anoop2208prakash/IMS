@@ -2,38 +2,50 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  padding: 40px;
 }
 
 .invoiceBox {
   width: 800px;
-  background: #fff;
-  border: 1px solid #ddd;
   padding: 30px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   font-family: Arial, sans-serif;
+
+  // Theme Variables
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-primary);
 }
 
 .header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  border-bottom: 2px solid #333;
   padding-bottom: 15px;
+  
+  // Theme Variables
+  border-bottom: 2px solid var(--color-text-primary);
 
   h1 {
     margin: 0;
-    color: #333;
+    color: var(--color-text-primary);
   }
 
   .headerDetails {
     text-align: right;
-    p { margin: 2px 0; }
+    p { 
+      margin: 2px 0; 
+      color: var(--color-text-secondary);
+    }
   }
 }
 
 .customerDetails {
   padding: 20px 0;
-  p { margin: 2px 0; }
+  p { 
+    margin: 2px 0; 
+    color: var(--color-text-primary);
+  }
 }
 
 .itemsTable {
@@ -41,15 +53,16 @@
   border-collapse: collapse;
   
   th, td {
-    border-bottom: 1px solid #eee;
     padding: 12px;
     text-align: left;
+    border-bottom: 1px solid var(--color-border-dashed); // Use variable
   }
 
   thead {
-    background-color: #f8f9fa;
+    background-color: var(--color-background); // Use variable
     th {
-      border-bottom: 2px solid #ddd;
+      border-bottom: 2px solid var(--color-border); // Use variable
+      color: var(--color-text-primary);
     }
   }
 
@@ -61,9 +74,10 @@
 .totalSection {
   margin-top: 20px;
   padding-top: 15px;
-  border-top: 2px solid #333;
+  border-top: 2px solid var(--color-text-primary); // Use variable
   text-align: right;
   font-size: 1.4em;
+  color: var(--color-text-primary);
 }
 
 .buttonRow {
@@ -75,20 +89,35 @@
 .printButton, .backButton {
   padding: 12px 25px;
   font-size: 16px;
-  color: white;
+  color: var(--color-primary-contrast); // Use variable
   border: none;
   border-radius: 5px;
   cursor: pointer;
   text-decoration: none;
   text-align: center;
 }
-.printButton { background-color: #007bff; }
-.backButton { background-color: #6c757d; }
+
+.printButton { 
+  background-color: var(--color-primary); 
+  &:hover {
+    background-color: var(--color-primary-hover);
+  }
+}
+.backButton { 
+  background-color: var(--color-btn-gray); 
+  &:hover {
+    background-color: #5a6268;
+  }
+}
 
 // Print-specific styles
 @media print {
   body * { visibility: hidden; }
-  .invoiceBox, .invoiceBox * { visibility: visible; }
+  .invoiceBox, .invoiceBox * { 
+    visibility: visible; 
+    color: #000 !important; // Force black text
+    background: #fff !important; // Force white background
+  }
   .invoiceBox {
     position: absolute;
     left: 0;
@@ -97,5 +126,11 @@
     box-shadow: none;
     border: none;
   }
+  .itemsTable {
+    th, td { border-bottom: 1px solid #000; }
+    thead { background-color: #eee; }
+  }
+  .header { border-bottom: 2px solid #000; }
+  .totalSection { border-top: 2px solid #000; }
   .buttonRow { display: none; }
 }

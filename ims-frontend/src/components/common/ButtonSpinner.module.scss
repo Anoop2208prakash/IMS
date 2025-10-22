@@ -1,10 +1,12 @@
 .spinner {
   width: 18px;
   height: 18px;
-  border: 3px solid rgba(255, 255, 255, 0.3);
-  border-top-color: #ffffff;
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
+
+  // Use CSS variables for the colors
+  border: 3px solid var(--color-primary-contrast-light); // A lighter, semi-transparent white
+  border-top-color: var(--color-primary-contrast);    // Solid white
 }
 
 @keyframes spin {

@@ -12,7 +12,6 @@
 }
 
 .modalContent {
-  background: white;
   padding: 30px;
   border-radius: 8px;
   width: 100%;
@@ -20,13 +19,18 @@
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
   text-align: center;
 
+  // Theme Variables
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+
   h2 {
     margin-top: 15px;
     margin-bottom: 10px;
+    color: var(--color-text-primary); // Use variable
   }
 
   p {
-    color: #495057;
+    color: var(--color-text-secondary); // Use variable
     font-size: 1.1em;
     line-height: 1.5;
   }
@@ -34,7 +38,7 @@
 
 .iconWrapper {
   font-size: 3em;
-  color: #e74c3c; // Red
+  color: var(--color-btn-red); // Use variable (Red)
 }
 
 .buttonGroup {
@@ -60,19 +64,20 @@
 }
 
 .confirmButton {
-  background-color: #e74c3c;
-  color: white;
+  background-color: var(--color-btn-red); // Use variable
+  color: var(--color-primary-contrast); // Use variable (white)
 
   &:hover:not(:disabled) {
-    background-color: #c0392b;
+    background-color: #c0392b; // Darken red
   }
 }
 
 .cancelButton {
-  background-color: #f1f3f5;
-  color: #333;
+  background-color: var(--color-background); // Use variable
+  color: var(--color-text-primary); // Use variable
+  border: 1px solid var(--color-border); // Add a border
 
   &:hover:not(:disabled) {
-    background-color: #dee2e6;
+    background-color: var(--color-border);
   }
 }

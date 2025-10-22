@@ -1,32 +1,69 @@
 .container {
-  background-color: #fff;
-  padding: 20px;
+  padding: 20px 30px;
   border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  
+  // Theme Variables
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+
+  h2 {
+    color: var(--color-text-primary);
+  }
 }
 
 .loansTable {
-  // You can reuse the .table styles from AdminPages.module.scss or define them here
   width: 100%;
   border-collapse: collapse;
   margin-top: 20px;
+  font-family: Arial, sans-serif;
 
   th, td {
-    border: 1px solid #ddd;
-    padding: 12px;
+    border: 1px solid var(--color-border); // Use variable
+    padding: 12px 15px;
     text-align: left;
+    vertical-align: middle;
   }
 
-  thead { background-color: #f8f9fa; }
+  thead th {
+    background-color: var(--color-background); // Use variable
+    font-weight: bold;
+    color: var(--color-text-primary); // Use variable
+  }
+
+  tbody tr:hover {
+    background-color: var(--color-background); // Use variable
+  }
 }
 
+// Styles for loading and empty states
+.spinnerCell {
+  text-align: center;
+  padding: 80px;
+}
+
+td > div[class*="emptyState"] {
+  border: 2px dashed var(--color-border-dashed);
+  border-radius: 8px;
+  padding: 80px 40px;
+}
+
+// --- Status Badge Styles ---
 .status {
-  padding: 4px 8px;
+  padding: 5px 10px;
   border-radius: 12px;
   font-size: 0.8em;
   font-weight: bold;
-  color: white;
+  color: var(--color-primary-contrast); // Use variable
+  display: inline-block;
 }
 
-.active { background-color: #007bff; } // Blue
-.returned { background-color: #6c757d; } // Gray
-.overdue { background-color: #e74c3c; } // Red
+.active {
+  background-color: var(--color-primary); // Blue
+}
+.returned {
+  background-color: var(--color-btn-gray); // Gray
+}
+.overdue {
+  background-color: var(--color-btn-red); // Red
+}

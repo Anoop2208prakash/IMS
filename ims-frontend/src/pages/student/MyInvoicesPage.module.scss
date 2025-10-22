@@ -1,8 +1,15 @@
 .container {
-  background-color: #fff;
   padding: 20px 30px;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  
+  // Theme Variables
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+
+  h2 {
+    color: var(--color-text-primary);
+  }
 }
 
 .header {
@@ -13,7 +20,7 @@
 }
 
 .totalDueCard {
-  background: #fff3cd;
+  background: #fff3cd; // Keep this as it's a specific warning color
   border: 1px solid #ffeeba;
   padding: 15px 25px;
   border-radius: 8px;
@@ -37,21 +44,42 @@
   margin-top: 20px;
 
   th, td {
-    border: 1px solid #ddd; /* <-- This line creates the full grid border */
+    border: 1px solid var(--color-border); // Use variable
     padding: 12px 15px;
     text-align: left;
     vertical-align: middle;
   }
 
   thead th {
-    background-color: #f8f9fa;
+    background-color: var(--color-background); // Use variable
     font-weight: bold;
-    color: #343a40;
+    color: var(--color-text-primary); // Use variable
   }
 
   tbody tr:hover {
-    background-color: #f1f3f5;
+    background-color: var(--color-background); // Use variable
   }
+
+  // This rule creates the fixed height for empty/loading rows
+  td[colSpan] {
+    height: 200px;
+    text-align: center;
+    vertical-align: middle;
+    padding: 0;
+  }
+}
+
+// Style for the cell holding the spinner
+.spinnerCell {
+  // Styles are handled by td[colSpan]
+}
+
+// This styles the *inner* dashed box for the empty state
+td > div[class*="emptyState"] {
+  border: 2px dashed var(--color-border-dashed);
+  border-radius: 8px;
+  padding: 40px;
+  display: inline-block;
 }
 
 .status {
@@ -59,16 +87,16 @@
   border-radius: 12px;
   font-size: 0.8em;
   font-weight: bold;
-  color: white;
+  color: var(--color-primary-contrast); // Use variable
   display: inline-block;
 }
 
 .pending, .overdue {
-  background-color: #e74c3c; // Red
+  background-color: var(--color-btn-red); // Use variable
 }
 
 .paid {
-  background-color: #28a745; // Green
+  background-color: var(--color-btn-green); // Use variable
 }
 
 .actions {
@@ -77,20 +105,17 @@
 
 .payButton {
   padding: 6px 12px;
-  background-color: #28a745;
-  color: white;
   border: none;
   border-radius: 4px;
   cursor: pointer;
   font-weight: bold;
   transition: background-color 0.2s;
 
-  &:hover {
-    background-color: #218838;
-  }
-}
+  // Theme Variables
+  background-color: var(--color-btn-green);
+  color: var(--color-primary-contrast);
 
-.spinnerCell {
-  padding: 40px;
-  text-align: center;
+  &:hover {
+    background-color: #218838; // Darken green
+  }
 }

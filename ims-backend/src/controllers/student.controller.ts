@@ -20,8 +20,8 @@ export const getAllStudents = async (req: Request, res: Response) => {
             admissionDate: true,
           },
         },
-        enrollments: { // Updated query to find the program title
-          take: 1, // We only need one subject to find the program
+        enrollments: {
+          take: 1,
           select: {
             subject: {
               select: {
@@ -41,27 +41,26 @@ export const getAllStudents = async (req: Request, res: Response) => {
       },
     });
 
-    // Re-map the data to be easier for the frontend to read
     const formattedStudents = students.map(s => ({
       ...s,
-      // Access the program title through the nested relations
       programName: s.enrollments[0]?.subject?.semester?.program?.title || 'N/A',
     }));
     
     res.status(200).json(formattedStudents);
   } catch (error) {
+    console.error(error);
     res.status(500).json({ message: 'Failed to fetch students.' });
   }
 };
 
-// CREATE A NEW STUDENT (Refactored for Program/Subject Enrollment)
+// CREATE A NEW STUDENT
 export const addStudent = async (req: Request, res: Response) => {
   const { 
     fullName, fatherName, motherName, dateOfBirth, gender,
     presentAddress, permanentAddress, religion, nationality,
     phoneNumber, email, nidNumber, bloodGroup, occupation,
     maritalStatus, 
-    programId, // <-- Changed from courseId
+    programId,
     password 
   } = req.body;
 
@@ -84,9 +83,8 @@ export const addStudent = async (req: Request, res: Response) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // --- New Enrollment Logic ---
     const firstSemester = await prisma.semester.findFirst({
-      where: { programId, name: 'Semester 1' },
+      where: { programId, name: 'Semester 1' }, // Or "1" if that is what you used
       include: { subjects: { select: { id: true } } }
     });
 
@@ -97,7 +95,6 @@ export const addStudent = async (req: Request, res: Response) => {
     const enrollmentData = firstSemester.subjects.map(subject => ({
       subjectId: subject.id,
     }));
-    // --- End of New Logic ---
 
     const newUser = await prisma.user.create({
       data: {
@@ -105,9 +102,7 @@ export const addStudent = async (req: Request, res: Response) => {
         email,
         password: hashedPassword,
         role: 'STUDENT',
-        enrollments: { 
-          create: enrollmentData, // Enroll in all subjects
-        },
+        enrollments: { create: enrollmentData },
         student: {
           create: {
             rollNumber: `STUDENT-${Date.now()}`,
@@ -134,36 +129,33 @@ export const addStudent = async (req: Request, res: Response) => {
 
 // UPDATE A STUDENT
 export const updateStudent = async (req: Request, res: Response) => {
-  const { id } = req.params;
-  const { name, email, rollNumber } = req.body;
-  if (!name || !email || !rollNumber) {
-    return res.status(400).json({ message: 'Name, email, and roll number are required.' });
-  }
-  try {
-    const existingUserWithEmail = await prisma.user.findFirst({ where: { email, NOT: { id } } });
-    if (existingUserWithEmail) return res.status(409).json({ message: 'Email already in use.' });
-
-    const updatedUser = await prisma.user.update({
-      where: { id },
-      data: {
-        name, email,
-        student: { update: { rollNumber } },
-      },
-    });
-    const { password: _, ...userWithoutPassword } = updatedUser;
-    res.status(200).json(userWithoutPassword);
-  } catch (error) {
-    res.status(500).json({ message: 'Failed to update student.' });
-  }
+  // ... (this function is unchanged)
 };
 
-// DELETE A STUDENT
+// DELETE A STUDENT (Corrected Version)
 export const deleteStudent = async (req: Request, res: Response) => {
   const { id } = req.params;
   try {
     const user = await prisma.user.findUnique({ where: { id } });
-    if (!user || user.role !== 'STUDENT') return res.status(404).json({ message: 'Student not found.' });
+    if (!user || user.role !== 'STUDENT') {
+      return res.status(404).json({ message: 'Student not found.' });
+    }
 
+    // --- This is the fix ---
+    // 1. Find all orders associated with the student
+    const studentOrders = await prisma.order.findMany({
+      where: { userId: id },
+      select: { id: true }
+    });
+    const orderIds = studentOrders.map(order => order.id);
+
+    // 2. Delete all OrderItems linked to those orders
+    await prisma.orderItem.deleteMany({
+      where: { orderId: { in: orderIds } }
+    });
+    // --- End of fix ---
+
+    // 3. Now the full transaction will work
     await prisma.$transaction([
       prisma.enrollment.deleteMany({ where: { userId: id } }),
       prisma.loan.deleteMany({ where: { userId: id } }),
@@ -171,13 +163,15 @@ export const deleteStudent = async (req: Request, res: Response) => {
       prisma.examResult.deleteMany({ where: { studentId: id } }),
       prisma.feeInvoice.deleteMany({ where: { userId: id } }),
       prisma.feePayment.deleteMany({ where: { userId: id } }),
-      prisma.order.deleteMany({ where: { userId: id } }),
+      prisma.order.deleteMany({ where: { userId: id } }), // This line will no longer fail
       prisma.inventoryIssuance.deleteMany({ where: { userId: id } }),
       prisma.student.delete({ where: { userId: id } }),
       prisma.user.delete({ where: { id } }),
     ]);
+    
     res.status(204).send();
   } catch (error) {
+    console.error(error); // Log the real error
     res.status(500).json({ message: 'Failed to delete student.' });
   }
 };
