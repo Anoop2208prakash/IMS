@@ -6,8 +6,8 @@
   padding: 15px;
   font-family: Arial, sans-serif;
   font-size: 0.9em;
-  color: #6c757d;
-  border-top: 1px solid #ddd;
+  color: var(--color-text-secondary); // Use variable
+  border-top: 1px solid var(--color-border); // Use variable
 }
 
 .rowsPerPage {
@@ -18,13 +18,15 @@
   select {
     padding: 5px;
     border-radius: 4px;
-    border: 1px solid #ccc;
-    background-color: #fff;
+    border: 1px solid var(--color-border); // Use variable
+    background-color: var(--color-surface); // Use variable
+    color: var(--color-text-primary); // Use variable
   }
 }
 
 .rangeDisplay {
   font-weight: 500;
+  color: var(--color-text-primary); // Use variable
 }
 
 .navigation {
@@ -43,13 +45,14 @@
     align-items: center;
     justify-content: center;
     transition: background-color 0.2s;
+    color: var(--color-text-primary); // Use variable
 
     &:hover:not(:disabled) {
-      background-color: #f0f0f0;
+      background-color: var(--color-background); // Use variable
     }
 
     &:disabled {
-      color: #ccc;
+      color: var(--color-border); // Use variable
       cursor: not-allowed;
     }
   }

@@ -1,10 +1,6 @@
-// --- Variables for easy theme management ---
-$primary-dark: #0a2540;
-$primary-accent: #007bff; // A standard blue accent
-$text-light: #ffffff;
-$text-dark: #333333;
-$border-color: #cccccc;
-$background-light: #f4f7f9;
+// --- Theme Variables ---
+// These variables are now defined in src/theme.scss
+// We just use them here.
 
 // --- Main Page Wrapper ---
 .pageWrapper {
@@ -13,7 +9,7 @@ $background-light: #f4f7f9;
   align-items: flex-start;
   min-height: 100vh;
   padding: 40px 20px;
-  background-color: $background-light;
+  background-color: var(--color-background);
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
@@ -21,17 +17,19 @@ $background-light: #f4f7f9;
 .admissionForm {
   width: 100%;
   max-width: 850px;
-  background: #ffffff;
+  background: var(--color-surface);
+  color: var(--color-text-primary);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
   border-radius: 8px;
   overflow: hidden;
   position: relative;
+  border: 1px solid var(--color-border);
 }
 
 // --- Angled Header ---
 .header {
-  background-color: $primary-dark;
-  color: $text-light;
+  background-color: var(--color-sidebar-bg); // Use sidebar color
+  color: var(--color-sidebar-text);
   padding: 30px 40px;
   clip-path: polygon(0 0, 100% 0, 100% 85%, 0 100%);
   position: relative;
@@ -116,7 +114,7 @@ $background-light: #f4f7f9;
 
   label {
     font-size: 0.9rem;
-    color: #555;
+    color: var(--color-text-secondary);
     margin-bottom: 8px;
   }
 
@@ -127,20 +125,22 @@ $background-light: #f4f7f9;
   input[type="password"],
   select {
     border: none;
-    border-bottom: 1px dotted $border-color;
+    border-bottom: 1px dotted var(--color-border);
     padding: 8px 4px;
     font-size: 1rem;
     background: transparent;
     transition: border-color 0.3s;
+    color: var(--color-text-primary);
 
     &:focus {
       outline: none;
-      border-bottom: 1px solid $primary-accent;
+      border-bottom: 1px solid var(--color-primary);
     }
   }
   
   select {
     cursor: pointer;
+    background-color: var(--color-surface); // Needed for dark mode
   }
 }
 
@@ -156,12 +156,13 @@ $background-light: #f4f7f9;
     gap: 5px;
     cursor: pointer;
     margin-bottom: 0;
+    color: var(--color-text-primary);
   }
 }
 
 // --- Address Fieldset ---
 .addressFieldset {
-  border: 1px dashed $border-color;
+  border: 1px dashed var(--color-border);
   padding: 20px;
   margin-bottom: 25px;
   border-radius: 4px;
@@ -170,7 +171,7 @@ $background-light: #f4f7f9;
     padding: 0 10px;
     margin-left: 10px;
     font-weight: 600;
-    color: $primary-dark;
+    color: var(--color-text-primary);
   }
 }
 
@@ -187,7 +188,7 @@ $background-light: #f4f7f9;
 
   p {
     font-size: 0.85rem;
-    color: #666;
+    color: var(--color-text-secondary);
     max-width: 80%;
     margin: 0 auto;
   }
@@ -202,19 +203,19 @@ $background-light: #f4f7f9;
 
 .signatureBox {
   width: 40%;
-  border-top: 1px dotted $text-dark;
+  border-top: 1px dotted var(--color-text-primary);
   padding-top: 8px;
   text-align: center;
 
   label {
     font-size: 0.9rem;
-    color: #555;
+    color: var(--color-text-secondary);
   }
 }
 
 // --- Angled Footer & Submission ---
 .footer {
-  background-color: $primary-dark;
+  background-color: var(--color-sidebar-bg);
   padding: 40px;
   margin-top: 30px;
   clip-path: polygon(0 15%, 100% 0, 100% 100%, 0% 100%);
@@ -230,8 +231,8 @@ $background-light: #f4f7f9;
 
 .submitButton {
   padding: 12px 30px;
-  background-color: $primary-accent;
-  color: white;
+  background-color: var(--color-primary);
+  color: var(--color-primary-contrast);
   border: none;
   border-radius: 5px;
   cursor: pointer;
@@ -240,28 +241,8 @@ $background-light: #f4f7f9;
   transition: background-color 0.3s;
 
   &:hover {
-    background-color: darken($primary-accent, 10%);
+    background-color: var(--color-primary-hover);
   }
-}
-
-// --- Message Styling ---
-.successMessage, .errorMessage {
-  margin-bottom: 15px;
-  padding: 10px;
-  border-radius: 4px;
-  font-weight: 500;
-  text-align: center;
-  color: white;
-  width: 100%;
-  max-width: 400px;
-}
-
-.successMessage {
-  background-color: #28a745;
-}
-
-.errorMessage {
-  background-color: #dc3545;
 }
 
 // --- Responsive Adjustments ---

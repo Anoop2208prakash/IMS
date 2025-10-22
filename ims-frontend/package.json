@@ -18,6 +18,7 @@
     "react-router-dom": "^7.9.3"
   },
   "devDependencies": {
+    "@babel/core": "^7.28.4",
     "@eslint/js": "^9.36.0",
     "@locator/babel-jsx": "^0.4.4",
     "@locator/runtime": "^0.4.4",

@@ -5,10 +5,32 @@
   --color-text-primary: #212529;
   --color-text-secondary: #6c757d;
   --color-border: #dee2e6;
+  --color-border-dashed: #e9ecef;
   --color-primary: #007bff;
+  --color-primary-hover: #0056b3;
+  
+  // Sidebar
   --color-sidebar-bg: #2c3e50;
   --color-sidebar-text: #ecf0f1;
+  --color-sidebar-hover: #34495e;
   --color-sidebar-active: #1abc9c;
+  
+  // Buttons
+  --color-btn-green: #28a745;
+  --color-btn-yellow: #ffc107;
+  --color-btn-red: #e74c3c;
+  --color-btn-teal: #17a2b8;
+  --color-btn-gray: #6c757d;
+  
+  // Searchbar (Light)
+  --color-search-bg: #f8f9fa;
+  --color-search-border: #dee2e6;
+  --color-search-text: #212529;
+  --color-search-placeholder: #6c757d;
+  --color-search-icon: #6c757d;
+
+  --color-primary-contrast: #ffffff;
+  --color-primary-contrast-light: rgba(255, 255, 255, 0.3);
 }
 
 /* Dark Theme */
@@ -18,13 +40,31 @@
   --color-text-primary: #f0f0f0;
   --color-text-secondary: #adb5bd;
   --color-border: #4a4a4a;
+  --color-border-dashed: #4a4a4a;
   --color-primary: #007bff;
+  --color-primary-hover: #0056b3;
+
+  // Sidebar (Dark)
   --color-sidebar-bg: #1e1e1e;
   --color-sidebar-text: #f0f0f0;
+  --color-sidebar-hover: #333;
   --color-sidebar-active: #007bff;
+  
+  // Buttons (remain the same)
+  
+  // Searchbar (Dark)
+  --color-search-bg: #2c2c2c;
+  --color-search-border: #555;
+  --color-search-text: #f0f0f0;
+  --color-search-placeholder: #9e9e9e;
+  --color-search-icon: #9e9e9e;
+
+  --color-primary-contrast: #ffffff;
+  --color-primary-contrast-light: rgba(255, 255, 255, 0.3);
 }
 
 /* Apply a smooth transition to color changes */
-body, .header, .sidebar, .statCard, .container {
-  transition: background-color 0.3s ease, color 0.3s ease;
+body, .header, .sidebar, .statCard, .container,
+input, select, button, .modalContent, .formContainer {
+  transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out, border-color 0.2s ease-in-out;
 }

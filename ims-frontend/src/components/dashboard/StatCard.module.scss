@@ -1,26 +1,27 @@
 .statCard {
-  background: #fff;
+  background: var(--color-surface); // Use variable
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   display: flex;
   align-items: center;
+  border: 1px solid var(--color-border); // Add a subtle border
 }
 
 .icon {
   font-size: 2.5em;
   margin-right: 20px;
-  color: #007bff;
+  color: var(--color-primary); // Use variable
 }
 
 .info {
   .value {
     font-size: 2em;
     font-weight: bold;
-    color: #343a40;
+    color: var(--color-text-primary); // Use variable
   }
   .title {
     font-size: 1em;
-    color: #6c757d;
+    color: var(--color-text-secondary); // Use variable
   }
 }

@@ -1,18 +1,25 @@
 .container {
-  background-color: #fff;
-  padding: 20px;
+  padding: 20px 30px;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+  // Theme Variables
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+
+  h2 {
+    color: var(--color-text-primary);
+  }
 }
 
 .examSection {
   margin-bottom: 30px;
 
   h3 {
-    border-bottom: 2px solid #007bff;
+    border-bottom: 2px solid var(--color-primary); // Use variable
     padding-bottom: 10px;
     margin-bottom: 15px;
-    color: #333;
+    color: var(--color-text-primary); // Use variable
     font-size: 1.4em;
   }
 }
@@ -23,22 +30,39 @@
   margin-top: 20px;
 
   th, td {
-    border: 1px solid #ddd;
-    padding: 12px;
+    border: 1px solid var(--color-border); // Use variable
+    padding: 12px 15px;
     text-align: left;
     vertical-align: middle;
   }
 
-  thead {
-    background-color: #f8f9fa;
+  thead th {
+    background-color: var(--color-background); // Use variable
     font-weight: bold;
+    color: var(--color-text-primary); // Use variable
   }
 
   tbody tr:nth-child(even) {
-    background-color: #f2f2f2;
+    background-color: var(--color-background); // Use variable
+  }
+
+  tbody tr:hover {
+    background-color: var(--color-border-dashed); // Use hover effect
   }
 }
 
 .contentArea {
   margin-top: 20px;
+}
+
+// Styles for loading and empty states
+.spinnerCell {
+  text-align: center;
+  padding: 80px;
+}
+
+td > div[class*="emptyState"] {
+  border: 2px dashed var(--color-border-dashed);
+  border-radius: 8px;
+  padding: 80px 40px;
 }

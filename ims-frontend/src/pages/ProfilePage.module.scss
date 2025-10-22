@@ -5,27 +5,33 @@
 }
 
 .profileCard {
-  background: #fff;
   padding: 30px;
   border-radius: 8px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
   width: 100%;
   max-width: 600px;
+  
+  // Theme Variables
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
 }
 
 .profileInfo p {
   font-size: 1.1em;
   line-height: 1.6;
+  color: var(--color-text-secondary); // Use variable
+  
   strong {
-    color: #333;
+    color: var(--color-text-primary); // Use variable
   }
 }
 
 .roleDetails {
   margin-top: 20px;
+  
   h3 {
-    color: #007bff;
-    border-bottom: 2px solid #e9ecef;
+    color: var(--color-primary); // Use variable
+    border-bottom: 2px solid var(--color-border); // Use variable
     padding-bottom: 10px;
   }
 }

@@ -16,18 +16,20 @@
   z-index: 1000; // Ensures it stays on top
 
   display: flex;
-  justify-content: space-between;
+  justify-content: space-between; // Positions logo (left) and dropdown (right)
   align-items: center;
   padding: 10px 30px;
-  background: #fff;
-  border-bottom: 1px solid #e0e0e0;
   height: 60px;
   box-sizing: border-box;
+  
+  // Theme Variables
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
 }
 
 // Style for the logo in the header
 .logo {
-  height: 55px; // Adjusted for a 60px header
+  height: 60px; // Adjusted for a 60px header
   
   img {
     height: 100%;
@@ -44,7 +46,9 @@
 
 .content {
   padding: 20px;
-  background-color: #f4f7f6;
   margin-top: 60px; // Pushes content down below the fixed header
   min-height: calc(100vh - 60px); // Ensures content area fills the viewport height
+  // Theme Variables
+  background-color: var(--color-background);
+  color: var(--color-text-primary);
 }

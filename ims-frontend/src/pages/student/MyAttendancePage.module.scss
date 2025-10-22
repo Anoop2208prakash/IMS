@@ -1,8 +1,15 @@
 .container {
-  background-color: #fff;
   padding: 20px 30px;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+  // Theme Variables
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+
+  h2 {
+    color: var(--color-text-primary);
+  }
 }
 
 .summaryGrid {
@@ -13,18 +20,21 @@
 }
 
 .summaryCard {
-  background: #f8f9fa;
   padding: 20px;
   border-radius: 8px;
   text-align: center;
   font-size: 1.1em;
-  color: #495057;
+
+  // Theme Variables
+  background: var(--color-background);
+  color: var(--color-text-secondary);
+  border: 1px solid var(--color-border-dashed);
 
   span {
     display: block;
     font-size: 2.5em;
     font-weight: bold;
-    color: #343a40;
+    color: var(--color-text-primary);
   }
 }
 
@@ -34,25 +44,34 @@
   margin-top: 20px;
 
   th, td {
-    border-bottom: 1px solid #ddd;
+    border: 1px solid var(--color-border);
     padding: 12px 15px;
     text-align: left;
     vertical-align: middle;
   }
 
   thead th {
-    background-color: #f8f9fa;
+    background-color: var(--color-background);
     font-weight: bold;
-    color: #343a40;
-    border-bottom-width: 2px;
+    color: var(--color-text-primary);
+  }
+
+  tbody tr:hover {
+    background-color: var(--color-background);
   }
 }
 
-// This styles the cell that holds the EmptyState component
+// Style for the cell holding the spinner
+.spinnerCell {
+  text-align: center;
+  padding: 80px;
+}
+
+// Style for the cell holding the empty state component
 td > div[class*="emptyState"] {
-  border: 2px dashed #e9ecef;
+  border: 2px dashed var(--color-border-dashed);
   border-radius: 8px;
-  padding: 40px;
+  padding: 80px 40px;
 }
 
 // --- Status Badge Styles ---
@@ -61,20 +80,20 @@ td > div[class*="emptyState"] {
   border-radius: 12px;
   font-size: 0.8em;
   font-weight: bold;
-  color: white;
+  color: var(--color-primary-contrast);
   display: inline-block;
 }
 
 .present, .completed {
-  background-color: #28a745; // Green
+  background-color: var(--color-btn-green);
 }
 .absent, .overdue, .pending {
-  background-color: #e74c3c; // Red
+  background-color: var(--color-btn-red);
 }
 .late {
-  background-color: #ffc107; // Yellow
-  color: #333;
+  background-color: var(--color-btn-yellow);
+  color: #333; // Keep dark text for yellow
 }
 .returned, .cancelled {
-  background-color: #6c757d; // Gray
+  background-color: var(--color-btn-gray);
 }

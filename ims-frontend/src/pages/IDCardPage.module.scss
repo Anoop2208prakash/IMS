@@ -8,22 +8,27 @@
 .idCard {
   width: 400px;
   height: 250px;
-  background: #fff;
   border-radius: 15px;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
   display: flex;
   flex-direction: column;
   font-family: Arial, sans-serif;
-  border: 1px solid #ddd;
+
+  // Theme Variables
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
 }
 
 .header {
-  background-color: #004080;
-  color: white;
   padding: 10px;
   text-align: center;
   border-top-left-radius: 15px;
   border-top-right-radius: 15px;
+  
+  // Theme Variables
+  background-color: var(--color-sidebar-bg);
+  color: var(--color-sidebar-text);
+
   h3, h4 {
     margin: 0;
   }
@@ -32,23 +37,25 @@
 }
 
 .content {
-  display: flex; // <-- This is the crucial fix
+  display: flex;
   padding: 20px;
-  align-items: center; // Vertically aligns the content in the middle
+  align-items: center;
   flex-grow: 1;
 }
 
 .photo {
   width: 100px;
   height: 120px;
-  border: 1px solid #ccc;
   display: flex;
   justify-content: center;
   align-items: center;
-  color: #aaa;
   font-size: 14px;
   overflow: hidden;
-  flex-shrink: 0; // Prevents the photo from shrinking
+  flex-shrink: 0;
+  
+  // Theme Variables
+  border: 1px solid var(--color-border);
+  color: var(--color-text-secondary);
 
   img {
     width: 100%;
@@ -60,9 +67,11 @@
 .details {
   flex-grow: 1;
   padding-left: 20px;
+  
   p {
     margin: 8px 0;
     font-size: 14px;
+    color: var(--color-text-primary); // Use variable
   }
 }
 
@@ -70,14 +79,17 @@
   margin-top: 30px;
   padding: 12px 25px;
   font-size: 16px;
-  background-color: #28a745;
-  color: white;
   border: none;
   border-radius: 5px;
   cursor: pointer;
   transition: background-color 0.2s;
+
+  // Theme Variables
+  background-color: var(--color-btn-green);
+  color: var(--color-primary-contrast);
+
   &:hover {
-    background-color: #218838;
+    background-color: #218838; // Darken green
   }
 }
 
@@ -96,5 +108,10 @@
     position: absolute;
     left: 0;
     top: 0;
+    padding: 0;
+  }
+  .idCard {
+    box-shadow: none;
+    border: 1px solid #000;
   }
 }

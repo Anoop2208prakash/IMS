@@ -3,10 +3,13 @@ import ReactDOM from 'react-dom/client';
 import App from './App';
 import { BrowserRouter } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
-import setupLocatorUI from "@locator/runtime";
+import { ThemeProvider } from './context/ThemeContext';
 import './theme.scss';
 
-// This check ensures LocatorJS only runs in your development environment
+// 1. Import LocatorJS
+import setupLocatorUI from "@locator/runtime";
+
+// 2. Set up LocatorJS using Vite's env variable
 if (import.meta.env.DEV) {
   setupLocatorUI();
 }
@@ -15,7 +18,9 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <BrowserRouter>
       <AuthProvider>
-        <App />
+        <ThemeProvider>
+          <App />
+        </ThemeProvider>
       </AuthProvider>
     </BrowserRouter>
   </React.StrictMode>

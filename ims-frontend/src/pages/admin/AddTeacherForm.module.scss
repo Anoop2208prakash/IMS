@@ -1,46 +1,79 @@
 .formContainer {
-  background: #f9f9f9;
   padding: 20px;
   margin-bottom: 20px;
   border-radius: 8px;
-  border: 1px solid #eee;
+
+  // Theme Variables
+  background: var(--color-background);
+  border: 1px solid var(--color-border-dashed);
+
+  h3 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    color: var(--color-text-primary);
+  }
 
   form {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 15px;
   }
 
-  input {
+  input,
+  select {
     padding: 10px;
-    border: 1px solid #ccc;
     border-radius: 4px;
+    font-size: 1em;
+    font-family: Arial, sans-serif;
+    box-sizing: border-box;
+
+    // Theme Variables
+    border: 1px solid var(--color-border);
+    background-color: var(--color-surface);
+    color: var(--color-text-primary);
   }
 }
 
 .error {
-  color: red;
+  color: var(--color-btn-red); // Use variable
   font-size: 0.9em;
+  margin-top: -10px; // Make it fit nicely
 }
 
 .buttonGroup {
   display: flex;
   gap: 10px;
+  margin-top: 5px;
 
   button {
     padding: 10px 15px;
     border: none;
     border-radius: 4px;
     cursor: pointer;
+    font-weight: bold;
+    font-size: 0.9em;
+    transition: background-color 0.2s;
+    color: var(--color-primary-contrast); // Use variable
 
     &[type="submit"] {
-      background-color: #28a745;
-      color: white;
+      background-color: var(--color-btn-green); // Use variable
+
+      &:hover:not(:disabled) {
+        background-color: #218838; // Darken green
+      }
+
+      &:disabled {
+        background-color: var(--color-border);
+        cursor: not-allowed;
+      }
     }
 
     &[type="button"] {
-      background-color: #6c757d;
-      color: white;
+      background-color: var(--color-btn-gray); // Use variable
+
+      &:hover {
+        background-color: #5a6268; // Darken gray
+      }
     }
   }
 }

@@ -3,7 +3,7 @@
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background-color: #f4f7f6;
+  background-color: var(--color-background); // Use variable
 }
 
 .formWrapper {
@@ -12,12 +12,13 @@
 
 .form {
   padding: 40px;
-  background: white;
+  background: var(--color-surface); // Use variable
   border-radius: 8px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
   width: 100%;
   max-width: 400px;
   text-align: center;
+  border: 1px solid var(--color-border); // Use variable
 }
 
 .formGroup {
@@ -28,15 +29,17 @@
     display: block;
     margin-bottom: 8px;
     font-weight: 600;
-    color: #333;
+    color: var(--color-text-primary); // Use variable
   }
 
   input {
     width: 100%;
     padding: 10px;
-    border: 1px solid #ccc;
+    border: 1px solid var(--color-border); // Use variable
+    background-color: var(--color-surface); // Use variable
+    color: var(--color-text-primary); // Use variable
     border-radius: 4px;
-    box-sizing: border-box; /* Important for padding */
+    box-sizing: border-box;
   }
 }
 
@@ -45,21 +48,20 @@
   padding: 12px;
   border: none;
   border-radius: 4px;
-  background-color: #007bff;
-  color: white;
+  background-color: var(--color-primary); // Use variable
+  color: var(--color-primary-contrast); // Use variable
   font-size: 16px;
   font-weight: bold;
   cursor: pointer;
   transition: background-color 0.3s ease;
 
-  // New styles to center the spinner
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 45px; // Ensures button height stays consistent
+  min-height: 45px;
 
   &:hover:not(:disabled) {
-    background-color: #0056b3;
+    background-color: var(--color-primary-hover); // Use variable
   }
 
   &:disabled {
@@ -70,18 +72,16 @@
 
 .successMessage {
   margin-top: 15px;
-  color: green;
+  color: var(--color-btn-green); // Use variable
 }
 
 .errorMessage {
   margin-top: 15px;
-  color: red;
+  color: var(--color-btn-red); // Use variable
 }
 
 .validationError {
-  color: #e74c3c;
+  color: var(--color-btn-red); // Use variable
   font-size: 0.85em;
   margin-top: 5px;
 }
-
-// The .loadingOverlay style is no longer needed
