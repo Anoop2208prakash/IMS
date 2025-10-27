@@ -15,12 +15,10 @@ const LoginPage = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  // This function validates the form and calls setFormErrors
   const validate = () => {
     const errors = { email: '', password: '' };
     let isValid = true;
 
-    // Email validation
     if (!email) {
       errors.email = 'Email address is required.';
       isValid = false;
@@ -29,7 +27,6 @@ const LoginPage = () => {
       isValid = false;
     }
 
-    // Password validation
     if (!password) {
       errors.password = 'Password is required.';
       isValid = false;
@@ -38,15 +35,14 @@ const LoginPage = () => {
       isValid = false;
     }
 
-    setFormErrors(errors); // <-- This is where setFormErrors is used
+    setFormErrors(errors);
     return isValid;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setFormErrors({ email: '', password: '' }); // Clear old errors
+    setFormErrors({ email: '', password: '' });
 
-    // Run validation before submitting
     if (!validate()) {
       return;
     }
@@ -90,9 +86,11 @@ const LoginPage = () => {
           {formErrors.password && <p className={styles.validationError}>{formErrors.password}</p>}
         </div>
         
-        <div style={{ textAlign: 'right', marginBottom: '15px', fontSize: '0.9em' }}>
-          <Link to="/forgot-password">Forgot Password?</Link>
-        </div>
+        {/* --- THIS IS THE FIX --- */}
+        <Link to="/forgot-password" className={styles.forgotPasswordLink}>
+          Forgot Password?
+        </Link>
+        {/* ---------------------- */}
         
         <button type="submit" className={styles.submitButton} disabled={loading}>
           {loading ? <ButtonSpinner /> : 'Login'}

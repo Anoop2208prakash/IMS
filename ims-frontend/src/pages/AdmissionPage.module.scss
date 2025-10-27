@@ -3,7 +3,7 @@
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background-color: var(--color-background); // Use variable
+  background-color: var(--color-background);
 }
 
 .formWrapper {
@@ -12,13 +12,22 @@
 
 .form {
   padding: 40px;
-  background: var(--color-surface); // Use variable
+  background: var(--color-surface);
   border-radius: 8px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
   width: 100%;
   max-width: 400px;
   text-align: center;
-  border: 1px solid var(--color-border); // Use variable
+  border: 1px solid var(--color-border);
+  color: var(--color-text-primary); // Styles the <h2>
+}
+
+// Style for the subheading text on Forgot/Reset pages
+.subheading {
+  color: var(--color-text-secondary);
+  margin-top: -15px;
+  margin-bottom: 25px;
+  font-size: 0.9em;
 }
 
 .formGroup {
@@ -29,15 +38,15 @@
     display: block;
     margin-bottom: 8px;
     font-weight: 600;
-    color: var(--color-text-primary); // Use variable
+    color: var(--color-text-primary);
   }
 
   input {
     width: 100%;
     padding: 10px;
-    border: 1px solid var(--color-border); // Use variable
-    background-color: var(--color-surface); // Use variable
-    color: var(--color-text-primary); // Use variable
+    border: 1px solid var(--color-border);
+    background-color: var(--color-surface);
+    color: var(--color-text-primary);
     border-radius: 4px;
     box-sizing: border-box;
   }
@@ -48,20 +57,19 @@
   padding: 12px;
   border: none;
   border-radius: 4px;
-  background-color: var(--color-primary); // Use variable
-  color: var(--color-primary-contrast); // Use variable
+  background-color: var(--color-primary);
+  color: var(--color-primary-contrast);
   font-size: 16px;
   font-weight: bold;
   cursor: pointer;
   transition: background-color 0.3s ease;
-
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 45px;
 
   &:hover:not(:disabled) {
-    background-color: var(--color-primary-hover); // Use variable
+    background-color: var(--color-primary-hover);
   }
 
   &:disabled {
@@ -70,18 +78,35 @@
   }
 }
 
-.successMessage {
-  margin-top: 15px;
-  color: var(--color-btn-green); // Use variable
-}
-
-.errorMessage {
-  margin-top: 15px;
-  color: var(--color-btn-red); // Use variable
-}
-
 .validationError {
-  color: var(--color-btn-red); // Use variable
+  color: var(--color-btn-red);
   font-size: 0.85em;
   margin-top: 5px;
+}
+
+// Style for the "Forgot Password?" link
+.forgotPasswordLink {
+  display: block;
+  text-align: right;
+  margin-bottom: 15px;
+  font-size: 0.9em;
+  color: var(--color-primary);
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+// Style for the "Back to Login" link
+.backLink {
+  margin-top: 20px;
+  display: block;
+  color: var(--color-primary);
+  text-decoration: none;
+  font-size: 0.9em;
+
+  &:hover {
+    text-decoration: underline;
+  }
 }
