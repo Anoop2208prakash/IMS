@@ -1,7 +1,7 @@
 // src/pages/StaffRegisterPage.tsx
 import React, { useState } from 'react';
 import axios from 'axios';
-import styles from './AdmissionPage.module.scss'; // Reuse existing styles
+import styles from '../assets/scss/pages/AdmissionPage.module.scss'; // Reuse existing styles
 
 const StaffRegisterPage = () => {
   const [formData, setFormData] = useState({

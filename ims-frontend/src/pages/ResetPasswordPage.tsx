@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import styles from './AdmissionPage.module.scss'; // Reuse styles
+import styles from '../assets/scss/pages/AdmissionPage.module.scss'; // Reuse styles
 
 const ResetPasswordPage = () => {
   const { token } = useParams<{ token: string }>(); // Get token from URL

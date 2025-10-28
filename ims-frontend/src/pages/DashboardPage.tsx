@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { Link } from 'react-router-dom';
 import StatCard from '../components/dashboard/StatCard';
 import Spinner from '../components/common/Spinner';
-import styles from './DashboardPage.module.scss';
+import styles from '../assets/scss/pages/DashboardPage.module.scss';
 import { FaUserGraduate, FaChalkboardTeacher } from 'react-icons/fa';
 import { BsBookHalf, BsJournalBookmarkFill, BsPersonCheckFill, BsPersonXFill, BsGraphUp } from 'react-icons/bs';
 

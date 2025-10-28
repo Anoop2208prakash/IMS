@@ -1,7 +1,7 @@
 import React, { useState, useEffect, ChangeEvent, FormEvent } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
-import styles from './EditModal.module.scss'; // Reuse the generic modal style
+import styles from '../../assets/scss/pages/admin/EditModal.module.scss'; // Reuse the generic modal style
 
 interface Semester { id: string; name: string; program: { title: string; } }
 interface SubjectData {

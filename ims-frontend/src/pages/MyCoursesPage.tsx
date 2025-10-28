@@ -1,7 +1,7 @@
 // src/pages/MyCoursesPage.tsx
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import styles from './MyCoursesPage.module.scss';
+import styles from '../assets/scss/pages/MyCoursesPage.module.scss';
 
 interface Course {
   id: string;

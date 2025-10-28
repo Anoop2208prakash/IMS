@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import styles from '../EditTeacherModal.module.scss'; // Reuse styles
+import styles from '../../../assets/scss/pages/admin/EditTeacherModal.module.scss'; // Reuse styles
 
 // The interface must include the 'id'
 interface BookData {

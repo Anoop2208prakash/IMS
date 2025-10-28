@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
-import styles from './MyLoansPage.module.scss';
+import styles from '../../../assets/scss/pages/admin/library/MyLoansPage.module.scss';
 import { BsBookHalf } from 'react-icons/bs';
 import Spinner from '../../../components/common/Spinner';
 import EmptyState from '../../../components/common/EmptyState';

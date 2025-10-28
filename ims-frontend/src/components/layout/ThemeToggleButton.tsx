@@ -1,6 +1,6 @@
 import { useTheme } from '../../context/ThemeContext';
 import { BsMoonStarsFill, BsSunFill } from 'react-icons/bs';
-import styles from './ThemeToggleButton.module.scss';
+import styles from '../../assets/scss/components/layout/ThemeToggleButton.module.scss';
 
 const ThemeToggleButton = () => {
   const { theme, toggleTheme } = useTheme();

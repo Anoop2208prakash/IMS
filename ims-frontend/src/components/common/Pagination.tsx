@@ -1,5 +1,5 @@
 import React, { ChangeEvent } from 'react';
-import styles from './Pagination.module.scss';
+import styles from '../../assets/scss/components/common/Pagination.module.scss';
 
 interface PaginationProps {
   count: number;

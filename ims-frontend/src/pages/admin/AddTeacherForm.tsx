@@ -1,7 +1,7 @@
 // src/components/admin/AddTeacherForm.tsx
 import React, { useState } from 'react';
 import axios from 'axios';
-import styles from './AddTeacherForm.module.scss';
+import styles from '../../assets/scss/pages/admin/AddForm.module.scss';
 
 interface AddTeacherFormProps {
   onTeacherAdded: () => void; // Function to refresh the teacher list

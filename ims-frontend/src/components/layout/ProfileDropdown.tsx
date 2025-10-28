@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import styles from './ProfileDropdown.module.scss';
+import styles from '../../assets/scss/components/layout/ProfileDropdown.module.scss';
 
 const ProfileDropdown = () => {
   const { user, logout } = useAuth();

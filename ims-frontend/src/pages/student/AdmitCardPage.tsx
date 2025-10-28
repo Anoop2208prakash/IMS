@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
-import styles from './AdmitCardPage.module.scss';
+import styles from '../../assets/scss/pages/student/AdmitCardPage.module.scss';
 import Spinner from '../../components/common/Spinner'; // 1. Import Spinner
 
 // --- Interfaces for Type Safety ---

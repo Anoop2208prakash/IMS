@@ -4,12 +4,10 @@ import App from './App';
 import { BrowserRouter } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
-import './theme.scss';
+import './theme.scss'; // Your global theme file
 
-// 1. Import LocatorJS
+// Setup for LocatorJS
 import setupLocatorUI from "@locator/runtime";
-
-// 2. Set up LocatorJS using Vite's env variable
 if (import.meta.env.DEV) {
   setupLocatorUI();
 }

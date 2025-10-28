@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import axios from 'axios';
 import toast from 'react-hot-toast';
-import styles from './OrderInvoicePage.module.scss';
+import styles from '../../assets/scss/pages/student/OrderInvoicePage.module.scss';
 import Spinner from '../../components/common/Spinner';
 
 // --- Interfaces for the invoice data structure ---

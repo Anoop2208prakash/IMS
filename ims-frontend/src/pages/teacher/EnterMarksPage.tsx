@@ -1,7 +1,7 @@
 import React, { useState, useEffect, FormEvent } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
-import styles from './EnterMarksPage.module.scss';
+import styles from '../../assets/scss/pages/teacher/EnterMarksPage.module.scss';
 import Spinner from '../../components/common/Spinner';
 
 // --- Interfaces ---

@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from './ProgressDisplay.module.scss';
+import styles from '../../assets/scss/components/common/ProgressDisplay.module.scss';
 
 interface ProgressDisplayProps {
   // Progress should be a number between 0 and 100

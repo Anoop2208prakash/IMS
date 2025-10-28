@@ -1,7 +1,7 @@
 // src/pages/AdmissionPage.tsx
 import React, { useState } from 'react';
 import axios from 'axios';
-import styles from './AdmissionPage.module.scss'; // We'll create this file next
+import styles from '../assets/scss/pages/AdmissionPage.module.scss'; // We'll create this file next
 
 const AdmissionPage = () => {
   const [formData, setFormData] = useState({

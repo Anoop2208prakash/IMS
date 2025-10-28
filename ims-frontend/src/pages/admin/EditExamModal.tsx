@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import styles from './EditTeacherModal.module.scss'; // Reuse styles
+import styles from '../../assets/scss/pages/admin/EditModal.module.scss'; // Reuse styles
 
 interface ExamData { id: string; name: string; date: string; totalMarks: number; }
 interface EditExamModalProps { exam: ExamData; onClose: () => void; onExamUpdated: () => void; }
