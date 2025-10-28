@@ -1,8 +1,21 @@
+.pageContainer {
+  padding: 20px;
+  border: 1px solid var(--color-border);
+  background-color: var(--color-surface);
+  color: var(--color-text-primary);
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+  h2 {
+    margin-top: 0; // <-- This is the fix
+    margin-bottom: 20px;
+  }
+}
+
 .dashboardGrid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   gap: 20px;
-  margin-top: 20px;
 }
 
 .widgetsGrid {
@@ -24,6 +37,10 @@
     margin-top: 0;
     border-bottom: 1px solid var(--color-border);
     padding-bottom: 10px;
+  }
+
+  p {
+    color: var(--color-text-secondary);
   }
 }
 
@@ -56,6 +73,14 @@
 
 .announcementsSection {
   margin-top: 30px;
+  
+  h3 {
+    color: var(--color-text-primary);
+  }
+
+  p {
+    color: var(--color-text-secondary);
+  }
 }
 
 .announcementCard {
@@ -64,6 +89,7 @@
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   margin-bottom: 20px;
+  border: 1px solid var(--color-border);
   border-left: 5px solid var(--color-btn-yellow); // Yellow accent
 
   h4 {
@@ -84,4 +110,40 @@
   margin-top: 15px;
   padding-top: 10px;
   border-top: 1px solid var(--color-border);
+}
+
+// --- Styles for Skeletons ---
+
+.skeletonStatCard,
+.skeletonWidget,
+.skeletonAnnouncement {
+  border-radius: 8px;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.skeletonStatCard {
+  height: 90px; // Approx height of a StatCard
+}
+
+.skeletonWidget {
+  height: 200px; // Approx height of a Widget
+  h3 {
+    margin-top: 0;
+    margin-bottom: 15px;
+  }
+}
+
+.skeletonAnnouncement {
+  height: 130px; // Approx height of an Announcement
+  margin-bottom: 20px;
+  h4 {
+    margin-top: 0;
+    margin-bottom: 10px;
+  }
+  p {
+    margin-top: 10px;
+  }
 }

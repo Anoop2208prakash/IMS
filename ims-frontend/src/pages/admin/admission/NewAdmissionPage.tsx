@@ -2,7 +2,7 @@ import { useState, useEffect, ChangeEvent, FormEvent } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import styles from '../../../assets/scss/pages/admin/admission/NewAdmissionPage.module.scss';
-import logo from '../../../assets/image/logo.jpg'; // Make sure you have a logo file here
+import logo from '../../../assets/image/logo.png'; // Make sure you have a logo file here
 
 interface Program {
   id: string;

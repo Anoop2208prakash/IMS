@@ -6,112 +6,215 @@
 }
 
 .idCard {
-  width: 400px;
-  height: 250px;
+  width: 320px; // Standard ID card width (approx)
+  height: 510px; // Standard ID card height
   border-radius: 15px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  position: relative;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
-  font-family: Arial, sans-serif;
 
   // Theme Variables
   background: var(--color-surface);
   border: 1px solid var(--color-border);
-}
+  color: var(--color-text-primary);
 
-.header {
-  padding: 10px;
-  text-align: center;
-  border-top-left-radius: 15px;
-  border-top-right-radius: 15px;
-  
-  // Theme Variables
-  background-color: var(--color-sidebar-bg);
-  color: var(--color-sidebar-text);
-
-  h3, h4 {
-    margin: 0;
+  // Background curves
+  &::before, &::after {
+    content: '';
+    position: absolute;
+    width: 250px;
+    height: 250px;
+    border-radius: 50%;
+    opacity: 0.8;
   }
-  h3 { font-size: 16px; }
-  h4 { font-size: 12px; font-weight: normal; }
+
+  // Left curve
+  &::before {
+    background: #e67e22; // Orange/gold
+    bottom: -120px;
+    left: -120px;
+  }
+  // Right curve
+  &::after {
+    background: #d35400; // Darker orange/gold
+    top: -100px;
+    right: -140px;
+  }
 }
 
-.content {
+.topClip {
+  height: 30px;
+  background: var(--color-surface);
+  position: relative;
+  z-index: 10;
+  
+  // The "hole" for the lanyard
+  &::before {
+    content: '';
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 50px;
+    height: 10px;
+    border-radius: 5px;
+    background: var(--color-background);
+    border: 1px solid var(--color-border);
+  }
+}
+
+.cardBody {
   display: flex;
-  padding: 20px;
+  flex-direction: column;
   align-items: center;
+  padding: 20px;
   flex-grow: 1;
+  z-index: 10; // Stay on top of curves
 }
 
 .photo {
-  width: 100px;
-  height: 120px;
+  width: 130px;
+  height: 130px;
+  border-radius: 15px; // Curved border
+  border: 4px solid #e67e22; // Orange border
+  padding: 4px;
+  background: #fff;
+  overflow: hidden;
+  flex-shrink: 0;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+
+  // Added flex to center the icon
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 14px;
-  overflow: hidden;
-  flex-shrink: 0;
-  
-  // Theme Variables
-  border: 1px solid var(--color-border);
-  color: var(--color-text-secondary);
 
   img {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    border-radius: 10px;
   }
+}
+
+// Style for the placeholder icon
+.photoIcon {
+  font-size: 6rem;
+  color: var(--color-border);
 }
 
 .details {
+  width: 100%;
+  text-align: center;
+  margin-top: 20px;
   flex-grow: 1;
-  padding-left: 20px;
-  
-  p {
-    margin: 8px 0;
-    font-size: 14px;
-    color: var(--color-text-primary); // Use variable
+  color: var(--color-text-primary);
+
+  .name {
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin: 0;
+  }
+  .title {
+    font-size: 1rem;
+    font-weight: 300;
+    color: #e67e22; // Orange text
+    margin: 5px 0 25px 0;
   }
 }
 
+.infoGrid {
+  display: grid;
+  grid-template-columns: 80px 1fr; // Label and Value columns
+  text-align: left;
+  gap: 10px;
+  font-size: 0.9rem;
+  
+  .label {
+    font-weight: 600;
+    color: var(--color-text-secondary);
+  }
+  .value {
+    font-weight: 500;
+  }
+}
+
+.footer {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-top: 20px;
+  color: var(--color-text-primary);
+
+  .companyLogo {
+    width: 50px;
+    height: 50px;
+    opacity: 0.7;
+  }
+
+  .dates {
+    text-align: right;
+    font-size: 0.8rem;
+    
+    p {
+      margin: 5px 0;
+    }
+    .label {
+      color: var(--color-text-secondary);
+    }
+    .value {
+      font-weight: bold;
+    }
+  }
+}
+
+// --- Print Button ---
 .printButton {
   margin-top: 30px;
   padding: 12px 25px;
   font-size: 16px;
+  background-color: var(--color-btn-green);
+  color: var(--color-primary-contrast);
   border: none;
   border-radius: 5px;
   cursor: pointer;
   transition: background-color 0.2s;
-
-  // Theme Variables
-  background-color: var(--color-btn-green);
-  color: var(--color-primary-contrast);
-
   &:hover {
-    background-color: #218838; // Darken green
+    background-color: #218838;
   }
 }
 
-// Print-specific styles
+// --- Print Styles ---
 @media print {
-  body * {
-    visibility: hidden;
-  }
-  .pageContainer, .pageContainer * {
-    visibility: visible;
-  }
-  .printButton {
-    display: none;
-  }
+  body * { visibility: hidden; }
+  .idCard, .idCard * { visibility: visible; }
+  .printButton { display: none; }
   .pageContainer {
     position: absolute;
     left: 0;
     top: 0;
     padding: 0;
+    margin: 0;
   }
   .idCard {
     box-shadow: none;
     border: 1px solid #000;
+  }
+  // Force print colors
+  .idCard::before, .idCard::after {
+    background: #e67e22 !important;
+    -webkit-print-color-adjust: exact; 
+    color-adjust: exact;
+  }
+  .photo {
+    border-color: #e67e22 !important;
+  }
+  .title {
+    color: #e67e22 !important;
+  }
+  .details p, .footer p, .infoGrid span {
+    color: #000 !important;
   }
 }
