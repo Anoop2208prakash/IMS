@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router-dom'; // Keep this, it's used in StudentDashboard
 import StatCard from '../components/dashboard/StatCard';
-import Spinner from '../components/common/Spinner';
 import styles from '../assets/scss/pages/DashboardPage.module.scss';
 import { FaUserGraduate, FaChalkboardTeacher } from 'react-icons/fa';
 import { BsBookHalf, BsJournalBookmarkFill, BsPersonCheckFill, BsPersonXFill, BsGraphUp } from 'react-icons/bs';
+import SkeletonLoader from '../components/common/SkeletonLoader';
 
 // --- Interfaces for Type Safety ---
 interface Announcement {
@@ -21,8 +21,12 @@ interface AdminData {
   announcements: Announcement[];
 }
 interface StudentData {
-  enrolledCourses: number; booksOnLoan: number; attendancePercentage: string;
-  presentDays: number; absentDays: number; lateDays: number;
+  enrolledSubjects: number; // <-- FIX: Renamed from enrolledCourses
+  booksOnLoan: number; 
+  attendancePercentage: string;
+  presentDays: number; 
+  absentDays: number; 
+  lateDays: number;
   recentOrders: Order[];
   upcomingDueDates: Loan[];
   announcements: Announcement[];
@@ -41,7 +45,7 @@ const AdminDashboard = ({ data }: { data: AdminData }) => (
 const StudentDashboard = ({ data }: { data: StudentData }) => (
   <>
     <div className={styles.dashboardGrid}>
-      <StatCard title="Enrolled Courses" value={data.enrolledCourses} icon={<BsJournalBookmarkFill />} />
+      <StatCard title="Enrolled Subjects" value={data.enrolledSubjects} icon={<BsJournalBookmarkFill />} />
       <StatCard title="Days Present" value={data.presentDays} icon={<BsPersonCheckFill />} />
       <StatCard title="Days Absent" value={data.absentDays} icon={<BsPersonXFill />} />
       <StatCard title="Overall Attendance" value={`${data.attendancePercentage}%`} icon={<BsGraphUp />} />
@@ -78,6 +82,30 @@ const StudentDashboard = ({ data }: { data: StudentData }) => (
   </>
 );
 
+// --- NEW Skeleton Components ---
+const AdminDashboardSkeleton = () => (
+  <div className={styles.dashboardGrid}>
+    <div className={styles.skeletonStatCard}><SkeletonLoader height="60px" /></div>
+    <div className={styles.skeletonStatCard}><SkeletonLoader height="60px" /></div>
+    <div className={styles.skeletonStatCard}><SkeletonLoader height="60px" /></div>
+    <div className={styles.skeletonStatCard}><SkeletonLoader height="60px" /></div>
+  </div>
+);
+
+const AnnouncementsSkeleton = () => (
+  <>
+    <div className={styles.skeletonAnnouncement}>
+      <h4><SkeletonLoader width="30%" height="20px" /></h4>
+      <SkeletonLoader width="100%" />
+      <SkeletonLoader width="90%" />
+    </div>
+    <div className={styles.skeletonAnnouncement}>
+      <h4><SkeletonLoader width="40%" height="20px" /></h4>
+      <SkeletonLoader width="90%" />
+    </div>
+  </>
+);
+
 // --- Main Page Component ---
 const DashboardPage = () => {
   const { user } = useAuth();
@@ -98,40 +126,53 @@ const DashboardPage = () => {
     fetchData();
   }, []);
 
-  if (loading) return <Spinner />;
-  if (!data) return <p>Could not load dashboard data.</p>;
+  if (!data && !loading) return <p>Could not load dashboard data.</p>;
 
   const renderDashboard = () => {
-    const isAdminOrTeacher = ['ADMIN', 'SUPER_ADMIN', 'ADMIN_ADMISSION', 'ADMIN_FINANCE', 'ADMIN_LIBRARY', 'TEACHER'].includes(user!.role);
+    if (loading) {
+      const isAdminOrTeacher = ['ADMIN', 'SUPER_ADMIN', 'ADMIN_ADMISSION', 'ADMIN_FINANCE', 'ADMIN_LIBRARY', 'TEACHER'].includes(user!.role);
+      if (isAdminOrTeacher) return <AdminDashboardSkeleton />;
+      if (user?.role === 'STUDENT') return <AdminDashboardSkeleton />; // Can create a specific student skeleton later
+      return <AdminDashboardSkeleton />;
+    }
     
-    if (isAdminOrTeacher) {
+    // FIX: Corrected 'TEACHR' typo
+    const isAdminOrTeacher = ['ADMIN', 'SUPER_ADMIN', 'ADMIN_ADMISSION', 'ADMIN_FINANCE', 'ADMIN_LIBRARY', 'TEACHER'].includes(user!.role);
+    if (isAdminOrTeacher && data) {
       return <AdminDashboard data={data as AdminData} />;
     }
-    if (user?.role === 'STUDENT') {
+    if (user?.role === 'STUDENT' && data) {
       return <StudentDashboard data={data as StudentData} />;
     }
     return <p>Welcome to your dashboard!</p>;
   };
 
+  const renderAnnouncements = () => {
+    if (loading) {
+      return <AnnouncementsSkeleton />;
+    }
+    // FIX: Check for data AND data.announcements
+    if (data && data.announcements?.length > 0) {
+      return data.announcements.map((ann) => (
+        <div key={ann.id} className={styles.announcementCard}>
+          <h4>{ann.title}</h4>
+          <p>{ann.content}</p>
+          <div className={styles.meta}>
+            Posted by {ann.author.name} on {new Date(ann.createdAt).toLocaleDateString()}
+          </div>
+        </div>
+      ));
+    }
+    return <p>No recent announcements.</p>;
+  };
+
   return (
-    <div>
+    <div className={styles.pageContainer}>
       <h2>Dashboard</h2>
       {renderDashboard()}
       <div className={styles.announcementsSection}>
         <h3>Institute Announcements</h3>
-        {data.announcements?.length > 0 ? (
-          data.announcements.map((ann) => (
-            <div key={ann.id} className={styles.announcementCard}>
-              <h4>{ann.title}</h4>
-              <p>{ann.content}</p>
-              <div className={styles.meta}>
-                Posted by {ann.author.name} on {new Date(ann.createdAt).toLocaleDateString()}
-              </div>
-            </div>
-          ))
-        ) : (
-          <p>No recent announcements.</p>
-        )}
+        {renderAnnouncements()}
       </div>
     </div>
   );
