@@ -1,7 +1,7 @@
 import { useState, ChangeEvent, FormEvent } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
-import styles from '../AddForm.module.scss'; // <-- Make sure this path is correct
+import styles from '../../../assets/scss/pages//admin/AddForm.module.scss'; // <-- Make sure this path is correct
 
 interface AddItemFormProps {
   onItemAdded: () => void;

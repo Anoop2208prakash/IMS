@@ -1,7 +1,7 @@
 import React, { useState, useEffect, ChangeEvent, FormEvent } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
-import styles from './EditModal.module.scss'; // Use the generic EditModal style
+import styles from '../../assets/scss/pages/admin/EditModal.module.scss'; // Use the generic EditModal style
 
 // 1. Update the interface to match the data from the parent page
 interface StudentData {

@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
-import styles from './MyAttendancePage.module.scss';
+import styles from '../../assets/scss/pages/student/MyAttendancePage.module.scss';
 import Spinner from '../../components/common/Spinner';
 import DataTable, { Column } from '../../components/common/DataTable';
 import { BsCalendarCheck } from 'react-icons/bs';

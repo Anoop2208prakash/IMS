@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
-import styles from './AdminPages.module.scss';
+import styles from '../../assets/scss/pages/admin/AdminPages.module.scss';
 import Spinner from '../../components/common/Spinner';
 import EmptyState from '../../components/common/EmptyState';
 import { BsJournalBookmarkFill } from 'react-icons/bs';

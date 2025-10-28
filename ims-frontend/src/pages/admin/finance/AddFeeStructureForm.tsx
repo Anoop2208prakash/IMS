@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import styles from '../AddTeacherForm.module.scss'; // You can reuse these styles
+import styles from '../../../assets/scss/pages/admin/AddTeacherForm.module.scss'; // You can reuse these styles
 
 interface Course {
     id: string;

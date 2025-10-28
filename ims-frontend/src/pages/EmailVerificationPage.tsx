@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import axios from 'axios';
-import styles from './AdmissionPage.module.scss'; // Reuse styles
+import styles from '../assets/scss/pages/AdmissionPage.module.scss'; // Reuse styles
 
 const EmailVerificationPage = () => {
   const { token } = useParams<{ token: string }>();

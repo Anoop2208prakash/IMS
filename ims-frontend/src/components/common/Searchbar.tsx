@@ -1,5 +1,5 @@
 import { ChangeEvent } from 'react';
-import styles from './Searchbar.module.scss';
+import styles from '../../assets/scss/components/common/Searchbar.module.scss';
 import { BsSearch } from 'react-icons/bs';
 
 interface SearchbarProps {

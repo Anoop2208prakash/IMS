@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import styles from './ChangePasswordPage.module.scss';
+import styles from '../assets/scss/pages/ChangePasswordPage.module.scss';
 
 const ChangePasswordPage = () => {
   const [formData, setFormData] = useState({

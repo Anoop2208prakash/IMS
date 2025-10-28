@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import styles from './IDCardPage.module.scss';
+import styles from '../assets/scss/pages/IDCardPage.module.scss';
 import Spinner from '../components/common/Spinner'; // <-- 1. Import Spinner
 
 interface ProfileData {

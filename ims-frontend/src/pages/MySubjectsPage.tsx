@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
-import styles from './MySubjectsPage.module.scss';
+import styles from '../assets/scss/pages/MySubjectsPage.module.scss';
 import Spinner from '../components/common/Spinner';
 import EmptyState from '../components/common/EmptyState';
 import { BsCardChecklist } from 'react-icons/bs';

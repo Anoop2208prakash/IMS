@@ -1,7 +1,7 @@
 import React, { useState, ChangeEvent, FormEvent } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
-import styles from './AddForm.module.scss'; // Use the new generic stylesheet
+import styles from '../../assets/scss/pages/admin/AddForm.module.scss'; // <-- This path is now fixed
 
 interface AddProgramFormProps {
   onProgramAdded: () => void;
@@ -21,12 +21,8 @@ const AddProgramForm = ({ onProgramAdded, onCancel }: AddProgramFormProps) => {
       await axios.post('http://localhost:5000/api/programs', formData);
       toast.success('Program created successfully!');
       onProgramAdded();
-    } catch (err) {
-      if (axios.isAxiosError(err) && err.response) {
-        toast.error(err.response.data.message || 'Failed to create program.');
-      } else {
-        toast.error('An unexpected error occurred.');
-      }
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || 'Failed to create program.');
     }
   };
 

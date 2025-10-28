@@ -1,7 +1,7 @@
 import { useState, useEffect, ChangeEvent, FormEvent } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
-import styles from './ManageAnnouncementsPage.module.scss';
+import styles from '../../assets/scss/pages/admin/AdminPages.module.scss';
 import Spinner from '../../components/common/Spinner';
 import EmptyState from '../../components/common/EmptyState';
 import { BsMegaphone } from 'react-icons/bs';

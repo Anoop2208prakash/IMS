@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import styles from './AddTeacherForm.module.scss'; // Reuse styles
+import styles from '../../assets/scss/pages/admin/AddForm.module.scss'; // Reuse styles
 
 interface AddExamFormProps { onExamAdded: () => void; onCancel: () => void; }
 

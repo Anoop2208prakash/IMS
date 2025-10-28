@@ -1,7 +1,7 @@
 // src/pages/ProfilePage.tsx
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import styles from './ProfilePage.module.scss';
+import styles from '../assets/scss/pages/ProfilePage.module.scss';
 
 interface ProfileData {
   id: string;

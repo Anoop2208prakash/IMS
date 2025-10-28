@@ -1,7 +1,7 @@
 // src/components/admin/library/CheckoutModal.tsx
 import React, { useState } from 'react';
 import axios from 'axios';
-import styles from '../EditTeacherModal.module.scss'; // Reuse styles
+import styles from '../../../assets/scss/pages/admin/EditTeacherModal.module.scss'; // Reuse styles
 
 interface BookData { id: string; title: string; }
 interface CheckoutModalProps {

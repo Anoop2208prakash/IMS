@@ -1,5 +1,5 @@
 import { useState, ChangeEvent } from 'react';
-import styles from './DataTable.module.scss';
+import styles from '../../assets/scss/components/common/DataTable.module.scss';
 import Spinner from './Spinner';
 import EmptyState from './EmptyState';
 import Pagination from './Pagination'; // 1. Import the Pagination component

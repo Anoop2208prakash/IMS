@@ -1,7 +1,7 @@
 import { useState, useEffect, ChangeEvent, FormEvent } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
-import styles from '../EditModal.module.scss'; // Reuse generic modal styles
+import styles from '../../../assets/scss/pages/admin/EditModal.module.scss'; // Reuse generic modal styles
 
 // 1. Ensure this interface matches the one in your page
 interface ItemData {

@@ -1,7 +1,7 @@
 import { useState, useEffect, ChangeEvent } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
-import styles from './BrowseBooksPage.module.scss';
+import styles from '../../../assets/scss/pages/admin/library/BrowseBooksPage.module.scss';
 import { BsBookHalf } from 'react-icons/bs';
 import Spinner from '../../../components/common/Spinner';
 import EmptyState from '../../../components/common/EmptyState';

@@ -2,8 +2,8 @@ import { Outlet } from 'react-router-dom';
 import Sidebar from '../components/layout/Sidebar';
 import ProfileDropdown from '../components/layout/ProfileDropdown';
 import ThemeToggleButton from '../components/layout/ThemeToggleButton'; // <-- Import
-import logo from '../assets/banner-logo.png';
-import styles from './MainLayout.module.scss';
+import logo from '../assets/image/banner-logo.png';
+import styles from '../assets/scss/layouts/MainLayout.module.scss';
 
 const MainLayout = () => {
   return (

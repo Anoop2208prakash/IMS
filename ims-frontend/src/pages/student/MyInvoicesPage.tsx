@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
-import styles from './MyInvoicesPage.module.scss';
+import styles from '../../assets/scss/pages/student/MyInvoicesPage.module.scss';
 import Spinner from '../../components/common/Spinner';
 import EmptyState from '../../components/common/EmptyState';
 import { FaFileInvoiceDollar } from 'react-icons/fa';

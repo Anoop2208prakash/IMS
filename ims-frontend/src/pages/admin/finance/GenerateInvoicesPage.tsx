@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import styles from './GenerateInvoicesPage.module.scss';
+import styles from '../../../assets/scss/pages/admin/finance/GenerateInvoicesPage.module.scss';
 
 interface FeeStructure {
   id: string;

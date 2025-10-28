@@ -1,6 +1,6 @@
 import { Routes, Route } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
-import { ThemeProvider } from './context/ThemeContext'; // 1. Import ThemeProvider
+// import { ThemeProvider } from './context/ThemeContext'; // <-- REMOVE THIS
 
 // --- Layout and Auth Imports ---
 import MainLayout from './layouts/MainLayout';
@@ -13,12 +13,13 @@ import StaffRegisterPage from './pages/StaffRegisterPage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
 
-// --- Shared Page Imports (for all logged-in users) ---
+// --- Shared Page Imports ---
 import DashboardPage from './pages/DashboardPage';
 import ProfilePage from './pages/ProfilePage';
 import ChangePasswordPage from './pages/ChangePasswordPage';
 import IDCardPage from './pages/IDCardPage';
 import OrderInvoicePage from './pages/student/OrderInvoicePage';
+
 
 // --- Student-Only Imports ---
 import MySubjectsPage from './pages/MySubjectsPage';
@@ -52,10 +53,11 @@ import ManageAnnouncementsPage from './pages/admin/ManageAnnouncementsPage';
 import BrowseBooksPage from './pages/admin/library/BrowseBooksPage';
 import MyLoansPage from './pages/admin/library/MyLoansPage';
 
+
 function App() {
   return (
-    // 2. Wrap the entire app in the ThemeProvider
-    <ThemeProvider>
+    // <ThemeProvider> <-- REMOVE THIS WRAPPER
+    <>
       <Toaster 
         position="top-right"
         toastOptions={{
@@ -63,7 +65,6 @@ function App() {
           error: { style: { background: '#e74c3c', color: 'white' } },
         }}
       />
-
       <Routes>
         {/* Public Routes */}
         <Route path="/login" element={<LoginPage />} />
@@ -130,7 +131,8 @@ function App() {
           </Route>
         </Route>
       </Routes>
-    </ThemeProvider>
+    </>
+    // </ThemeProvider> <-- REMOVE THIS WRAPPER
   );
 }
 

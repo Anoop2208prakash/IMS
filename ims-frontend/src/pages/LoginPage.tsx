@@ -3,7 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
-import styles from './AdmissionPage.module.scss';
+import styles from '../assets/scss/pages/AdmissionPage.module.scss';
 import ButtonSpinner from '../components/common/ButtonSpinner';
 
 const LoginPage = () => {

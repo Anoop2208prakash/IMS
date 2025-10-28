@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
-import styles from './MyResultsPage.module.scss';
+import styles from '../../assets/scss/pages/student/MyResultsPage.module.scss';
 import Spinner from '../../components/common/Spinner';
 import EmptyState from '../../components/common/EmptyState';
 import { BsClipboardCheck } from 'react-icons/bs';

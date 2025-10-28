@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from './DeleteModal.module.scss';
+import styles from '../../assets/scss/components/common/DeleteModal.module.scss';
 import { BsExclamationTriangleFill } from 'react-icons/bs';
 
 interface DeleteModalProps {

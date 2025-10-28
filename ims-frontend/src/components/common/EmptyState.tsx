@@ -1,5 +1,5 @@
 import { ReactNode } from 'react';
-import styles from './EmptyState.module.scss';
+import styles from '../../assets/scss/components/common/EmptyState.module.scss';
 import { BsFileEarmarkText } from 'react-icons/bs'; // 1. Import a default icon
 
 interface EmptyStateProps {

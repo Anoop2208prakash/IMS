@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import styles from './MyOrdersPage.module.scss';
+import styles from '../../assets/scss/pages/student/MyOrdersPage.module.scss';
 import Spinner from '../../components/common/Spinner';
 import EmptyState from '../../components/common/EmptyState';
 import { BsBoxSeam } from 'react-icons/bs';

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, FormEvent } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
-import styles from './MarkAttendancePage.module.scss';
+import styles from '../../assets/scss/pages/teacher/MarkAttendancePage.module.scss';
 import Spinner from '../../components/common/Spinner';
 
 // 1. Updated interface to 'Subject'

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, ChangeEvent, FormEvent } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
-import styles from './EditModal.module.scss'; // A new, generic stylesheet
+import styles from '../../assets/scss/pages/admin/EditModal.module.scss'; // <-- This path is updated
 
 interface ProgramData { id: string; title: string; durationYears: number; }
 interface EditProgramModalProps {

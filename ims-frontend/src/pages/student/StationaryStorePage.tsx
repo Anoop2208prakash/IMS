@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import styles from './StationaryStorePage.module.scss';
+import styles from '../../assets/scss/pages/student/StationaryStorePage.module.scss';
 import Spinner from '../../components/common/Spinner';
 import EmptyState from '../../components/common/EmptyState';
 import { BsCartX } from 'react-icons/bs';

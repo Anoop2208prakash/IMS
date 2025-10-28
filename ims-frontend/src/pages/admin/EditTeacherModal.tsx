@@ -1,67 +1,56 @@
-// src/components/admin/EditTeacherModal.tsx
-import React, { useState, useEffect } from 'react';
+import React, { useState, ChangeEvent, FormEvent } from 'react';
 import axios from 'axios';
-import styles from './EditTeacherModal.module.scss';
+import toast from 'react-hot-toast';
+import styles from '../../assets/scss/pages/admin/AddForm.module.scss'; // <-- This path is updated
 
-interface TeacherData { /* ... same interface from ManageTeachersPage ... */ }
-
-interface EditTeacherModalProps {
-  teacher: TeacherData;
-  onClose: () => void;
-  onTeacherUpdated: () => void;
+interface AddTeacherFormProps {
+  onTeacherAdded: () => void;
+  onCancel: () => void;
 }
 
-const EditTeacherModal = ({ teacher, onClose, onTeacherUpdated }: EditTeacherModalProps) => {
+const AddTeacherForm = ({ onTeacherAdded, onCancel }: AddTeacherFormProps) => {
   const [formData, setFormData] = useState({
-    name: '',
+    fullName: '',
     email: '',
+    password: '',
     department: '',
   });
   const [error, setError] = useState('');
 
-  useEffect(() => {
-    // Pre-fill the form when the component mounts with teacher data
-    if (teacher) {
-      setFormData({
-        name: teacher.name,
-        email: teacher.email,
-        department: teacher.teacher.department,
-      });
-    }
-  }, [teacher]);
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError('');
     try {
-      await axios.put(`http://localhost:5000/api/teachers/${teacher.id}`, formData);
-      onTeacherUpdated();
+      await axios.post('http://localhost:5000/api/teachers', formData);
+      toast.success('Teacher added successfully!');
+      onTeacherAdded();
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Failed to update teacher.');
+      setError(err.response?.data?.message || 'Failed to add teacher.');
+      toast.error(err.response?.data?.message || 'Failed to add teacher.');
     }
   };
 
   return (
-    <div className={styles.modalBackdrop}>
-      <div className={styles.modalContent}>
-        <h2>Edit Teacher</h2>
-        <form onSubmit={handleSubmit}>
-          <input type="text" name="name" value={formData.name} onChange={handleChange} required />
-          <input type="email" name="email" value={formData.email} onChange={handleChange} required />
-          <input type="text" name="department" value={formData.department} onChange={handleChange} required />
-          {error && <p className={styles.error}>{error}</p>}
-          <div className={styles.buttonGroup}>
-            <button type="submit">Save Changes</button>
-            <button type="button" onClick={onClose}>Cancel</button>
-          </div>
-        </form>
-      </div>
+    <div className={styles.formContainer}>
+      <h3>Add New Teacher</h3>
+      <form onSubmit={handleSubmit}>
+        <input type="text" name="fullName" placeholder="Full Name" onChange={handleChange} required />
+        <input type="email" name="email" placeholder="Email" onChange={handleChange} required />
+        <input type="password" name="password" placeholder="Temporary Password" onChange={handleChange} required />
+        <input type="text" name="department" placeholder="Department (e.g., CSE)" onChange={handleChange} required />
+        
+        {error && <p className={styles.error}>{error}</p>}
+        <div className={styles.buttonGroup}>
+          <button type="submit">Add Teacher</button>
+          <button type="button" onClick={onCancel}>Cancel</button>
+        </div>
+      </form>
     </div>
   );
 };
 
-export default EditTeacherModal;
+export default AddTeacherForm;

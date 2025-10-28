@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import styles from '../AddTeacherForm.module.scss';
+import styles from '../../../assets/scss/pages/admin/AddTeacherForm.module.scss';
 
 interface AddBookFormProps {
   onBookAdded: () => void;

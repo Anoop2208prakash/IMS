@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
-import styles from './EditModal.module.scss'; // Reuse modal styles
+import styles from '../../assets/scss/pages/admin/EditModal.module.scss'; // Reuse modal styles
 
 interface SubjectData { id: string; title: string; }
 interface TeacherData { id: string; name: string; }

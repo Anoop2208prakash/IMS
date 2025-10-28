@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
-import styles from './BookingConfirmationModal.module.scss';
+import styles from '../../assets/scss/pages/student/BookingConfirmationModal.module.scss';
 
 interface Item { id: string; name: string; price: number; }
 interface Order { orderId: string; /* other fields can be added here */ }

@@ -1,7 +1,7 @@
 import { useState, useEffect, ChangeEvent, FormEvent } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
-import styles from './AddForm.module.scss';
+import styles from '../../assets/scss/pages/admin/AddForm.module.scss';
 
 interface Semester {
   id: string;
