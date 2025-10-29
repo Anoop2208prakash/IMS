@@ -1,9 +1,18 @@
-// src/controllers/staff.controller.ts
 import { Request, Response } from 'express';
 import { PrismaClient, Role } from '@prisma/client';
 import bcrypt from 'bcrypt';
 
 const prisma = new PrismaClient();
+
+// Helper function to generate a unique 7-digit SID
+const generateSID = async (): Promise<string> => {
+  let sID = Math.floor(1000000 + Math.random() * 9000000).toString();
+  const existing = await prisma.user.findUnique({ where: { sID } });
+  if (existing) {
+    return await generateSID(); // Recurse if it exists
+  }
+  return sID;
+};
 
 export const registerStaff = async (req: Request, res: Response) => {
   const { fullName, email, password, role, department } = req.body;
@@ -35,18 +44,19 @@ export const registerStaff = async (req: Request, res: Response) => {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
+    const sID = await generateSID(); // <-- Generate the new SID
 
     const newUser = await prisma.user.create({
       data: {
         name: fullName,
         email,
         password: hashedPassword,
+        sID: sID, // <-- Save the new SID
         role: role,
         // Conditionally create a teacher record if the role is TEACHER
         ...(role === 'TEACHER' && {
           teacher: {
             create: {
-              employeeId: `TEACHER-${Date.now()}`,
               department: department,
               dateJoined: new Date(),
             },
@@ -54,8 +64,9 @@ export const registerStaff = async (req: Request, res: Response) => {
         }),
       },
     });
-
-    res.status(201).json({ message: `${role} registered successfully!`, user: newUser });
+    
+    const { password: _, ...userWithoutPassword } = newUser;
+    res.status(201).json({ message: `${role} registered successfully!`, user: userWithoutPassword });
 
   } catch (error) {
     console.error('Staff registration error:', error);

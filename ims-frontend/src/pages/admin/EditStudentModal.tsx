@@ -1,17 +1,18 @@
 import React, { useState, useEffect, ChangeEvent, FormEvent } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
-import styles from '../../assets/scss/pages/admin/EditModal.module.scss'; // Use the generic EditModal style
+import styles from '../../assets/scss/pages/admin/EditModal.module.scss'; // Use the correct path
 
-// 1. Update the interface to match the data from the parent page
+// 1. This interface now matches the one in ManageStudentsPage.tsx
 interface StudentData {
   id: string;
   name: string;
   email: string;
+  sID: string; // <-- Use sID
   student: {
-    rollNumber: string;
+    admissionDate: string;
   };
-  programName: string; // This is just for display, not editing
+  programName: string;
 }
 
 interface EditStudentModalProps {
@@ -24,16 +25,16 @@ const EditStudentModal = ({ student, onClose, onStudentUpdated }: EditStudentMod
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    rollNumber: '',
+    sID: '', // <-- Use sID
   });
 
-  // 2. Pre-fill the form with the correct data structure
+  // 2. Pre-fill the form with the correct data
   useEffect(() => {
     if (student) {
       setFormData({
         name: student.name,
         email: student.email,
-        rollNumber: student.student.rollNumber,
+        sID: student.sID, // <-- Use sID
       });
     }
   }, [student]);
@@ -45,16 +46,12 @@ const EditStudentModal = ({ student, onClose, onStudentUpdated }: EditStudentMod
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     try {
-      // 3. Send the updated data to the API
+      // 3. Send sID to the backend (as required by student.controller.ts)
       await axios.put(`http://localhost:5000/api/students/${student.id}`, formData);
       toast.success('Student updated successfully!');
       onStudentUpdated();
-    } catch (err) {
-      if (axios.isAxiosError(err) && err.response) {
-        toast.error(err.response.data.message || 'Failed to update student.');
-      } else {
-        toast.error('An unexpected error occurred.');
-      }
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || 'Failed to update student.');
     }
   };
 
@@ -69,8 +66,8 @@ const EditStudentModal = ({ student, onClose, onStudentUpdated }: EditStudentMod
           <label>Email</label>
           <input type="email" name="email" value={formData.email} onChange={handleChange} required />
           
-          <label>Roll Number</label>
-          <input type="text" name="rollNumber" value={formData.rollNumber} onChange={handleChange} required />
+          <label>SID</label>
+          <input type="text" name="sID" value={formData.sID} onChange={handleChange} required />
 
           <div className={styles.buttonGroup}>
             <button type="submit">Save Changes</button>

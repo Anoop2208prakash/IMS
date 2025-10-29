@@ -4,6 +4,16 @@ import bcrypt from 'bcrypt';
 
 const prisma = new PrismaClient();
 
+// Helper function to generate a unique 7-digit SID
+const generateSID = async (): Promise<string> => {
+  let sID = Math.floor(1000000 + Math.random() * 9000000).toString();
+  const existing = await prisma.user.findUnique({ where: { sID } });
+  if (existing) {
+    return await generateSID(); // Recurse if it exists
+  }
+  return sID;
+};
+
 // GET ALL STUDENTS
 export const getAllStudents = async (req: Request, res: Response) => {
   try {
@@ -13,10 +23,11 @@ export const getAllStudents = async (req: Request, res: Response) => {
         id: true,
         name: true,
         email: true,
+        sID: true, // <-- Get the new SID
         createdAt: true,
         student: {
           select: {
-            rollNumber: true,
+            // rollNumber: true, // <-- REMOVED
             admissionDate: true,
           },
         },
@@ -82,6 +93,7 @@ export const addStudent = async (req: Request, res: Response) => {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
+    const sID = await generateSID(); // Generate the new SID
 
     const firstSemester = await prisma.semester.findFirst({
       where: { programId, name: 'Semester 1' }, // Or "1" if that is what you used
@@ -101,11 +113,12 @@ export const addStudent = async (req: Request, res: Response) => {
         name: fullName,
         email,
         password: hashedPassword,
+        sID: sID, // <-- Add the new SID
         role: 'STUDENT',
         enrollments: { create: enrollmentData },
         student: {
           create: {
-            rollNumber: `STUDENT-${Date.now()}`,
+            // rollNumber: `STUDENT-${Date.now()}`, // <-- REMOVED
             admissionDate: new Date(),
             fatherName, motherName,
             dateOfBirth: new Date(dateOfBirth),
@@ -129,7 +142,33 @@ export const addStudent = async (req: Request, res: Response) => {
 
 // UPDATE A STUDENT
 export const updateStudent = async (req: Request, res: Response) => {
-  // ... (this function is unchanged)
+  const { id } = req.params;
+  const { name, email, sID } = req.body; // <-- Changed from rollNumber to sID
+  if (!name || !email || !sID) {
+    return res.status(400).json({ message: 'Name, email, and SID are required.' });
+  }
+  try {
+    const existingUserWithEmail = await prisma.user.findFirst({ where: { email, NOT: { id } } });
+    if (existingUserWithEmail) return res.status(409).json({ message: 'Email already in use.' });
+
+    // Check for sID conflict
+    const existingUserWithSID = await prisma.user.findFirst({ where: { sID, NOT: { id } } });
+    if (existingUserWithSID) return res.status(409).json({ message: 'SID is already in use.' });
+
+    const updatedUser = await prisma.user.update({
+      where: { id },
+      data: {
+        name, 
+        email,
+        sID, // <-- Update sID on the User model
+      },
+    });
+    const { password: _, ...userWithoutPassword } = updatedUser;
+    res.status(200).json(userWithoutPassword);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Failed to update student.' });
+  }
 };
 
 // DELETE A STUDENT (Corrected Version)
@@ -141,7 +180,6 @@ export const deleteStudent = async (req: Request, res: Response) => {
       return res.status(404).json({ message: 'Student not found.' });
     }
 
-    // --- This is the fix ---
     // 1. Find all orders associated with the student
     const studentOrders = await prisma.order.findMany({
       where: { userId: id },
@@ -149,12 +187,13 @@ export const deleteStudent = async (req: Request, res: Response) => {
     });
     const orderIds = studentOrders.map(order => order.id);
 
-    // 2. Delete all OrderItems linked to those orders
-    await prisma.orderItem.deleteMany({
-      where: { orderId: { in: orderIds } }
-    });
-    // --- End of fix ---
-
+    // 2. Delete all OrderItems linked to those orders (if any)
+    if (orderIds.length > 0) {
+      await prisma.orderItem.deleteMany({
+        where: { orderId: { in: orderIds } }
+      });
+    }
+    
     // 3. Now the full transaction will work
     await prisma.$transaction([
       prisma.enrollment.deleteMany({ where: { userId: id } }),

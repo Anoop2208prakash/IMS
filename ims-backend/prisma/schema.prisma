@@ -57,6 +57,7 @@ enum MaritalStatus {
 // --- Main Models ---
 model User {
   id                   String              @id @default(cuid())
+  sID                  String              @unique // <-- ADDED: Main 7-digit ID
   email                String              @unique
   name                 String
   password             String
@@ -87,7 +88,7 @@ model Student {
   id               String        @id @default(cuid())
   userId           String        @unique
   user             User          @relation(fields: [userId], references: [id])
-  rollNumber       String        @unique
+  // rollNumber       String     @unique // <-- REMOVED
   admissionDate    DateTime
 
   fatherName       String?
@@ -109,7 +110,7 @@ model Student {
 model Teacher {
   id          String   @id @default(cuid())
   userId      String   @unique
-  employeeId  String   @unique
+  // employeeId  String   @unique // <-- REMOVED
   department  String
   dateJoined  DateTime
   user        User     @relation(fields: [userId], references: [id])

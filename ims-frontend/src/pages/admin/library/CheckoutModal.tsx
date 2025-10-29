@@ -1,7 +1,7 @@
-// src/components/admin/library/CheckoutModal.tsx
-import React, { useState } from 'react';
+import React, { useState, FormEvent } from 'react';
 import axios from 'axios';
-import styles from '../../../assets/scss/pages/admin/EditTeacherModal.module.scss'; // Reuse styles
+import toast from 'react-hot-toast';
+import styles from '../../../assets/scss/pages/admin/AdminPages.module.scss'; // 1. Corrected path to generic modal styles
 
 interface BookData { id: string; title: string; }
 interface CheckoutModalProps {
@@ -11,22 +11,28 @@ interface CheckoutModalProps {
 }
 
 const CheckoutModal = ({ book, onClose, onCheckoutSuccess }: CheckoutModalProps) => {
-  // Renamed state from userId to identifier
-  const [identifier, setIdentifier] = useState('');
-  const [error, setError] = useState('');
+  const [sID, setSID] = useState(''); // 2. Changed state to sID
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    setError('');
+    setLoading(true);
+    
+    const dueDate = new Date();
+    dueDate.setDate(dueDate.getDate() + 14); // 14-day loan
+
     try {
-      // Send 'identifier' in the request body
       await axios.post('http://localhost:5000/api/loans/checkout', {
         bookId: book.id,
-        identifier: identifier,
+        userIdentifier: sID, // 3. Send sID as userIdentifier
+        dueDate: dueDate.toISOString(),
       });
+      toast.success('Book checked out successfully!');
       onCheckoutSuccess();
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Failed to check out book.');
+      toast.error(err.response?.data?.message || 'Failed to check out book.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -35,19 +41,22 @@ const CheckoutModal = ({ book, onClose, onCheckoutSuccess }: CheckoutModalProps)
       <div className={styles.modalContent}>
         <h2>Checkout: {book.title}</h2>
         <form onSubmit={handleSubmit}>
-          {/* Updated label and placeholder */}
-          <label>Roll Number / Employee ID</label>
+          <label>User SID</label>
           <input
             type="text"
-            placeholder="Enter borrower's ID..."
-            value={identifier}
-            onChange={(e) => setIdentifier(e.target.value)}
+            placeholder="Enter 7-digit SID..."
+            value={sID}
+            onChange={(e) => setSID(e.target.value)}
             required
+            disabled={loading}
           />
-          {error && <p className={styles.error}>{error}</p>}
           <div className={styles.buttonGroup}>
-            <button type="submit">Confirm Checkout</button>
-            <button type="button" onClick={onClose}>Cancel</button>
+            <button type="submit" disabled={loading}>
+              {loading ? 'Processing...' : 'Confirm Checkout'}
+            </button>
+            <button type="button" onClick={onClose} disabled={loading}>
+              Cancel
+            </button>
           </div>
         </form>
       </div>

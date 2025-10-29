@@ -1,11 +1,11 @@
 import { useState, useEffect, ChangeEvent } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
-import styles from '../../assets/scss/pages/admin/AdminPages.module.scss';
+import styles from '../../assets/scss/pages/admin/AdminPages.module.scss'; // Corrected path
 import Spinner from '../../components/common/Spinner';
 import EmptyState from '../../components/common/EmptyState';
 import Pagination from '../../components/common/Pagination';
-import DeleteModal from '../../components/common/DeleteModal'; // 1. Import DeleteModal
+import DeleteModal from '../../components/common/DeleteModal';
 import Searchbar from '../../components/common/Searchbar';
 import { FaUserGraduate } from 'react-icons/fa';
 import EditStudentModal from './EditStudentModal';
@@ -14,8 +14,9 @@ interface StudentData {
   id: string;
   name: string;
   email: string;
+  sID: string; // <-- Use new sID
   student: {
-    rollNumber: string;
+    // rollNumber: string; // <-- Removed
     admissionDate: string;
   };
   programName: string;
@@ -26,11 +27,9 @@ const ManageStudentsPage = () => {
   const [loading, setLoading] = useState(true);
   const [editingStudent, setEditingStudent] = useState<StudentData | null>(null);
   
-  // 3. Add state for DeleteModal
   const [deletingStudent, setDeletingStudent] = useState<StudentData | null>(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
   
-  // 4. Add state for Searchbar
   const [searchTerm, setSearchTerm] = useState('');
   
   const [page, setPage] = useState(0);
@@ -62,7 +61,6 @@ const ManageStudentsPage = () => {
     toast.success('Student information updated!');
   };
 
-  // 5. Update handleDelete to work with the modal
   const handleDelete = async () => {
     if (!deletingStudent) return;
     setDeleteLoading(true);
@@ -82,11 +80,11 @@ const ManageStudentsPage = () => {
     }
   };
 
-  // 6. Filtering and Pagination Logic
+  // Filtering and Pagination Logic
   const filteredStudents = students.filter(student =>
     student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     student.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    student.student.rollNumber.toLowerCase().includes(searchTerm.toLowerCase())
+    student.sID.toLowerCase().includes(searchTerm.toLowerCase()) // <-- Search by sID
   );
 
   const currentItems = filteredStudents.slice(
@@ -130,7 +128,7 @@ const ManageStudentsPage = () => {
       <tr key={student.id}>
         <td>{student.name}</td>
         <td>{student.email}</td>
-        <td>{student.student?.rollNumber}</td>
+        <td>{student.sID}</td> {/* <-- Display sID */}
         <td>{student.programName}</td>
         <td>{new Date(student.student?.admissionDate).toLocaleDateString()}</td>
         <td>
@@ -140,7 +138,6 @@ const ManageStudentsPage = () => {
           >
             Edit
           </button>
-          {/* 7. Update delete button to open modal */}
           <button
             onClick={() => setDeletingStudent(student)}
             className={`${styles.button} ${styles.deleteButton}`}
@@ -158,12 +155,11 @@ const ManageStudentsPage = () => {
         <h2>Manage Students</h2>
       </div>
 
-      {/* 8. Add the Searchbar */}
       <div className={styles.searchContainer}>
         <Searchbar
           value={searchTerm}
           onChange={handleSearchChange}
-          placeholder="Search by name, email, or roll number..."
+          placeholder="Search by name, email, or SID..."
         />
       </div>
 
@@ -172,7 +168,7 @@ const ManageStudentsPage = () => {
           <tr>
             <th>Name</th>
             <th>Email</th>
-            <th>Roll Number</th>
+            <th>SID</th> {/* <-- Updated header */}
             <th>Program</th>
             <th>Admission Date</th>
             <th>Actions</th>
@@ -199,11 +195,10 @@ const ManageStudentsPage = () => {
         />
       )}
 
-      {/* 9. Add the DeleteModal */}
       {deletingStudent && (
         <DeleteModal
           title="Delete Student"
-          message={`Are you sure you want to delete ${deletingStudent.name} (${deletingStudent.student.rollNumber})? This action is permanent.`}
+          message={`Are you sure you want to delete ${deletingStudent.name} (${deletingStudent.sID})? This action is permanent.`}
           onClose={() => setDeletingStudent(null)}
           onConfirm={handleDelete}
           loading={deleteLoading}

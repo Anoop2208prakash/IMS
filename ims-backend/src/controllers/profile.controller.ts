@@ -4,8 +4,7 @@ import { AuthRequest } from '../middleware/auth.middleware';
 
 const prisma = new PrismaClient();
 
-export const getMyProfile = async (req: AuthRequest, res: Response) => {
-  // req.user is attached by our authMiddleware
+export const getProfile = async (req: AuthRequest, res: Response) => {
   if (!req.user) {
     return res.status(401).json({ message: 'Not authenticated' });
   }
@@ -17,15 +16,43 @@ export const getMyProfile = async (req: AuthRequest, res: Response) => {
         id: true,
         name: true,
         email: true,
+        sID: true,
         role: true,
-        student: { // Use 'select' to specify which student fields to include
+        student: {
           select: {
-            rollNumber: true,
             admissionDate: true,
-            photoUrl: true // <-- This is the crucial addition
+            photoUrl: true,
+            phoneNumber: true,
+            bloodGroup: true,
           }
         },
-        teacher: true, // Teacher profile doesn't have a photo yet, so 'true' is fine
+        teacher: {
+          select: {
+            department: true,
+            dateJoined: true,
+          }
+        },
+        // --- THIS IS THE FIX ---
+        // Enrollments are on the User, not the Student
+        enrollments: {
+          take: 1, // We only need one to find the program
+          select: {
+            subject: {
+              select: {
+                semester: {
+                  select: {
+                    program: {
+                      select: {
+                        title: true,
+                        durationYears: true,
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
       },
     });
 
@@ -33,8 +60,28 @@ export const getMyProfile = async (req: AuthRequest, res: Response) => {
       return res.status(404).json({ message: 'Profile not found.' });
     }
 
-    res.status(200).json(userProfile);
+    // Format the student data to match what the frontend expects
+    const studentData = userProfile.student ? {
+      ...userProfile.student,
+      // Get program data from the top-level enrollments
+      programName: userProfile.enrollments[0]?.subject?.semester?.program?.title || 'N/A',
+      durationYears: userProfile.enrollments[0]?.subject?.semester?.program?.durationYears || 0,
+    } : null;
+
+    // Build the final, clean profile object
+    const profileResponse = {
+      id: userProfile.id,
+      name: userProfile.name,
+      email: userProfile.email,
+      sID: userProfile.sID,
+      role: userProfile.role,
+      student: studentData,
+      teacher: userProfile.teacher,
+    };
+
+    res.status(200).json(profileResponse);
   } catch (error) {
+    console.error(error); // Log the error for debugging
     res.status(500).json({ message: 'Failed to fetch profile.' });
   }
 };

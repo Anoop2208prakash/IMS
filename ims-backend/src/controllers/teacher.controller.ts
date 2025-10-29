@@ -5,6 +5,16 @@ import { AuthRequest } from '../middleware/auth.middleware';
 
 const prisma = new PrismaClient();
 
+// Helper function to generate a unique 7-digit SID
+const generateSID = async (): Promise<string> => {
+  let sID = Math.floor(1000000 + Math.random() * 9000000).toString();
+  const existing = await prisma.user.findUnique({ where: { sID } });
+  if (existing) {
+    return await generateSID(); // Recurse if it exists
+  }
+  return sID;
+};
+
 // This function fetches all existing teachers.
 export const getAllTeachers = async (req: AuthRequest, res: Response) => {
   try {
@@ -14,11 +24,12 @@ export const getAllTeachers = async (req: AuthRequest, res: Response) => {
         id: true,
         name: true,
         email: true,
+        sID: true, // <-- Get the new SID
         role: true,
         createdAt: true,
         teacher: {
           select: {
-            employeeId: true,
+            // employeeId: true, // <-- Removed
             department: true,
             dateJoined: true,
           },
@@ -46,16 +57,18 @@ export const addTeacher = async (req: AuthRequest, res: Response) => {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
+    const sID = await generateSID(); // <-- Generate new SID
 
     const newUser = await prisma.user.create({
       data: {
         name: fullName,
         email,
         password: hashedPassword,
+        sID: sID, // <-- Save new SID
         role: 'TEACHER',
         teacher: {
           create: {
-            employeeId: `TEACHER-${Date.now()}`,
+            // employeeId: `TEACHER-${Date.now()}`, // <-- Removed
             department: department,
             dateJoined: new Date(),
           },
@@ -74,19 +87,25 @@ export const addTeacher = async (req: AuthRequest, res: Response) => {
 // This function updates a teacher's details.
 export const updateTeacher = async (req: AuthRequest, res: Response) => {
   const { id } = req.params;
-  const { name, email, department } = req.body;
+  const { name, email, sID, department } = req.body; // <-- Added sID
 
-  if (!name || !email || !department) {
-    return res.status(400).json({ message: 'Name, email, and department are required.' });
+  if (!name || !email || !sID || !department) {
+    return res.status(400).json({ message: 'Name, email, SID, and department are required.' });
   }
 
   try {
     const existingUserWithEmail = await prisma.user.findFirst({
       where: { email: email, NOT: { id: id } },
     });
-
     if (existingUserWithEmail) {
-      return res.status(409).json({ message: 'This email is already in use by another account.' });
+      return res.status(409).json({ message: 'This email is already in use.' });
+    }
+    
+    const existingUserWithSID = await prisma.user.findFirst({
+      where: { sID: sID, NOT: { id: id } },
+    });
+    if (existingUserWithSID) {
+      return res.status(409).json({ message: 'This SID is already in use.' });
     }
 
     const updatedUser = await prisma.user.update({
@@ -94,6 +113,7 @@ export const updateTeacher = async (req: AuthRequest, res: Response) => {
       data: {
         name: name,
         email: email,
+        sID: sID, // <-- Update sID
         teacher: {
           update: {
             department: department,
@@ -120,11 +140,12 @@ export const deleteTeacher = async (req: AuthRequest, res: Response) => {
       return res.status(404).json({ message: 'Teacher not found.' });
     }
     
-    // Updated transaction to include all relations from the new schema
+    // Updated transaction to include all relations
     await prisma.$transaction([
       prisma.subjectAssignment.deleteMany({ where: { teacherId: id } }),
       prisma.attendance.deleteMany({ where: { markedById: id } }),
       prisma.examResult.deleteMany({ where: { enteredById: id } }),
+      prisma.announcement.deleteMany({ where: { authorId: id } }), // <-- Added this
       prisma.teacher.delete({ where: { userId: id } }),
       prisma.user.delete({ where: { id: id } })
     ]);
@@ -158,7 +179,6 @@ export const getMyAssignedSubjects = async (req: AuthRequest, res: Response) => 
       },
     });
     
-    // Remap to a cleaner array of subjects
     const subjects = assignments.map(a => ({
       ...a.subject,
       programTitle: a.subject.semester.program.title,

@@ -1,21 +1,47 @@
-import React, { useState, ChangeEvent, FormEvent } from 'react';
+import React, { useState, useEffect, ChangeEvent, FormEvent } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
-import styles from '../../assets/scss/pages/admin/AddForm.module.scss'; // <-- This path is updated
+// This uses the correct path based on your file structure screenshot
+import styles from '../../assets/scss/pages/admin/AdminPages.module.scss'; 
 
-interface AddTeacherFormProps {
-  onTeacherAdded: () => void;
-  onCancel: () => void;
+// 1. Define the data structure for a teacher
+interface TeacherData {
+  id: string;
+  name: string;
+  email: string;
+  sID: string; // Use the new sID
+  teacher: {
+    department: string;
+  };
 }
 
-const AddTeacherForm = ({ onTeacherAdded, onCancel }: AddTeacherFormProps) => {
+// 2. Define the props that this component accepts
+interface EditTeacherModalProps {
+  teacher: TeacherData;
+  onClose: () => void;
+  onTeacherUpdated: () => void;
+}
+
+// 3. Accept the props
+const EditTeacherModal = ({ teacher, onClose, onTeacherUpdated }: EditTeacherModalProps) => {
   const [formData, setFormData] = useState({
-    fullName: '',
+    name: '',
     email: '',
-    password: '',
+    sID: '',
     department: '',
   });
-  const [error, setError] = useState('');
+
+  // 4. Pre-fill the form with the teacher's data
+  useEffect(() => {
+    if (teacher) {
+      setFormData({
+        name: teacher.name,
+        email: teacher.email,
+        sID: teacher.sID,
+        department: teacher.teacher.department,
+      });
+    }
+  }, [teacher]);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
@@ -23,34 +49,37 @@ const AddTeacherForm = ({ onTeacherAdded, onCancel }: AddTeacherFormProps) => {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    setError('');
     try {
-      await axios.post('http://localhost:5000/api/teachers', formData);
-      toast.success('Teacher added successfully!');
-      onTeacherAdded();
+      // Send all updated fields to the backend
+      await axios.put(`http://localhost:5000/api/teachers/${teacher.id}`, formData);
+      toast.success('Teacher updated successfully!');
+      onTeacherUpdated();
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Failed to add teacher.');
-      toast.error(err.response?.data?.message || 'Failed to add teacher.');
+      toast.error(err.response?.data?.message || 'Failed to update teacher.');
     }
   };
 
   return (
-    <div className={styles.formContainer}>
-      <h3>Add New Teacher</h3>
-      <form onSubmit={handleSubmit}>
-        <input type="text" name="fullName" placeholder="Full Name" onChange={handleChange} required />
-        <input type="email" name="email" placeholder="Email" onChange={handleChange} required />
-        <input type="password" name="password" placeholder="Temporary Password" onChange={handleChange} required />
-        <input type="text" name="department" placeholder="Department (e.g., CSE)" onChange={handleChange} required />
-        
-        {error && <p className={styles.error}>{error}</p>}
-        <div className={styles.buttonGroup}>
-          <button type="submit">Add Teacher</button>
-          <button type="button" onClick={onCancel}>Cancel</button>
-        </div>
-      </form>
+    <div className={styles.modalBackdrop}>
+      <div className={styles.modalContent}>
+        <h2>Edit Teacher</h2>
+        <form onSubmit={handleSubmit}>
+          <label>Name</label>
+          <input type="text" name="name" value={formData.name} onChange={handleChange} required />
+          <label>Email</label>
+          <input type="email" name="email" value={formData.email} onChange={handleChange} required />
+          <label>SID</label>
+          <input type="text" name="sID" value={formData.sID} onChange={handleChange} required />
+          <label>Department</label>
+          <input type="text" name="department" value={formData.department} onChange={handleChange} required />
+          <div className={styles.buttonGroup}>
+            <button type="submit">Save Changes</button>
+            <button type="button" onClick={onClose}>Cancel</button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 };
 
-export default AddTeacherForm;
+export default EditTeacherModal;

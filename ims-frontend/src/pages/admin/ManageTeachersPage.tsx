@@ -1,7 +1,7 @@
 import { useState, useEffect, ChangeEvent } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
-import styles from '../../assets/scss/pages/admin/AdminPages.module.scss';
+import styles from '../../assets/scss/pages/admin/AdminPages.module.scss'; // Corrected import path
 import Spinner from '../../components/common/Spinner';
 import EmptyState from '../../components/common/EmptyState';
 import Pagination from '../../components/common/Pagination';
@@ -15,8 +15,8 @@ interface TeacherData {
   id: string;
   name: string;
   email: string;
+  sID: string; // Use new sID
   teacher: {
-    employeeId: string;
     department: string;
     dateJoined: string;
   };
@@ -102,7 +102,7 @@ const ManageTeachersPage = () => {
   const filteredTeachers = teachers.filter(teacher =>
     teacher.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     teacher.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    teacher.teacher.employeeId.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    teacher.sID.toLowerCase().includes(searchTerm.toLowerCase()) || // Use sID
     teacher.teacher.department.toLowerCase().includes(searchTerm.toLowerCase())
   );
   
@@ -137,7 +137,7 @@ const ManageTeachersPage = () => {
       <tr key={teacher.id}>
         <td>{teacher.name}</td>
         <td>{teacher.email}</td>
-        <td>{teacher.teacher.employeeId}</td>
+        <td>{teacher.sID}</td> {/* Use sID */}
         <td>{teacher.teacher.department}</td>
         <td>{new Date(teacher.teacher.dateJoined).toLocaleDateString()}</td>
         <td>
@@ -161,7 +161,7 @@ const ManageTeachersPage = () => {
         <Searchbar
           value={searchTerm}
           onChange={handleSearchChange}
-          placeholder="Search by name, email, ID, or department..."
+          placeholder="Search by name, email, SID, or department..."
         />
       </div>
 
@@ -172,7 +172,7 @@ const ManageTeachersPage = () => {
           <tr>
             <th>Name</th>
             <th>Email</th>
-            <th>Employee ID</th>
+            <th>SID</th> {/* Updated header */}
             <th>Department</th>
             <th>Date Joined</th>
             <th>Actions</th>
@@ -191,7 +191,8 @@ const ManageTeachersPage = () => {
         onRowsPerPageChange={handleRowsPerPageChange}
       />
       
-      {editingTeacher && <EditTeacherModal teacher={editingTeacher} onClose={() => setEditingTeacher(null)} onTeacherUpdated={handleTeacherUpdated} />}
+      {editingTeacher && <EditTeacherModal teacher={editingTeacher} 
+      onClose={() => setEditingTeacher(null)} onTeacherUpdated={handleTeacherUpdated} />}
       
       {deletingTeacher && (
         <DeleteModal

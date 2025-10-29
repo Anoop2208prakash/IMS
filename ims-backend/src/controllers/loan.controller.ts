@@ -1,31 +1,25 @@
 import { Request, Response } from 'express';
 import { PrismaClient } from '@prisma/client';
-import { AuthRequest } from '../middleware/auth.middleware'; // Import AuthRequest
+import { AuthRequest } from '../middleware/auth.middleware';
 const prisma = new PrismaClient();
 
 // PROCESS a book checkout
 export const checkoutBook = async (req: Request, res: Response) => {
-  const { bookId, identifier } = req.body;
+  // 1. Changed 'identifier' to 'userIdentifier' for clarity
+  const { bookId, userIdentifier } = req.body;
 
-  if (!bookId || !identifier) {
-    return res.status(400).json({ message: 'Book ID and User Identifier are required.' });
+  if (!bookId || !userIdentifier) {
+    return res.status(400).json({ message: 'Book ID and User SID are required.' });
   }
 
   try {
-    let user = null;
-    const studentProfile = await prisma.student.findUnique({ where: { rollNumber: identifier } });
-
-    if (studentProfile) {
-      user = await prisma.user.findUnique({ where: { id: studentProfile.userId } });
-    } else {
-      const teacherProfile = await prisma.teacher.findUnique({ where: { employeeId: identifier } });
-      if (teacherProfile) {
-        user = await prisma.user.findUnique({ where: { id: teacherProfile.userId } });
-      }
-    }
+    // 2. Find the user (Student OR Teacher) directly by their sID
+    const user = await prisma.user.findUnique({
+      where: { sID: userIdentifier },
+    });
     
     if (!user) {
-      return res.status(404).json({ message: 'User with that Roll Number or Employee ID not found.' });
+      return res.status(404).json({ message: 'User with that SID not found.' });
     }
 
     const book = await prisma.book.findUnique({ where: { id: bookId } });
@@ -35,7 +29,7 @@ export const checkoutBook = async (req: Request, res: Response) => {
     }
     
     const dueDate = new Date();
-    dueDate.setDate(dueDate.getDate() + 14);
+    dueDate.setDate(dueDate.getDate() + 14); // 14-day loan period
 
     const [, newLoan] = await prisma.$transaction([
       prisma.book.update({ where: { id: bookId }, data: { availableQuantity: { decrement: 1 } } }),
@@ -54,7 +48,7 @@ export const getActiveLoans = async (req: Request, res: Response) => {
     const activeLoans = await prisma.loan.findMany({
       where: { returnDate: null },
       include: {
-        user: { select: { name: true } },
+        user: { select: { name: true, sID: true } }, // 3. Include sID
         book: { select: { title: true } },
       },
       orderBy: { dueDate: 'asc' },
@@ -89,9 +83,7 @@ export const returnBook = async (req: Request, res: Response) => {
   }
 };
 
-// v-- This entire function is new --v
-
-// GET a user's own loan history
+// GET a user's own loan history (for Students and Teachers)
 export const getMyLoans = async (req: AuthRequest, res: Response) => {
   if (!req.user) {
     return res.status(401).json({ message: 'Not authenticated' });

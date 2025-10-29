@@ -1,12 +1,12 @@
 import { useState, useEffect, ChangeEvent, useCallback } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
-import styles from '../../assets/scss/pages/admin/AdminPages.module.scss';
+import styles from '../../assets/scss/pages/admin/AdminPages.module.scss'; // Corrected import path
 import Spinner from '../../components/common/Spinner';
 import EmptyState from '../../components/common/EmptyState';
 import Pagination from '../../components/common/Pagination';
 import DeleteModal from '../../components/common/DeleteModal';
-import Searchbar from '../../components/common/Searchbar'; // 1. Import Searchbar
+import Searchbar from '../../components/common/Searchbar';
 import { BsBook } from 'react-icons/bs';
 import AddSemesterForm from './AddSemesterForm';
 import EditSemesterModal from './EditSemesterModal';
@@ -26,7 +26,7 @@ const ManageSemestersPage = () => {
   const [semesters, setSemesters] = useState<SemesterData[]>([]);
   const [programs, setPrograms] = useState<ProgramData[]>([]);
   const [selectedProgramId, setSelectedProgramId] = useState('all');
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false); // Set to false initially
   const [showAddForm, setShowAddForm] = useState(false);
   
   // Modal states
@@ -35,7 +35,7 @@ const ManageSemestersPage = () => {
   const [deleteLoading, setDeleteLoading] = useState(false);
 
   // Search & Pagination states
-  const [searchTerm, setSearchTerm] = useState(''); // 2. Add search state
+  const [searchTerm, setSearchTerm] = useState('');
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
 

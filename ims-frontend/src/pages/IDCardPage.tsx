@@ -2,40 +2,39 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import styles from '../assets/scss/pages/IDCardPage.module.scss';
 import Spinner from '../components/common/Spinner';
-import logo from '../assets/image/logo.png'; // Assuming this is the university crest logo
-import { BsPersonSquare } from 'react-icons/bs'; // Import the placeholder icon
+import logo from '../assets/image/logo.png';
+import { BsPersonSquare } from 'react-icons/bs';
 
-// 1. Updated ProfileData interface to include all required fields
+// 1. Updated ProfileData interface
 interface ProfileData {
   id: string;
   name: string;
   email: string;
+  sID: string; // <-- This is the new ID
   role: string;
   student?: {
-    rollNumber: string;
+    // rollNumber: string; // <-- Removed
     admissionDate: string;
     photoUrl?: string;
     phoneNumber?: string;
     bloodGroup?: string;
-    // These fields are from our new Program/Subject structure
     programName?: string; 
     durationYears?: number;
   };
   teacher?: {
-    employeeId: string;
+    // employeeId: string; // <-- Removed
     dateJoined: string;
     department?: string;
     photoUrl?: string;
   };
 }
 
-// 2. Helper functions to get the correct data
+// 2. Updated helper functions
 const getIdentifier = (profile: ProfileData) => {
-  return profile.student?.rollNumber || profile.teacher?.employeeId || 'N/A';
+  return profile.sID; // Just return the sID
 };
 
 const getTitle = (profile: ProfileData) => {
-  // This logic now checks for the student's program name
   return profile.student?.programName || profile.teacher?.department || profile.role;
 };
 
@@ -50,7 +49,7 @@ const getExpireDate = (profile: ProfileData) => {
     joinDate.setFullYear(joinDate.getFullYear() + profile.student.durationYears);
     return joinDate.toLocaleDateString('en-GB');
   }
-  return 'N/A'; // Or a static date for teachers
+  return 'N/A';
 };
 
 const getPhotoUrl = (profile: ProfileData): string | null => {
@@ -80,7 +79,10 @@ const IDCardPage = () => {
     return <Spinner />;
   }
   
-  if (!profile) return <p>Could not load profile data.</p>;
+  if (!profile) {
+    // This message will now only appear if the API call truly fails
+    return <p>Could not load profile data.</p>;
+  }
 
   const photoUrl = getPhotoUrl(profile);
   const { student } = profile;
@@ -93,7 +95,6 @@ const IDCardPage = () => {
         <div className={styles.topClip}></div>
         <div className={styles.cardBody}>
           <div className={styles.photo}>
-            {/* 3. Use the icon if no photoUrl exists */}
             {photoUrl ? (
               <img src={photoUrl} alt="Profile" />
             ) : (
@@ -106,7 +107,7 @@ const IDCardPage = () => {
             <p className={styles.title}>{getTitle(profile)}</p>
 
             <div className={styles.infoGrid}>
-              <span className={styles.label}>CODE</span>
+              <span className={styles.label}>{isStudent ? 'SID' : 'ID'}</span>
               <span className={styles.value}>: {getIdentifier(profile)}</span>
               
               {profile.student?.bloodGroup && (
