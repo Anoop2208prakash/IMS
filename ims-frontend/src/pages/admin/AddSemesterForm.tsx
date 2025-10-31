@@ -1,14 +1,14 @@
 import React, { useState, useEffect, ChangeEvent, FormEvent } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
-import styles from '../../assets/scss/pages/admin/AddForm.module.scss';
+import styles from '../../assets/scss/pages/admin/AddForm.module.scss'; // Corrected path
 
 interface Program { id: string; title: string; }
 
 interface AddSemesterFormProps {
   onSemesterAdded: () => void;
   onCancel: () => void;
-  programId: string; // <-- 1. Accept programId as a prop
+  programId: string; // This prop pre-selects the dropdown
 }
 
 const AddSemesterForm = ({ onSemesterAdded, onCancel, programId }: AddSemesterFormProps) => {
@@ -21,7 +21,7 @@ const AddSemesterForm = ({ onSemesterAdded, onCancel, programId }: AddSemesterFo
       .catch(() => toast.error('Failed to load programs.'));
   }, []);
 
-  // 2. Update the form's state if the programId prop changes
+  // Update the form's state if the programId prop changes
   useEffect(() => {
     setFormData(prev => ({ ...prev, programId: programId }));
   }, [programId]);
@@ -50,11 +50,14 @@ const AddSemesterForm = ({ onSemesterAdded, onCancel, programId }: AddSemesterFo
       <h3>Add New Semester</h3>
       <form onSubmit={handleSubmit}>
         <input type="text" name="name" placeholder="Semester Name (e.g., Semester 1)" value={formData.name} onChange={handleChange} required />
-        <select name="programId" value={formData.programId} onChange={handleChange} required disabled>
-          {/* 3. The dropdown is now disabled because the program is selected on the main page */}
+        
+        {/* --- THIS IS THE FIX --- */}
+        {/* The 'disabled' prop is removed to allow selection */}
+        <select name="programId" value={formData.programId} onChange={handleChange} required>
           <option value="" disabled>-- Select a Program --</option>
           {programs.map(p => <option key={p.id} value={p.id}>{p.title}</option>)}
         </select>
+        
         <div className={styles.buttonGroup}>
           <button type="submit">Add Semester</button>
           <button type="button" onClick={onCancel}>Cancel</button>

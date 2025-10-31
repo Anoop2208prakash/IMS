@@ -1,4 +1,4 @@
-import { useState, useEffect, ChangeEvent, useCallback } from 'react'; // 1. Import useCallback
+import { useState, useEffect, ChangeEvent, useCallback } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import styles from '../../assets/scss/pages/admin/AdminPages.module.scss';
@@ -7,54 +7,54 @@ import EmptyState from '../../components/common/EmptyState';
 import Pagination from '../../components/common/Pagination';
 import DeleteModal from '../../components/common/DeleteModal';
 import Searchbar from '../../components/common/Searchbar';
-import { BsCardChecklist } from 'react-icons/bs';
+import HeaderMenu from '../../components/common/HeaderMenu';
+import ImportCSVModal from '../../components/common/ImportCSVModal';
+import FilterModal from '../../components/common/FilterModal';
+import { BsCardChecklist, BsFilter } from 'react-icons/bs';
 import AddSubjectForm from './AddSubjectForm';
 import EditSubjectModal from './EditSubjectModal';
 import AssignTeacherModal from './AssignTeacherModal';
 
-// Interfaces for our data
-interface ProgramData { id: string; title: string; }
-interface SemesterData { id: string; name: string; }
 interface SubjectData {
   id: string; title: string; subjectCode: string; credits: number; semesterId: string;
   semester: { name: string; program: { title: string; }; };
 }
+interface ProgramData { id: string; title: string; }
+interface SemesterData { id: string; name: string; }
 
 const ManageSubjectsPage = () => {
-  const [subjects, setSubjects] = useState<SubjectData[]>([]);
-  const [programs, setPrograms] = useState<ProgramData[]>([]);
-  const [semesters, setSemesters] = useState<SemesterData[]>([]);
-  
   // Filter states
   const [selectedProgramId, setSelectedProgramId] = useState('all');
   const [selectedSemesterId, setSelectedSemesterId] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
   
+  const [subjects, setSubjects] = useState<SubjectData[]>([]);
+  const [programs, setPrograms] = useState<ProgramData[]>([]); // 1. Add state for programs
+  const [semesters, setSemesters] = useState<SemesterData[]>([]); // 2. Add state for semesters
+
   const [loading, setLoading] = useState(false);
   const [showAddForm, setShowAddForm] = useState(false);
   
   // Modal states
+  const [showFilterModal, setShowFilterModal] = useState(false);
+  const [showImportModal, setShowImportModal] = useState(false);
   const [editingSubject, setEditingSubject] = useState<SubjectData | null>(null);
   const [assigningSubject, setAssigningSubject] = useState<SubjectData | null>(null);
   const [deletingSubject, setDeletingSubject] = useState<SubjectData | null>(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
   
-  // Pagination states
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
-  // --- Data Fetching ---
-
-  // 1. Fetch all programs (runs once)
+  // 3. Fetch programs for the filter modal
   useEffect(() => {
     axios.get('http://localhost:5000/api/programs')
       .then(res => setPrograms(res.data))
       .catch(() => toast.error('Failed to load programs.'));
   }, []);
 
-  // 2. When a program is selected, fetch its semesters
+  // 4. Fetch semesters when the filter's program ID changes
   useEffect(() => {
-    setSelectedSemesterId('all');
     if (selectedProgramId && selectedProgramId !== 'all') {
       axios.get(`http://localhost:5000/api/semesters?programId=${selectedProgramId}`)
         .then(res => setSemesters(res.data))
@@ -62,9 +62,12 @@ const ManageSubjectsPage = () => {
     } else {
       setSemesters([]);
     }
+    // Reset semester if program changes
+    if (selectedProgramId !== 'all') {
+      setSelectedSemesterId('all');
+    }
   }, [selectedProgramId]);
 
-  // 3. Wrap fetchSubjects in useCallback
   const fetchSubjects = useCallback(async () => {
     setLoading(true);
     let params: { [key: string]: string } = {};
@@ -87,10 +90,8 @@ const ManageSubjectsPage = () => {
       setLoading(false);
       setPage(0);
     }
-    // 4. Add the function's dependencies
   }, [selectedProgramId, selectedSemesterId]);
 
-  // 5. Re-fetch subjects whenever the stable fetchSubjects function changes
   useEffect(() => {
     fetchSubjects();
   }, [fetchSubjects]);
@@ -98,6 +99,7 @@ const ManageSubjectsPage = () => {
   // --- Handlers ---
   const handleSubjectAdded = () => { setShowAddForm(false); fetchSubjects(); };
   const handleSubjectUpdated = () => { setEditingSubject(null); fetchSubjects(); };
+  const handleImportSuccess = () => { fetchSubjects(); };
   
   const handleDelete = async () => {
     if (!deletingSubject) return;
@@ -107,17 +109,13 @@ const ManageSubjectsPage = () => {
       toast.success('Subject deleted successfully!');
       setSubjects(current => current.filter(s => s.id !== deletingSubject.id));
       setDeletingSubject(null);
-    } catch (err) {
-      if (axios.isAxiosError(err) && err.response) {
-        toast.error(err.response.data.message || 'Failed to delete subject.');
-      } else {
-        toast.error('An unexpected error occurred.');
-      }
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || 'Failed to delete subject.');
     } finally {
       setDeleteLoading(false);
     }
   };
-  
+
   const handleRowsPerPageChange = (event: ChangeEvent<HTMLSelectElement>) => {
     setRowsPerPage(Number.parseInt(event.target.value, 10));
     setPage(0);
@@ -127,8 +125,7 @@ const ManageSubjectsPage = () => {
     setSearchTerm(e.target.value);
     setPage(0);
   };
-
-  // --- Filtering & Pagination ---
+  
   const filteredSubjects = subjects.filter(subject =>
     subject.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
     subject.subjectCode.toLowerCase().includes(searchTerm.toLowerCase())
@@ -139,9 +136,62 @@ const ManageSubjectsPage = () => {
     page * rowsPerPage + rowsPerPage
   );
 
+  const handleExportCSV = async () => {
+    toast.loading('Preparing download...');
+    try {
+      const response = await axios.get('http://localhost:5000/api/export/subjects', {
+        params: {
+          programId: selectedProgramId,
+          semesterId: selectedSemesterId,
+          searchTerm: searchTerm
+        },
+        responseType: 'blob',
+      });
+      const url = URL.createObjectURL(response.data);
+      const link = document.createElement('a');
+      link.setAttribute('href', url);
+      link.setAttribute('download', 'subjects_export.csv');
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      toast.dismiss();
+      toast.success('Data exported successfully!');
+    } catch (err: any) {
+      toast.dismiss();
+      const errorText = await (err.response?.data as Blob).text();
+      try {
+        const errorJson = JSON.parse(errorText);
+        toast.error(errorJson.message || 'Failed to export subjects.');
+      } catch (e) {
+        toast.error('Failed to export subjects.');
+      }
+    }
+  };
+
+  const menuActions = [
+    {
+      label: 'Add New Subject',
+      onClick: () => setShowAddForm(true),
+      disabled: selectedSemesterId === 'all'
+    },
+    { label: 'Export CSV', onClick: handleExportCSV },
+    { label: 'Import CSV', onClick: () => setShowImportModal(true) }
+  ];
+  
+  const handleApplyFilters = (filters: { programId: string, semesterId: string }) => {
+    setSelectedProgramId(filters.programId);
+    setSelectedSemesterId(filters.semesterId);
+  };
+
   const renderTableBody = () => {
     if (loading) {
-      return <tr><td colSpan={5} className={styles.spinnerCell}><Spinner /></td></tr>;
+      return (
+        <tr>
+          <td colSpan={5} className={styles.spinnerCell}>
+            <Spinner />
+          </td>
+        </tr>
+      );
     }
     if (filteredSubjects.length === 0) {
       return (
@@ -171,35 +221,28 @@ const ManageSubjectsPage = () => {
   };
   
   const addFormSemesterId = selectedSemesterId === 'all' ? '' : selectedSemesterId;
+  const addFormProgramId = selectedProgramId === 'all' ? '' : selectedProgramId;
+
+  // 5. Create the options arrays for the filter modal
+  const programOptions = [
+    { value: 'all', label: '-- All Programs --' },
+    ...programs.map(p => ({ value: p.id, label: p.title }))
+  ];
+
+  const semesterOptions = [
+    { value: 'all', label: '-- All Semesters --' },
+    ...semesters.map(s => ({ value: s.id, label: s.name }))
+  ];
 
   return (
     <div className={styles.container}>
       <div className={styles.header}>
         <h2>Manage Subjects</h2>
         <div className={styles.headerActions}>
-          <select 
-            value={selectedProgramId} 
-            onChange={(e) => setSelectedProgramId(e.target.value)} 
-            className={styles.filterDropdown}
-          >
-            <option value="all">-- All Programs --</option>
-            {programs.map(p => <option key={p.id} value={p.id}>{p.title}</option>)}
-          </select>
-          <select 
-            value={selectedSemesterId} 
-            onChange={(e) => setSelectedSemesterId(e.target.value)} 
-            className={styles.filterDropdown}
-            disabled={selectedProgramId === 'all'}
-          >
-            <option value="all">-- All Semesters --</option>
-            {semesters.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
-          </select>
-          <button 
-            onClick={() => setShowAddForm(prev => !prev)}
-            disabled={selectedSemesterId === 'all' && !showAddForm} 
-          >
-            {showAddForm ? 'Cancel' : 'Add New Subject'}
+          <button className={styles.iconButton} onClick={() => setShowFilterModal(true)}>
+            <BsFilter />
           </button>
+          <HeaderMenu actions={menuActions} />
         </div>
       </div>
       
@@ -215,7 +258,8 @@ const ManageSubjectsPage = () => {
         <AddSubjectForm 
           onSubjectAdded={handleSubjectAdded} 
           onCancel={() => setShowAddForm(false)}
-          selectedSemesterId={addFormSemesterId}
+          initialProgramId={addFormProgramId}
+          initialSemesterId={addFormSemesterId}
         />
       )}
       
@@ -241,6 +285,26 @@ const ManageSubjectsPage = () => {
         onPageChange={setPage}
         onRowsPerPageChange={handleRowsPerPageChange}
       />
+
+      {/* 6. Pass the new options to the filter modal */}
+      {showFilterModal && (
+        <FilterModal
+          onClose={() => setShowFilterModal(false)}
+          onApply={handleApplyFilters}
+          initialFilters={{ programId: selectedProgramId, semesterId: selectedSemesterId }}
+          filterType="programAndSemester"
+          programOptions={programOptions}
+          semesterOptions={semesterOptions}
+        />
+      )}
+
+      {showImportModal && (
+        <ImportCSVModal
+          onClose={() => setShowImportModal(false)}
+          onImportSuccess={handleImportSuccess}
+          importUrl="http://localhost:5000/api/import/subjects"
+        />
+      )}
 
       {editingSubject && (
         <EditSubjectModal

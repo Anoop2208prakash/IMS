@@ -1,4 +1,4 @@
-import { useState, useEffect, ChangeEvent, useCallback } from 'react'; // 1. Import useCallback
+import { useState, useEffect, ChangeEvent, useCallback } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import styles from '../../../assets/scss/pages/admin/AdminPages.module.scss';
@@ -7,7 +7,10 @@ import EmptyState from '../../../components/common/EmptyState';
 import Pagination from '../../../components/common/Pagination';
 import DeleteModal from '../../../components/common/DeleteModal';
 import Searchbar from '../../../components/common/Searchbar';
-import { BsCartX } from 'react-icons/bs';
+import HeaderMenu from '../../../components/common/HeaderMenu';
+import ImportCSVModal from '../../../components/common/ImportCSVModal';
+import FilterModal from '../../../components/common/FilterModal'; // 1. Import reusable modal
+import { BsCartX, BsFilter } from 'react-icons/bs';
 import AddInventoryItemForm from './AddInventoryItemForm';
 import EditInventoryItemModal from './EditInventoryItemModal';
 
@@ -15,6 +18,11 @@ type ItemCategory = 'UNIFORM' | 'STATIONARY' | 'OTHER';
 interface ItemData {
   id: string; name: string; category: ItemCategory;
   price: number; quantityInStock: number;
+}
+// 2. Define the type for the filter options
+interface FilterOption {
+  value: string;
+  label: string;
 }
 
 const ManageInventoryPage = () => {
@@ -26,13 +34,17 @@ const ManageInventoryPage = () => {
   const [deletingItem, setDeletingItem] = useState<ItemData | null>(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
   
+  // Filter & Search States
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
+  
+  // Modal States
+  const [showFilterModal, setShowFilterModal] = useState(false);
+  const [showImportModal, setShowImportModal] = useState(false);
   
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
-  // 2. Wrap fetchItems in useCallback
   const fetchItems = useCallback(async () => {
     setLoading(true);
     try {
@@ -49,15 +61,15 @@ const ManageInventoryPage = () => {
       setLoading(false);
       setPage(0);
     }
-  }, [selectedCategory]); // 3. Add its dependency
+  }, [selectedCategory]);
 
-  // 4. Re-fetch items when the stable fetchItems function changes
   useEffect(() => {
     fetchItems();
-  }, [fetchItems]); // <-- This now includes fetchItems
+  }, [fetchItems]); // Fixed useEffect dependency
 
   const handleItemAdded = () => { setShowAddForm(false); fetchItems(); toast.success('Item added successfully!'); };
   const handleItemUpdated = () => { setEditingItem(null); fetchItems(); toast.success('Item updated successfully!'); };
+  const handleImportSuccess = () => { fetchItems(); };
   
   const handleDelete = async () => {
     if (!deletingItem) return;
@@ -67,12 +79,8 @@ const ManageInventoryPage = () => {
       setItems(currentItems => currentItems.filter(item => item.id !== deletingItem.id));
       toast.success('Item deleted successfully!');
       setDeletingItem(null);
-    } catch (err) {
-      if (axios.isAxiosError(err) && err.response) {
-        toast.error(err.response.data.message || 'Failed to delete item.');
-      } else {
-        toast.error('An unexpected error occurred.');
-      }
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || 'Failed to delete item.');
     } finally {
       setDeleteLoading(false);
     }
@@ -96,6 +104,57 @@ const ManageInventoryPage = () => {
     setSearchTerm(e.target.value);
     setPage(0);
   };
+
+  const handleExportCSV = async () => {
+    toast.loading('Preparing download...');
+    try {
+      const response = await axios.get('http://localhost:5000/api/export/inventory', {
+        params: { category: selectedCategory, searchTerm },
+        responseType: 'blob',
+      });
+      const url = URL.createObjectURL(response.data);
+      const link = document.createElement('a');
+      link.setAttribute('href', url);
+      link.setAttribute('download', 'inventory_export.csv');
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      toast.dismiss();
+      toast.success('Data exported successfully!');
+    } catch (err: any) {
+      toast.dismiss();
+      const errorText = await (err.response?.data as Blob).text();
+      try {
+        const errorJson = JSON.parse(errorText);
+        toast.error(errorJson.message || 'Failed to export items.');
+      } catch (e) {
+        toast.error('Failed to export items.');
+      }
+    }
+  };
+
+  const menuActions = [
+    {
+      label: 'Add New Item',
+      onClick: () => setShowAddForm(true),
+    },
+    { label: 'Export CSV', onClick: handleExportCSV },
+    { label: 'Import CSV', onClick: () => setShowImportModal(true) }
+  ];
+
+  // 3. This handler now correctly matches the FilterModal's onApply prop
+  const handleApplyFilter = (filters: { programId: string; semesterId: string }) => {
+    // We use the 'programId' field from the modal to store our 'category'
+    setSelectedCategory(filters.programId);
+  };
+
+  // 4. Define the *category* options to pass to the modal
+  const categoryOptions: FilterOption[] = [
+    { value: 'all', label: 'All Categories' },
+    { value: 'STATIONARY', label: 'Stationary' },
+    { value: 'UNIFORM', label: 'Uniform' },
+    { value: 'OTHER', label: 'Other' }
+  ];
 
   const renderTableBody = () => {
     if (loading) {
@@ -132,19 +191,10 @@ const ManageInventoryPage = () => {
       <div className={styles.header}>
         <h2>Manage Inventory</h2>
         <div className={styles.headerActions}>
-          <select 
-            value={selectedCategory} 
-            onChange={(e) => setSelectedCategory(e.target.value)} 
-            className={styles.filterDropdown}
-          >
-            <option value="all">All Categories</option>
-            <option value="STATIONARY">Stationary</option>
-            <option value="UNIFORM">Uniform</option>
-            <option value="OTHER">Other</option>
-          </select>
-          <button onClick={() => setShowAddForm(prev => !prev)}>
-            {showAddForm ? 'Cancel' : 'Add New Item'}
+          <button className={styles.iconButton} onClick={() => setShowFilterModal(true)}>
+            <BsFilter />
           </button>
+          <HeaderMenu actions={menuActions} />
         </div>
       </div>
 
@@ -181,12 +231,32 @@ const ManageInventoryPage = () => {
         onRowsPerPageChange={handleRowsPerPageChange}
       />
       
+      {showImportModal && (
+        <ImportCSVModal
+          onClose={() => setShowImportModal(false)}
+          onImportSuccess={handleImportSuccess}
+          importUrl="http://localhost:5000/api/import/inventory"
+        />
+      )}
+
+      {/* 5. Pass the correct props to the reusable FilterModal */}
+      {showFilterModal && (
+        <FilterModal
+          onClose={() => setShowFilterModal(false)}
+          onApply={handleApplyFilter}
+          initialFilters={{ programId: selectedCategory, semesterId: 'all' }}
+          filterType="category"
+          programOptions={categoryOptions} // Pass categories as programOptions
+          semesterOptions={[]} // Pass an empty array
+        />
+      )}
+
       {editingItem && <EditInventoryItemModal item={editingItem} onClose={() => setEditingItem(null)} onItemUpdated={handleItemUpdated} />}
       
       {deletingItem && (
         <DeleteModal
           title="Delete Item"
-          message={`Are you sure you want to delete "${deletingItem.name}"? This will permanently remove it from the inventory.`}
+          message={`Are you sure you want to delete "${deletingItem.name}"?`}
           onClose={() => setDeletingItem(null)}
           onConfirm={handleDelete}
           loading={deleteLoading}

@@ -1,22 +1,31 @@
 .layout {
   display: flex;
+  // This padding-left is the *key*. It creates the space for the sidebar.
+  padding-left: 240px;
+  transition: padding-left 0.3s ease-in-out;
+}
+
+// This new class shrinks the padding when the sidebar is collapsed
+.layoutCollapsed {
+  padding-left: 78px;
 }
 
 .mainContent {
-  margin-left: 240px; /* Same as sidebar width */
   flex-grow: 1;
-  width: calc(100% - 240px);
+  width: 100%; // Main content is now full width
+  min-height: 100vh;
+  background-color: var(--color-background);
 }
 
 .header {
   position: fixed;
   top: 0;
-  right: 0;
-  width: 100%; // <-- This is the fix (was 100%)
-  z-index: 1000; // Ensures it stays on top
-
+  // The header's left position is now 0, as it's inside the .mainContent
+  left: 0; 
+  width: 100%; // Header is always 100% width
+  z-index: 1000;
   display: flex;
-  justify-content: space-between; // Positions logo (left) and dropdown (right)
+  justify-content: space-between;
   align-items: center;
   padding: 10px 30px;
   height: 60px;
@@ -27,17 +36,11 @@
   border-bottom: 1px solid var(--color-border);
 }
 
-// Style for the logo in the header
 .logo {
-  height: 60px; // Adjusted for a 60px header
-  
-  img {
-    height: 100%;
-    width: auto;
-  }
+  height: 40px;
+  img { height: 100%; width: auto; }
 }
 
-// Wrapper for controls on the right (Theme Toggle, Profile Dropdown)
 .headerControls {
   display: flex;
   align-items: center;
