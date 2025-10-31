@@ -1,22 +1,38 @@
 import { Router } from 'express';
 import {
-  getAllSubjects, addSubject, updateSubject, deleteSubject,
-  assignTeacherToSubject, getEnrolledStudents
+  getAllSubjects,
+  createSubject, // <-- Renamed from addSubject
+  updateSubject,
+  deleteSubject,
+  assignTeacherToSubject,
+  getEnrolledStudents
 } from '../controllers/subject.controller';
 import { authMiddleware, roleMiddleware } from '../middleware/auth.middleware';
 
 const router = Router();
-const adminOnly = [authMiddleware, roleMiddleware(['ADMIN'])];
-const teacherOnly = [authMiddleware, roleMiddleware(['TEACHER'])];
+const adminRoles = ['ADMIN', 'SUPER_ADMIN'];
+const teacherRole = ['TEACHER'];
 
 // Admin routes
 router.get('/', authMiddleware, getAllSubjects);
-router.post('/', adminOnly, addSubject);
-router.put('/:id', adminOnly, updateSubject);
-router.delete('/:id', adminOnly, deleteSubject);
-router.post('/:subjectId/assign-teacher', adminOnly, assignTeacherToSubject);
+router.post('/', authMiddleware, roleMiddleware(adminRoles), createSubject);
+router.put('/:id', authMiddleware, roleMiddleware(adminRoles), updateSubject);
+router.delete('/:id', authMiddleware, roleMiddleware(adminRoles), deleteSubject);
+
+// Route for Admins to assign a teacher
+router.post(
+  '/:id/assign-teacher', // <-- Standardized to :id
+  authMiddleware,
+  roleMiddleware(adminRoles),
+  assignTeacherToSubject
+);
 
 // Teacher routes
-router.get('/:subjectId/students', teacherOnly, getEnrolledStudents);
+router.get(
+  '/:subjectId/students', // <-- This remains :subjectId as it's specific
+  authMiddleware,
+  roleMiddleware(teacherRole),
+  getEnrolledStudents
+);
 
 export default router;

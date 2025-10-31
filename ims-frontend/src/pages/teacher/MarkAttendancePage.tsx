@@ -8,17 +8,21 @@ import Spinner from '../../components/common/Spinner';
 interface Subject { 
   id: string; 
   title: string;
-  programTitle: string; // We get this from the backend now
+  semester: {
+    program: {
+      title: string;
+    };
+  };
 }
 interface Student { 
   id: string; 
   name: string; 
-  student: { rollNumber: string; };
+  sID: string; // Use sID
 }
 type AttendanceStatus = 'PRESENT' | 'ABSENT' | 'LATE';
 
 const MarkAttendancePage = () => {
-  const [mySubjects, setMySubjects] = useState<Subject[]>([]);
+  const [mySubjects, setMySubjects] = useState<Subject[]>([]); // 2. State is now Subject[]
   const [selectedSubjectId, setSelectedSubjectId] = useState('');
   const [students, setStudents] = useState<Student[]>([]);
   const [attendance, setAttendance] = useState<Record<string, AttendanceStatus>>({});
@@ -67,7 +71,7 @@ const MarkAttendancePage = () => {
     const records = Object.entries(attendance).map(([studentId, status]) => ({ studentId, status }));
 
     const promise = axios.post('http://localhost:5000/api/attendance', {
-      subjectId: selectedSubjectId, // 3. Send subjectId, not courseId
+      subjectId: selectedSubjectId, // Send subjectId
       date,
       records,
     });
@@ -85,10 +89,10 @@ const MarkAttendancePage = () => {
       <div className={styles.controls}>
         <select onChange={e => setSelectedSubjectId(e.target.value)} value={selectedSubjectId}>
           <option value="">-- Select a Subject --</option>
-          {/* 4. Map over subjects and show program title */}
+          {/* 3. Map over subjects and show program title */}
           {mySubjects.map(sub => (
             <option key={sub.id} value={sub.id}>
-              {sub.programTitle} - {sub.title}
+              {sub.semester.program.title} - {sub.title}
             </option>
           ))}
         </select>
@@ -102,7 +106,8 @@ const MarkAttendancePage = () => {
           <div className={styles.studentList}>
             {students.map(student => (
               <div key={student.id} className={styles.studentRow}>
-                <span>{student.name} ({student.student.rollNumber})</span>
+                {/* 4. Display sID instead of rollNumber */}
+                <span>{student.name} ({student.sID})</span>
                 <div className={styles.statusButtons}>
                   {['PRESENT', 'ABSENT', 'LATE'].map(status => (
                     <button

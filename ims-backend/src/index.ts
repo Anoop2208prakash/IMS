@@ -23,6 +23,7 @@ import orderRoutes from './routes/order.routes';
 import announcementRoutes from './routes/announcement.routes';
 import dashboardRoutes from './routes/dashboard.routes';
 import transferRoutes from './routes/transfer.routes'; // Import renamed route
+import enrollmentRoutes from './routes/enrollment.routes';
 
 dotenv.config();
 
@@ -56,6 +57,7 @@ app.use('/api/inventory', inventoryRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/announcements', announcementRoutes);
 app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/enrollments', enrollmentRoutes);
 
 // Both export and import routes are handled by the same router.
 app.use('/api/export', transferRoutes);

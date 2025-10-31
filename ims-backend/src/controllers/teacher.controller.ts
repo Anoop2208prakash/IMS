@@ -24,12 +24,11 @@ export const getAllTeachers = async (req: AuthRequest, res: Response) => {
         id: true,
         name: true,
         email: true,
-        sID: true, // <-- Get the new SID
+        sID: true, 
         role: true,
         createdAt: true,
         teacher: {
           select: {
-            // employeeId: true, // <-- Removed
             department: true,
             dateJoined: true,
           },
@@ -42,52 +41,16 @@ export const getAllTeachers = async (req: AuthRequest, res: Response) => {
   }
 };
 
-// This function creates a new teacher.
+// This function creates a new teacher. (Handled by staff.controller.ts)
 export const addTeacher = async (req: AuthRequest, res: Response) => {
-  const { fullName, email, password, department } = req.body;
-
-  if (!fullName || !email || !password || !department) {
-    return res.status(400).json({ message: 'All fields are required.' });
-  }
-
-  try {
-    const existingUser = await prisma.user.findUnique({ where: { email } });
-    if (existingUser) {
-      return res.status(409).json({ message: 'Email is already in use.' });
-    }
-
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const sID = await generateSID(); // <-- Generate new SID
-
-    const newUser = await prisma.user.create({
-      data: {
-        name: fullName,
-        email,
-        password: hashedPassword,
-        sID: sID, // <-- Save new SID
-        role: 'TEACHER',
-        teacher: {
-          create: {
-            // employeeId: `TEACHER-${Date.now()}`, // <-- Removed
-            department: department,
-            dateJoined: new Date(),
-          },
-        },
-      },
-    });
-
-    const { password: _, ...userWithoutPassword } = newUser;
-    res.status(201).json(userWithoutPassword);
-
-  } catch (error) {
-    res.status(500).json({ message: 'Failed to create teacher.' });
-  }
+  // This logic is now in staff.controller.ts
+  res.status(501).json({ message: 'Not implemented. Please use /api/staff/register' });
 };
 
 // This function updates a teacher's details.
 export const updateTeacher = async (req: AuthRequest, res: Response) => {
   const { id } = req.params;
-  const { name, email, sID, department } = req.body; // <-- Added sID
+  const { name, email, sID, department } = req.body;
 
   if (!name || !email || !sID || !department) {
     return res.status(400).json({ message: 'Name, email, SID, and department are required.' });
@@ -113,7 +76,7 @@ export const updateTeacher = async (req: AuthRequest, res: Response) => {
       data: {
         name: name,
         email: email,
-        sID: sID, // <-- Update sID
+        sID: sID,
         teacher: {
           update: {
             department: department,
@@ -140,12 +103,18 @@ export const deleteTeacher = async (req: AuthRequest, res: Response) => {
       return res.status(404).json({ message: 'Teacher not found.' });
     }
     
-    // Updated transaction to include all relations
+    // 1. Un-assign subjects before deleting the teacher
+    await prisma.subject.updateMany({
+      where: { teacherId: id },
+      data: { teacherId: null },
+    });
+
+    // 2. Run the rest of the transaction
     await prisma.$transaction([
-      prisma.subjectAssignment.deleteMany({ where: { teacherId: id } }),
+      // prisma.subjectAssignment.deleteMany({ where: { teacherId: id } }), // <-- REMOVED
       prisma.attendance.deleteMany({ where: { markedById: id } }),
       prisma.examResult.deleteMany({ where: { enteredById: id } }),
-      prisma.announcement.deleteMany({ where: { authorId: id } }), // <-- Added this
+      prisma.announcement.deleteMany({ where: { authorId: id } }),
       prisma.teacher.delete({ where: { userId: id } }),
       prisma.user.delete({ where: { id: id } })
     ]);
@@ -164,28 +133,28 @@ export const getMyAssignedSubjects = async (req: AuthRequest, res: Response) => 
   if (!teacherId) return res.status(401).json({ message: 'Not authenticated.' });
 
   try {
-    const assignments = await prisma.subjectAssignment.findMany({
-      where: { teacherId },
-      include: { 
-        subject: { 
-          include: {
-            semester: { 
-              include: {
-                program: { select: { title: true } }
-              }
-            }
-          }
-        } 
+    // 1. Find subjects directly where teacherId matches
+    const subjects = await prisma.subject.findMany({
+      where: {
+        teacherId: teacherId,
       },
+      include: {
+        semester: {
+          include: {
+            program: true, // Include the program details
+          },
+        },
+      },
+      orderBy: {
+        title: 'asc' // Order by subject title A-Z
+      }
     });
-    
-    const subjects = assignments.map(a => ({
-      ...a.subject,
-      programTitle: a.subject.semester.program.title,
-    }));
-    
+
+    // 2. Return the subjects directly
     res.status(200).json(subjects);
+
   } catch (error) {
+    console.error(error);
     res.status(500).json({ message: 'Failed to fetch assigned subjects.' });
   }
 };
