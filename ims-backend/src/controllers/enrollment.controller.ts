@@ -4,38 +4,45 @@ import { AuthRequest } from '../middleware/auth.middleware';
 
 const prisma = new PrismaClient();
 
-// GET a student's own enrolled subjects
+/**
+ * GET: /api/enrollments/my-subjects
+ * Fetches all subjects for the currently logged-in student.
+ */
 export const getMyEnrolledSubjects = async (req: AuthRequest, res: Response) => {
-  const userId = req.user?.id;
-  if (!userId) {
+  const studentId = req.user?.id;
+  if (!studentId) {
     return res.status(401).json({ message: 'Not authenticated' });
   }
 
   try {
     const enrollments = await prisma.enrollment.findMany({
-      where: { userId },
+      where: {
+        userId: studentId,
+      },
       include: {
-        subject: { // Include the subject details
+        subject: {
           include: {
-            semester: { // And the semester
+            semester: {
               include: {
-                program: { select: { title: true } } // And the program title
-              }
-            }
-          }
-        }
-      }
+                program: true, // Include the program details
+              },
+            },
+          },
+        },
+      },
+      orderBy: {
+        subject: {
+          title: 'asc', // Order by subject title A-Z
+        },
+      },
     });
-
-    // Remap to a cleaner array of subjects that includes program/semester names
-    const subjects = enrollments.map(e => ({
-      ...e.subject,
-      programTitle: e.subject.semester.program.title,
-      semesterName: e.subject.semester.name
-    }));
     
+    // We only want to return the subject data
+    const subjects = enrollments.map(e => e.subject);
+
     res.status(200).json(subjects);
   } catch (error) {
-    res.status(500).json({ message: 'Failed to fetch enrolled subjects.' });
+    console.error('Failed to fetch subjects:', error);
+    res.status(500).json({ message: 'Failed to fetch subjects.' });
   }
 };

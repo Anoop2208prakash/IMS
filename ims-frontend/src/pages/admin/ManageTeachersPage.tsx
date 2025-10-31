@@ -10,6 +10,7 @@ import Searchbar from '../../components/common/Searchbar';
 import HeaderMenu from '../../components/common/HeaderMenu';
 import ImportCSVModal from '../../components/common/ImportCSVModal';
 import { FaChalkboardTeacher } from 'react-icons/fa';
+import { BsFilter } from 'react-icons/bs'; // Import the filter icon
 import AddTeacherForm from './AddTeacherForm';
 import EditTeacherModal from './EditTeacherModal';
 
@@ -63,6 +64,7 @@ const ManageTeachersPage = () => {
   const handleTeacherAdded = () => {
     setShowAddForm(false);
     fetchTeachers();
+    toast.success('Teacher added successfully!');
   };
 
   const handleTeacherUpdated = () => {
@@ -190,9 +192,11 @@ const ManageTeachersPage = () => {
     <div className={styles.container}>
       <div className={styles.header}>
         <h2>Manage Teachers</h2>
-        {/* --- THIS IS THE FIX --- */}
         <div className={styles.headerActions}>
-          {/* The Filter button has been removed */}
+          {/* This page does not have filters, so we just show a disabled button for UI consistency */}
+          <button className={styles.iconButton} onClick={() => toast.error('No filters available for this page.')} disabled>
+            <BsFilter />
+          </button>
           <HeaderMenu actions={menuActions} />
         </div>
       </div>

@@ -56,22 +56,25 @@ enum MaritalStatus {
 
 // --- Main Models ---
 model User {
-  id                   String              @id @default(cuid())
-  sID                  String              @unique // <-- ADDED: Main 7-digit ID
-  email                String              @unique
+  id                   String       @id @default(cuid())
+  sID                  String       @unique
+  email                String       @unique
   name                 String
   password             String
-  role                 Role                @default(STUDENT)
-  createdAt            DateTime            @default(now())
-  updatedAt            DateTime            @updatedAt
+  role                 Role         @default(STUDENT)
+  createdAt            DateTime     @default(now())
+  updatedAt            DateTime     @updatedAt
   
-  passwordResetToken   String?             @unique
+  passwordResetToken   String?      @unique
   passwordResetExpires DateTime?
 
   student              Student?
   teacher              Teacher?
   enrollments          Enrollment[]
-  assignments          SubjectAssignment[] @relation("TeacherAssignments")
+  
+  // assignments          SubjectAssignment[] @relation("TeacherAssignments") // <-- REMOVED
+  taughtSubjects       Subject[]           @relation("TeacherSubjects") // <-- ADDED
+
   loans                Loan[]
   studentAttendance    Attendance[]        @relation("StudentAttendance")
   markedAttendance     Attendance[]        @relation("TeacherAttendance")
@@ -88,7 +91,6 @@ model Student {
   id               String        @id @default(cuid())
   userId           String        @unique
   user             User          @relation(fields: [userId], references: [id])
-  // rollNumber       String     @unique // <-- REMOVED
   admissionDate    DateTime
 
   fatherName       String?
@@ -110,7 +112,6 @@ model Student {
 model Teacher {
   id          String   @id @default(cuid())
   userId      String   @unique
-  // employeeId  String   @unique // <-- REMOVED
   department  String
   dateJoined  DateTime
   user        User     @relation(fields: [userId], references: [id])
@@ -119,7 +120,7 @@ model Teacher {
 // --- Academic Structure ---
 model Program {
   id            String         @id @default(cuid())
-  title         String         @unique // e.g., "BTech Computer Science"
+  title         String         @unique
   description   String?        @db.Text
   durationYears Int            
   
@@ -128,25 +129,30 @@ model Program {
 }
 
 model Semester {
-  id         String    @id @default(cuid())
-  name       String    // e.g., "Semester 1"
-  programId  String
-  program    Program   @relation(fields: [programId], references: [id])
+  id        String    @id @default(cuid())
+  name      String
+  programId String
+  program   Program   @relation(fields: [programId], references: [id])
   
-  subjects   Subject[]
+  subjects  Subject[]
   @@unique([programId, name])
 }
 
 model Subject {
-  id                String              @id @default(cuid())
-  title             String              // e.g., "Data Structures"
-  subjectCode       String              @unique
+  id                String       @id @default(cuid())
+  title             String
+  subjectCode       String       @unique
   credits           Int
   semesterId        String
-  semester          Semester            @relation(fields: [semesterId], references: [id])
+  semester          Semester     @relation(fields: [semesterId], references: [id])
+
+  // --- THIS IS THE FIX ---
+  teacherId         String?      // 1. Add optional foreign key
+  teacher           User?        @relation("TeacherSubjects", fields: [teacherId], references: [id])
+  // -----------------------
   
   enrollments       Enrollment[]
-  assignments       SubjectAssignment[]
+  // assignments       SubjectAssignment[] // <-- REMOVED
   attendanceRecords Attendance[]
   examResults       ExamResult[]
 }
@@ -156,23 +162,25 @@ model Enrollment {
   id         String   @id @default(cuid())
   userId     String
   user       User     @relation(fields: [userId], references: [id])
-  subjectId  String   // Linked to Subject
+  subjectId  String
   subject    Subject  @relation(fields: [subjectId], references: [id])
   enrolledAt DateTime @default(now())
 
   @@unique([userId, subjectId])
 }
 
-model SubjectAssignment {
-  id         String   @id @default(cuid())
-  teacherId  String
-  teacher    User     @relation("TeacherAssignments", fields: [teacherId], references: [id])
-  subjectId  String   // Linked to Subject
-  subject    Subject  @relation(fields: [subjectId], references: [id])
-  assignedAt DateTime @default(now())
-
-  @@unique([teacherId, subjectId])
-}
+// --- THIS MODEL IS NOW DELETED ---
+// model SubjectAssignment {
+//   id         String   @id @default(cuid())
+//   teacherId  String
+//   teacher    User     @relation("TeacherAssignments", fields: [teacherId], references: [id])
+//   subjectId  String
+//   subject    Subject  @relation(fields: [subjectId], references: [id])
+//   assignedAt DateTime @default(now())
+// 
+//   @@unique([teacherId, subjectId])
+// }
+// ---------------------------------
 
 model Attendance {
   id           String           @id @default(cuid())
@@ -182,7 +190,7 @@ model Attendance {
   studentId    String
   student      User             @relation("StudentAttendance", fields: [studentId], references: [id])
   
-  subjectId    String           // Linked to Subject
+  subjectId    String
   subject      Subject          @relation(fields: [subjectId], references: [id])
   
   markedById   String
@@ -199,7 +207,7 @@ model ExamResult {
   studentId     String
   student       User     @relation("StudentResults", fields: [studentId], references: [id])
   
-  subjectId     String   // Linked to Subject
+  subjectId     String
   subject       Subject  @relation(fields: [subjectId], references: [id])
   
   examId        String
@@ -217,7 +225,7 @@ model FeeStructure {
   id        String       @id @default(cuid())
   name      String
   amount    Float
-  programId String       // Linked to Program
+  programId String
   program   Program      @relation(fields: [programId], references: [id])
   invoices  FeeInvoice[]
   createdAt DateTime     @default(now())

@@ -1,6 +1,7 @@
 import { Response } from 'express';
 import { PrismaClient, AttendanceStatus } from '@prisma/client';
 import { AuthRequest } from '../middleware/auth.middleware';
+
 const prisma = new PrismaClient();
 
 interface AttendanceRecord {
@@ -11,7 +12,6 @@ interface AttendanceRecord {
 // For a Teacher to submit attendance records
 export const submitAttendance = async (req: AuthRequest, res: Response) => {
   const teacherId = req.user?.id;
-  // 1. Changed courseId to subjectId
   const { subjectId, date, records } = req.body as {
     subjectId: string;
     date: string;
@@ -23,24 +23,42 @@ export const submitAttendance = async (req: AuthRequest, res: Response) => {
   }
 
   try {
+    // --- THIS IS THE FIX ---
+    // 1. Verify the teacher is assigned to this subject
+    const assignment = await prisma.subjectAssignment.findUnique({
+      where: {
+        teacherId_subjectId: {
+          teacherId: teacherId,
+          subjectId: subjectId,
+        },
+      },
+    });
+
+    if (!assignment) {
+      return res.status(403).json({ message: 'You are not assigned to this subject.' });
+    }
+    // --- End of fix ---
+
+    // 2. Prepare all upsert operations
     const upsertOperations = records.map(record => 
       prisma.attendance.upsert({
-        // 2. Updated the unique where clause
         where: { date_studentId_subjectId: { date: new Date(date), studentId: record.studentId, subjectId } },
         update: { status: record.status },
         create: {
           date: new Date(date),
           status: record.status,
           studentId: record.studentId,
-          subjectId: subjectId, // 3. Use subjectId here
+          subjectId: subjectId,
           markedById: teacherId,
         },
       })
     );
     
+    // 3. Run all operations in a single transaction
     await prisma.$transaction(upsertOperations);
     res.status(201).json({ message: 'Attendance submitted successfully.' });
   } catch (error) {
+    console.error(error);
     res.status(500).json({ message: 'Failed to submit attendance.' });
   }
 };
@@ -54,7 +72,7 @@ export const getMyAttendance = async (req: AuthRequest, res: Response) => {
     const attendanceRecords = await prisma.attendance.findMany({
       where: { studentId },
       include: {
-        subject: { select: { title: true } }, // 4. Changed course to subject
+        subject: { select: { title: true } }, // Correctly fetches subject
       },
       orderBy: { date: 'desc' },
     });

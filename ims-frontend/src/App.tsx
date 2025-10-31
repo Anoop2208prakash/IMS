@@ -1,6 +1,6 @@
 import { Routes, Route } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
-// import { ThemeProvider } from './context/ThemeContext'; // <-- REMOVE THIS
+import { ThemeProvider } from './context/ThemeContext';
 
 // --- Layout and Auth Imports ---
 import MainLayout from './layouts/MainLayout';
@@ -17,9 +17,7 @@ import ResetPasswordPage from './pages/ResetPasswordPage';
 import DashboardPage from './pages/DashboardPage';
 import ProfilePage from './pages/ProfilePage';
 import ChangePasswordPage from './pages/ChangePasswordPage';
-import IDCardPage from './pages/IDCardPage';
 import OrderInvoicePage from './pages/student/OrderInvoicePage';
-
 
 // --- Student-Only Imports ---
 import MySubjectsPage from './pages/MySubjectsPage';
@@ -31,6 +29,7 @@ import StationaryStorePage from './pages/student/StationaryStorePage';
 import MyOrdersPage from './pages/student/MyOrdersPage';
 
 // --- Teacher-Only Imports ---
+import MyClassesPage from './pages/teacher/MyClassesPage'; // 1. IMPORT THE NEW PAGE
 import MarkAttendancePage from './pages/teacher/MarkAttendancePage';
 import EnterMarksPage from './pages/teacher/EnterMarksPage';
 
@@ -50,14 +49,13 @@ import GenerateInvoicesPage from './pages/admin/finance/GenerateInvoicesPage';
 import ManageInventoryPage from './pages/admin/inventory/ManageInventoryPage';
 import ViewOrdersPage from './pages/admin/ViewOrdersPage';
 import ManageAnnouncementsPage from './pages/admin/ManageAnnouncementsPage';
+import IDCardPage from './pages/IDCardPage';
 import BrowseBooksPage from './pages/admin/library/BrowseBooksPage';
 import MyLoansPage from './pages/admin/library/MyLoansPage';
 
-
 function App() {
   return (
-    // <ThemeProvider> <-- REMOVE THIS WRAPPER
-    <>
+    <ThemeProvider>
       <Toaster 
         position="top-right"
         toastOptions={{
@@ -65,6 +63,7 @@ function App() {
           error: { style: { background: '#e74c3c', color: 'white' } },
         }}
       />
+
       <Routes>
         {/* Public Routes */}
         <Route path="/login" element={<LoginPage />} />
@@ -97,11 +96,12 @@ function App() {
 
             {/* Teacher-Only Routes */}
             <Route element={<RoleProtectedRoute allowedRoles={['TEACHER']} />}>
+              <Route path="/teacher/my-classes" element={<MyClassesPage />} /> {/* 2. ADD THE ROUTE */}
               <Route path="/teacher/attendance" element={<MarkAttendancePage />} />
               <Route path="/teacher/marks" element={<EnterMarksPage />} />
             </Route>
             
-            {/* Admin-Only Routes (Consolidated) */}
+            {/* Admin-Only Routes */}
             <Route element={<RoleProtectedRoute allowedRoles={['ADMIN', 'ADMIN_ADMISSION']} />}>
               <Route path="/admin/admissions" element={<ViewAdmissionsPage />} />
               <Route path="/admin/admission/new" element={<NewAdmissionPage />} />
@@ -131,8 +131,7 @@ function App() {
           </Route>
         </Route>
       </Routes>
-    </>
-    // </ThemeProvider> <-- REMOVE THIS WRAPPER
+    </ThemeProvider>
   );
 }
 

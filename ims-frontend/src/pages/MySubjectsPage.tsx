@@ -1,18 +1,22 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
-import styles from '../assets/scss/pages/MySubjectsPage.module.scss';
+import styles from '../assets/scss/pages/MySubjectsPage.module.scss'; // Use its own stylesheet
 import Spinner from '../components/common/Spinner';
 import EmptyState from '../components/common/EmptyState';
-import { BsCardChecklist } from 'react-icons/bs';
+import { BsJournalBookmarkFill } from 'react-icons/bs';
 
 interface Subject {
   id: string;
   title: string;
   subjectCode: string;
   credits: number;
-  programTitle: string;
-  semesterName: string;
+  semester: {
+    name: string;
+    program: {
+      title: string;
+    };
+  };
 }
 
 const MySubjectsPage = () => {
@@ -20,9 +24,10 @@ const MySubjectsPage = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchMySubjects = async () => {
+    const fetchSubjects = async () => {
+      setLoading(true);
       try {
-        setLoading(true);
+        // This is the API endpoint we just created
         const response = await axios.get('http://localhost:5000/api/enrollments/my-subjects');
         setSubjects(response.data);
       } catch (err) {
@@ -35,27 +40,38 @@ const MySubjectsPage = () => {
         setLoading(false);
       }
     };
-    fetchMySubjects();
+    
+    fetchSubjects();
   }, []);
-
-  if (loading) return <Spinner />;
 
   return (
     <div className={styles.container}>
       <h2>My Subjects</h2>
-      {subjects.length === 0 ? (
-        <EmptyState message="You are not enrolled in any subjects." icon={<BsCardChecklist size={40} />} />
+      
+      {loading ? (
+        <Spinner />
       ) : (
         <div className={styles.subjectsGrid}>
-          {subjects.map(subject => (
-            <div key={subject.id} className={styles.subjectCard}>
-              <h3>{subject.title}</h3>
-              <p className={styles.code}>{subject.subjectCode}</p>
-              <p>{subject.programTitle}</p>
-              <p>{subject.semesterName}</p>
-              <p className={styles.credits}><strong>Credits:</strong> {subject.credits}</p>
+          {subjects.length === 0 ? (
+            <div className={styles.emptyContainer}>
+              <EmptyState 
+                message="You are not enrolled in any subjects." 
+                icon={<BsJournalBookmarkFill size={40} />} 
+              />
             </div>
-          ))}
+          ) : (
+            subjects.map((subject) => (
+              <div key={subject.id} className={styles.subjectCard}>
+                <h3>{subject.title}</h3>
+                <p className={styles.code}>{subject.subjectCode}</p>
+                <p>{subject.semester.program.title}</p>
+                <p>{subject.semester.name}</p>
+                <p className={styles.credits}>
+                  <strong>Credits:</strong> {subject.credits}
+                </p>
+              </div>
+            ))
+          )}
         </div>
       )}
     </div>

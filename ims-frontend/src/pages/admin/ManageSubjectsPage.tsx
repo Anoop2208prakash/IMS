@@ -12,15 +12,20 @@ import ImportCSVModal from '../../components/common/ImportCSVModal';
 import FilterModal from '../../components/common/FilterModal';
 import { BsCardChecklist, BsFilter } from 'react-icons/bs';
 import AddSubjectForm from './AddSubjectForm';
-import EditSubjectModal from './EditSubjectModal';
 import AssignTeacherModal from './AssignTeacherModal';
+import EditSubjectModal from './EditSubjectModal';
 
 interface SubjectData {
   id: string; title: string; subjectCode: string; credits: number; semesterId: string;
   semester: { name: string; program: { title: string; }; };
+  teacher: { id: string; name: string } | null;
 }
 interface ProgramData { id: string; title: string; }
 interface SemesterData { id: string; name: string; }
+interface FilterOption {
+  value: string;
+  label: string;
+}
 
 const ManageSubjectsPage = () => {
   // Filter states
@@ -29,8 +34,8 @@ const ManageSubjectsPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   
   const [subjects, setSubjects] = useState<SubjectData[]>([]);
-  const [programs, setPrograms] = useState<ProgramData[]>([]); // 1. Add state for programs
-  const [semesters, setSemesters] = useState<SemesterData[]>([]); // 2. Add state for semesters
+  const [programs, setPrograms] = useState<ProgramData[]>([]);
+  const [semesters, setSemesters] = useState<SemesterData[]>([]);
 
   const [loading, setLoading] = useState(false);
   const [showAddForm, setShowAddForm] = useState(false);
@@ -46,14 +51,14 @@ const ManageSubjectsPage = () => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
-  // 3. Fetch programs for the filter modal
+  // Fetch programs for the filter modal
   useEffect(() => {
     axios.get('http://localhost:5000/api/programs')
       .then(res => setPrograms(res.data))
       .catch(() => toast.error('Failed to load programs.'));
   }, []);
 
-  // 4. Fetch semesters when the filter's program ID changes
+  // Fetch semesters when the filter's program ID changes
   useEffect(() => {
     if (selectedProgramId && selectedProgramId !== 'all') {
       axios.get(`http://localhost:5000/api/semesters?programId=${selectedProgramId}`)
@@ -99,6 +104,7 @@ const ManageSubjectsPage = () => {
   // --- Handlers ---
   const handleSubjectAdded = () => { setShowAddForm(false); fetchSubjects(); };
   const handleSubjectUpdated = () => { setEditingSubject(null); fetchSubjects(); };
+  const handleTeacherAssigned = () => { setAssigningSubject(null); fetchSubjects(); };
   const handleImportSuccess = () => { fetchSubjects(); };
   
   const handleDelete = async () => {
@@ -168,11 +174,12 @@ const ManageSubjectsPage = () => {
     }
   };
 
+  // --- THIS IS THE FIX ---
   const menuActions = [
     {
       label: 'Add New Subject',
       onClick: () => setShowAddForm(true),
-      disabled: selectedSemesterId === 'all'
+      // 'disabled' property removed
     },
     { label: 'Export CSV', onClick: handleExportCSV },
     { label: 'Import CSV', onClick: () => setShowImportModal(true) }
@@ -187,7 +194,7 @@ const ManageSubjectsPage = () => {
     if (loading) {
       return (
         <tr>
-          <td colSpan={5} className={styles.spinnerCell}>
+          <td colSpan={6} className={styles.spinnerCell}>
             <Spinner />
           </td>
         </tr>
@@ -196,7 +203,7 @@ const ManageSubjectsPage = () => {
     if (filteredSubjects.length === 0) {
       return (
         <tr>
-          <td colSpan={5}>
+          <td colSpan={6}>
             <EmptyState 
               message={searchTerm ? "No subjects match your search." : "No subjects found for the selected filter."} 
               icon={<BsCardChecklist size={40} />} 
@@ -211,6 +218,7 @@ const ManageSubjectsPage = () => {
         <td>{subject.subjectCode}</td>
         <td>{subject.semester.program.title}</td>
         <td>{subject.semester.name}</td>
+        <td>{subject.teacher ? subject.teacher.name : 'N/A'}</td>
         <td>
           <button onClick={() => setAssigningSubject(subject)} className={`${styles.button} ${styles.assignButton}`}>Assign</button>
           <button onClick={() => setEditingSubject(subject)} className={`${styles.button} ${styles.editButton}`}>Edit</button>
@@ -223,13 +231,12 @@ const ManageSubjectsPage = () => {
   const addFormSemesterId = selectedSemesterId === 'all' ? '' : selectedSemesterId;
   const addFormProgramId = selectedProgramId === 'all' ? '' : selectedProgramId;
 
-  // 5. Create the options arrays for the filter modal
-  const programOptions = [
+  const programOptions: FilterOption[] = [
     { value: 'all', label: '-- All Programs --' },
     ...programs.map(p => ({ value: p.id, label: p.title }))
   ];
 
-  const semesterOptions = [
+  const semesterOptions: FilterOption[] = [
     { value: 'all', label: '-- All Semesters --' },
     ...semesters.map(s => ({ value: s.id, label: s.name }))
   ];
@@ -270,6 +277,7 @@ const ManageSubjectsPage = () => {
             <th>Code</th>
             <th>Program</th>
             <th>Semester</th>
+            <th>Teacher</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -286,7 +294,6 @@ const ManageSubjectsPage = () => {
         onRowsPerPageChange={handleRowsPerPageChange}
       />
 
-      {/* 6. Pass the new options to the filter modal */}
       {showFilterModal && (
         <FilterModal
           onClose={() => setShowFilterModal(false)}
@@ -318,7 +325,7 @@ const ManageSubjectsPage = () => {
         <AssignTeacherModal
           subject={assigningSubject}
           onClose={() => setAssigningSubject(null)}
-          onTeacherAssigned={() => setAssigningSubject(null)}
+          onTeacherAssigned={handleTeacherAssigned}
         />
       )}
 

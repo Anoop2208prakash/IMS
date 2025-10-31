@@ -1,16 +1,27 @@
-// src/controllers/admission.controller.ts
 import { Request, Response } from 'express';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Gender, MaritalStatus, Role } from '@prisma/client';
 import bcrypt from 'bcrypt';
 import { AuthRequest } from '../middleware/auth.middleware';
 
 const prisma = new PrismaClient();
 
-export const submitApplication = async (req: Request, res: Response) => {
-  const { fullName, email, password, courseId } = req.body;
+// Helper function to generate a unique 7-digit SID
+const generateSID = async (): Promise<string> => {
+  let sID = Math.floor(1000000 + Math.random() * 9000000).toString();
+  const existing = await prisma.user.findUnique({ where: { sID } });
+  if (existing) {
+    return await generateSID(); // Recurse if it exists
+  }
+  return sID;
+};
 
-  if (!fullName || !email || !password || !courseId) {
-    return res.status(400).json({ message: 'All fields are required.' });
+// This function is for a public admission form
+export const submitApplication = async (req: Request, res: Response) => {
+  // 1. Changed courseId to programId
+  const { fullName, email, password, programId } = req.body;
+
+  if (!fullName || !email || !password || !programId) {
+    return res.status(400).json({ message: 'Full name, email, password, and program are required.' });
   }
 
   try {
@@ -20,23 +31,38 @@ export const submitApplication = async (req: Request, res: Response) => {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
+    const sID = await generateSID(); // 2. Generate new sID
+
+    // 3. Find all subjects for Semester 1 of the selected program
+    const firstSemester = await prisma.semester.findFirst({
+      where: { programId, name: 'Semester 1' },
+      include: { subjects: { select: { id: true } } }
+    });
+
+    if (!firstSemester || firstSemester.subjects.length === 0) {
+      return res.status(400).json({ message: `This program has no subjects in Semester 1. Cannot enroll.` });
+    }
+
+    // 4. Prepare enrollment data for all subjects
+    const enrollmentData = firstSemester.subjects.map(subject => ({
+      subjectId: subject.id,
+    }));
 
     const newUser = await prisma.user.create({
       data: {
         name: fullName,
         email,
         password: hashedPassword,
+        sID: sID, // 5. Save the new sID
         role: 'STUDENT',
         student: {
           create: {
-            rollNumber: `STUDENT-${Date.now()}`,
+            // rollNumber is removed
             admissionDate: new Date(),
           },
         },
-        enrollments: { // <-- This block was added
-          create: {
-            courseId: courseId, // Links the user to the selected course
-          },
+        enrollments: {
+          create: enrollmentData, // 6. Create enrollments for all subjects
         },
       },
     });
@@ -58,7 +84,9 @@ export const getMyAttendance = async (req: AuthRequest, res: Response) => {
     const attendanceRecords = await prisma.attendance.findMany({
       where: { studentId },
       include: {
-        course: { select: { title: true } }, // Include the course title
+        // --- THIS IS THE FIX ---
+        // Changed 'course' to 'subject' to match your schema
+        subject: { select: { title: true } }, 
       },
       orderBy: { date: 'desc' },
     });

@@ -29,14 +29,17 @@ const navLinks = {
     { path: '/stationary-store', label: 'Stationary Store', icon: <BsCartFill /> },
     { path: '/my-orders', label: 'My Orders', icon: <BsBoxSeam /> }
   ],
+  // --- THIS IS THE FIX ---
   TEACHER: [
     { path: '/', label: 'Dashboard', icon: <BsFillGridFill /> },
+    { path: '/teacher/my-classes', label: 'My Classes', icon: <BsBook /> }, // <-- ADD THIS LINK
     { path: '/id-card', label: 'ID Card', icon: <BsPersonBadgeFill /> },
     { path: '/library', label: 'Library', icon: <BsBookHalf /> },
     { path: '/my-loans', label: 'My Loans', icon: <BsArrowLeftRight /> },
     { path: '/teacher/attendance', label: 'Mark Attendance', icon: <BsCalendarCheck /> },
     { path: '/teacher/marks', label: 'Enter Marks', icon: <BsPencilSquare /> },
   ],
+  // -------------------------
   ADMIN: [
     { path: '/', label: 'Dashboard', icon: <BsFillGridFill /> },
     { path: '/id-card', label: 'ID Card', icon: <BsPersonBadgeFill /> },
@@ -95,7 +98,6 @@ const Sidebar = ({ isCollapsed, onToggle }: SidebarProps) => {
         ))}
       </nav>
       
-      {/* 4. The toggle button is now here, *outside* the nav */}
       <button onClick={onToggle} className={styles.collapseToggle}>
         {isCollapsed ? <BsChevronRight /> : <BsChevronLeft />}
       </button>
