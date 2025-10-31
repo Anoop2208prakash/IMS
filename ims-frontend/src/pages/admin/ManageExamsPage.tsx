@@ -1,4 +1,4 @@
-import { useState, useEffect, ChangeEvent } from 'react';
+import { useState, useEffect, ChangeEvent, useCallback } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import styles from '../../assets/scss/pages/admin/AdminPages.module.scss';
@@ -6,8 +6,10 @@ import Spinner from '../../components/common/Spinner';
 import EmptyState from '../../components/common/EmptyState';
 import Pagination from '../../components/common/Pagination';
 import DeleteModal from '../../components/common/DeleteModal';
-import Searchbar from '../../components/common/Searchbar'; // 1. Import Searchbar
-import { BsPencilSquare } from 'react-icons/bs';
+import Searchbar from '../../components/common/Searchbar';
+import HeaderMenu from '../../components/common/HeaderMenu'; // 1. Import
+import ImportCSVModal from '../../components/common/ImportCSVModal'; // 2. Import
+import { BsPencilSquare, BsFilter } from 'react-icons/bs'; // 3. Import;
 import AddExamForm from './AddExamForm';
 import EditExamModal from './EditExamModal';
 
@@ -24,16 +26,17 @@ const ManageExamsPage = () => {
   const [showAddForm, setShowAddForm] = useState(false);
   
   // Modal States
+  const [showImportModal, setShowImportModal] = useState(false); // 4. Add state
   const [editingExam, setEditingExam] = useState<ExamData | null>(null);
   const [deletingExam, setDeletingExam] = useState<ExamData | null>(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
 
   // Search & Pagination States
-  const [searchTerm, setSearchTerm] = useState(''); // 2. Add search state
+  const [searchTerm, setSearchTerm] = useState('');
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
-  const fetchExams = async () => {
+  const fetchExams = useCallback(async () => {
     setLoading(true);
     try {
       const response = await axios.get('http://localhost:5000/api/exams');
@@ -47,11 +50,11 @@ const ManageExamsPage = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []); // 5. Add dependency
 
   useEffect(() => {
     fetchExams();
-  }, []);
+  }, [fetchExams]);
 
   const handleExamAdded = () => {
     setShowAddForm(false);
@@ -65,6 +68,10 @@ const ManageExamsPage = () => {
     toast.success('Exam updated successfully!');
   };
 
+  const handleImportSuccess = () => {
+    fetchExams();
+  };
+
   const handleDelete = async () => {
     if (!deletingExam) return;
     setDeleteLoading(true);
@@ -73,18 +80,13 @@ const ManageExamsPage = () => {
       setExams(current => current.filter(e => e.id !== deletingExam.id));
       toast.success('Exam deleted successfully!');
       setDeletingExam(null);
-    } catch (err) {
-      if (axios.isAxiosError(err) && err.response) {
-        toast.error(err.response.data.message || 'Failed to delete exam.');
-      } else {
-        toast.error('An unexpected error occurred while deleting.');
-      }
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || 'Failed to delete exam.');
     } finally {
       setDeleteLoading(false);
     }
   };
 
-  // --- Filtering & Pagination ---
   const filteredExams = exams.filter(exam =>
     exam.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -98,6 +100,43 @@ const ManageExamsPage = () => {
     setSearchTerm(e.target.value);
     setPage(0);
   };
+
+  const handleExportCSV = async () => {
+    toast.loading('Preparing download...');
+    try {
+      const response = await axios.get('http://localhost:5000/api/export/exams', {
+        params: { searchTerm },
+        responseType: 'blob',
+      });
+      const url = URL.createObjectURL(response.data);
+      const link = document.createElement('a');
+      link.setAttribute('href', url);
+      link.setAttribute('download', 'exams_export.csv');
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      toast.dismiss();
+      toast.success('Data exported successfully!');
+    } catch (err: any) {
+      toast.dismiss();
+      const errorText = await (err.response?.data as Blob).text();
+      try {
+        const errorJson = JSON.parse(errorText);
+        toast.error(errorJson.message || 'Failed to export exams.');
+      } catch (e) {
+        toast.error('Failed to export exams.');
+      }
+    }
+  };
+
+  const menuActions = [
+    {
+      label: 'Add New Exam',
+      onClick: () => setShowAddForm(true),
+    },
+    { label: 'Export CSV', onClick: handleExportCSV },
+    { label: 'Import CSV', onClick: () => setShowImportModal(true) }
+  ];
 
   const currentItems = filteredExams.slice(
     page * rowsPerPage,
@@ -143,12 +182,15 @@ const ManageExamsPage = () => {
     <div className={styles.container}>
       <div className={styles.header}>
         <h2>Manage Exams</h2>
-        <button onClick={() => setShowAddForm(prev => !prev)}>
-          {showAddForm ? 'Cancel' : 'Add New Exam'}
-        </button>
+        {/* 6. Use new header controls */}
+        <div className={styles.headerActions}>
+          <button className={styles.iconButton} onClick={() => toast.error('No filters available for this page.')}>
+            <BsFilter />
+          </button>
+          <HeaderMenu actions={menuActions} />
+        </div>
       </div>
 
-      {/* 3. Add the Searchbar */}
       <div className={styles.searchContainer}>
         <Searchbar
           value={searchTerm}
@@ -173,7 +215,6 @@ const ManageExamsPage = () => {
         </tbody>
       </table>
 
-      {/* 4. Update count to use filtered data */}
       <Pagination
         count={filteredExams.length}
         page={page}
@@ -181,6 +222,15 @@ const ManageExamsPage = () => {
         onPageChange={setPage}
         onRowsPerPageChange={handleRowsPerPageChange}
       />
+
+      {/* 7. Render new Import Modal */}
+      {showImportModal && (
+        <ImportCSVModal
+          onClose={() => setShowImportModal(false)}
+          onImportSuccess={handleImportSuccess}
+          importUrl="http://localhost:5000/api/import/exams"
+        />
+      )}
 
       {editingExam && <EditExamModal exam={editingExam} onClose={() => setEditingExam(null)} onExamUpdated={handleExamUpdated} />}
       

@@ -1,0 +1,49 @@
+// Re-use most styles from FilterModal
+@import './FilterModal.module.scss';
+
+.modalBody {
+  p {
+    font-size: 0.9em;
+    color: var(--color-text-secondary);
+    line-height: 1.5;
+    margin-top: 0;
+    text-align: center;
+  }
+}
+
+.uploadBox {
+  margin-top: 15px;
+}
+
+.fileInput {
+  width: 0.1px;
+  height: 0.1px;
+  opacity: 0;
+  overflow: hidden;
+  position: absolute;
+  z-index: -1;
+}
+
+.fileLabel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 30px;
+  border-radius: 8px;
+  border: 2px dashed var(--color-border-dashed);
+  background-color: var(--color-background);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all 0.2s;
+
+  span {
+    margin-top: 15px;
+    font-weight: 600;
+  }
+
+  &:hover {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+  }
+}

@@ -1,57 +1,81 @@
 import { useState, useEffect, ChangeEvent, FormEvent } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
-import styles from '../../assets/scss/pages/admin/AddForm.module.scss';
+import styles from '../../assets/scss/pages/admin/AddForm.module.scss'; // Corrected path
 
-interface Semester {
-  id: string;
-  name: string;
-  program: { title: string; };
-}
+interface Program { id: string; title: string; }
+interface Semester { id: string; name: string; }
 
+// 1. Update the props interface to accept the initial values
 interface AddSubjectFormProps {
   onSubjectAdded: () => void;
   onCancel: () => void;
-  selectedSemesterId: string; // This prop is passed from the parent page
+  initialProgramId: string;
+  initialSemesterId: string;
 }
 
-const AddSubjectForm = ({ onSubjectAdded, onCancel, selectedSemesterId }: AddSubjectFormProps) => {
-  const [formData, setFormData] = useState({
-    title: '',
-    subjectCode: '',
-    credits: '',
-    semesterId: selectedSemesterId || '' // Use the prop to set initial state
-  });
+const AddSubjectForm = ({ onSubjectAdded, onCancel, initialProgramId, initialSemesterId }: AddSubjectFormProps) => {
+  // Form data
+  const [title, setTitle] = useState('');
+  const [subjectCode, setSubjectCode] = useState('');
+  const [credits, setCredits] = useState('');
+  
+  // Dropdown data
+  const [programs, setPrograms] = useState<Program[]>([]);
   const [semesters, setSemesters] = useState<Semester[]>([]);
+  
+  // Selected values
+  const [selectedProgramId, setSelectedProgramId] = useState(initialProgramId || '');
+  const [selectedSemesterId, setSelectedSemesterId] = useState(initialSemesterId || '');
 
+  // 2. Fetch all programs on load
   useEffect(() => {
-    // Fetch all semesters to populate the dropdown
-    axios.get('http://localhost:5000/api/semesters')
-      .then(res => setSemesters(res.data))
-      .catch(() => toast.error('Failed to load semesters.'));
+    axios.get('http://localhost:5000/api/programs')
+      .then(res => setPrograms(res.data))
+      .catch(() => toast.error('Failed to load programs.'));
   }, []);
 
-  // Sync form state if the prop changes
+  // 3. When selectedProgramId changes, fetch its semesters
   useEffect(() => {
-    setFormData(prev => ({ ...prev, semesterId: selectedSemesterId }));
-  }, [selectedSemesterId]);
+    if (selectedProgramId && selectedProgramId !== 'all') {
+      axios.get(`http://localhost:5000/api/semesters?programId=${selectedProgramId}`)
+        .then(res => setSemesters(res.data))
+        .catch(() => toast.error('Failed to load semesters.'));
+    } else {
+      setSemesters([]);
+    }
+    // Reset semester if program changes
+    if (selectedProgramId !== initialProgramId) {
+      setSelectedSemesterId('');
+    }
+  }, [selectedProgramId, initialProgramId]);
+  
+  // 4. Handle initial semester selection
+  useEffect(() => {
+    if (initialProgramId && initialProgramId !== 'all') {
+      axios.get(`http://localhost:5000/api/semesters?programId=${initialProgramId}`)
+        .then(res => {
+          setSemesters(res.data);
+          setSelectedSemesterId(initialSemesterId || '');
+        })
+        .catch(() => toast.error('Failed to load initial semesters.'));
+    }
+  }, [initialProgramId, initialSemesterId]);
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
-  };
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     try {
-      await axios.post('http://localhost:5000/api/subjects', formData);
+      await axios.post('http://localhost:5000/api/subjects', {
+        title,
+        subjectCode,
+        credits,
+        semesterId: selectedSemesterId
+      });
       toast.success('Subject created successfully!');
       onSubjectAdded();
-    } catch (err) {
-      if (axios.isAxiosError(err) && err.response) {
-        toast.error(err.response.data.message || 'Failed to create subject.');
-      } else {
-        toast.error('An unexpected error occurred.');
-      }
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || 'Failed to create subject.');
     }
   };
 
@@ -59,15 +83,23 @@ const AddSubjectForm = ({ onSubjectAdded, onCancel, selectedSemesterId }: AddSub
     <div className={styles.formContainer}>
       <h3>Add New Subject</h3>
       <form onSubmit={handleSubmit}>
-        <input type="text" name="title" placeholder="Subject Title (e.g., Data Structures)" value={formData.title} onChange={handleChange} required />
-        <input type="text" name="subjectCode" placeholder="Subject Code (e.g., CS101)" value={formData.subjectCode} onChange={handleChange} required />
-        <input type="number" name="credits" placeholder="Credits" value={formData.credits} min="1" onChange={handleChange} required />
+        <input type="text" name="title" placeholder="Subject Title (e.g., Data Structures)" value={title} onChange={(e) => setTitle(e.target.value)} required />
+        <input type="text" name="subjectCode" placeholder="Subject Code (e.g., CS101)" value={subjectCode} onChange={(e) => setSubjectCode(e.target.value)} required />
+        <input type="number" name="credits" placeholder="Credits" value={credits} min="1" onChange={(e) => setCredits(e.target.value)} required />
         
-        {/* The dropdown is now disabled because the semester is selected on the main page */}
-        <select name="semesterId" value={formData.semesterId} onChange={handleChange} required disabled>
+        <select value={selectedProgramId} onChange={(e) => setSelectedProgramId(e.target.value)} required>
+          <option value="" disabled>-- Select a Program --</option>
+          <option value="all" disabled>-- All Programs --</option>
+          {programs.map(p => (
+            <option key={p.id} value={p.id}>{p.title}</option>
+          ))}
+        </select>
+
+        <select value={selectedSemesterId} onChange={(e) => setSelectedSemesterId(e.target.value)} required disabled={!selectedProgramId || selectedProgramId === 'all'}>
           <option value="" disabled>-- Select a Semester --</option>
+          <option value="all" disabled>-- All Semesters --</option>
           {semesters.map(s => (
-            <option key={s.id} value={s.id}>{s.program.title} - {s.name}</option>
+            <option key={s.id} value={s.id}>{s.name}</option>
           ))}
         </select>
 

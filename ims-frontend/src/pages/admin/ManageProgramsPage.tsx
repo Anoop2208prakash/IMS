@@ -1,4 +1,4 @@
-import { useState, useEffect, ChangeEvent } from 'react';
+import { useState, useEffect, ChangeEvent, useCallback } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import styles from '../../assets/scss/pages/admin/AdminPages.module.scss';
@@ -6,7 +6,9 @@ import Spinner from '../../components/common/Spinner';
 import EmptyState from '../../components/common/EmptyState';
 import Pagination from '../../components/common/Pagination';
 import DeleteModal from '../../components/common/DeleteModal';
-import Searchbar from '../../components/common/Searchbar'; // 1. Import Searchbar
+import Searchbar from '../../components/common/Searchbar';
+import HeaderMenu from '../../components/common/HeaderMenu';
+import ImportCSVModal from '../../components/common/ImportCSVModal';
 import { BsJournalBookmarkFill } from 'react-icons/bs';
 import AddProgramForm from './AddProgramForm';
 import EditProgramModal from './EditProgramModal';
@@ -21,17 +23,18 @@ const ManageProgramsPage = () => {
   const [programs, setPrograms] = useState<ProgramData[]>([]);
   const [loading, setLoading] = useState(true);
   const [showAddForm, setShowAddForm] = useState(false);
+  
+  // Modal states
+  const [showImportModal, setShowImportModal] = useState(false);
   const [editingProgram, setEditingProgram] = useState<ProgramData | null>(null);
   const [deletingProgram, setDeletingProgram] = useState<ProgramData | null>(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
   
-  // 2. Add state for search
   const [searchTerm, setSearchTerm] = useState('');
-  
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
-  const fetchPrograms = async () => {
+  const fetchPrograms = useCallback(async () => {
     setLoading(true);
     try {
       const response = await axios.get('http://localhost:5000/api/programs');
@@ -45,11 +48,11 @@ const ManageProgramsPage = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchPrograms();
-  }, []);
+  }, [fetchPrograms]);
   
   const handleProgramAdded = () => {
     setShowAddForm(false);
@@ -61,6 +64,10 @@ const ManageProgramsPage = () => {
     fetchPrograms();
   };
 
+  const handleImportSuccess = () => {
+    fetchPrograms();
+  };
+
   const handleDelete = async () => {
     if (!deletingProgram) return;
     setDeleteLoading(true);
@@ -69,18 +76,13 @@ const ManageProgramsPage = () => {
       toast.success('Program deleted successfully!');
       setPrograms(current => current.filter(p => p.id !== deletingProgram.id));
       setDeletingProgram(null);
-    } catch (err) {
-      if (axios.isAxiosError(err) && err.response) {
-        toast.error(err.response.data.message || 'Failed to delete program.');
-      } else {
-        toast.error('An unexpected error occurred.');
-      }
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || 'Failed to delete program.');
     } finally {
       setDeleteLoading(false);
     }
   };
 
-  // 3. Filtering and Pagination Logic
   const filteredPrograms = programs.filter(program =>
     program.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -97,14 +99,57 @@ const ManageProgramsPage = () => {
 
   const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
-    setPage(0); // Reset page on search
+    setPage(0);
   };
+
+  // --- THIS IS THE FIX ---
+  const handleExportCSV = async () => {
+    toast.loading('Preparing download...');
+    try {
+      // 1. Call the correct API endpoint: /api/export/programs
+      const response = await axios.get('http://localhost:5000/api/export/programs', {
+        params: { searchTerm },
+        responseType: 'blob',
+      });
+      
+      // 2. Create the download link
+      const url = URL.createObjectURL(response.data);
+      const link = document.createElement('a');
+      link.setAttribute('href', url);
+      link.setAttribute('download', 'programs_export.csv');
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      toast.dismiss();
+      toast.success('Data exported successfully!');
+      
+    } catch (err: any) {
+      toast.dismiss();
+      // This logic correctly reads the error message from the backend
+      const errorText = await (err.response?.data as Blob).text();
+      try {
+        const errorJson = JSON.parse(errorText);
+        toast.error(errorJson.message || 'Failed to export programs.');
+      } catch (e) {
+        toast.error('Failed to export programs.');
+      }
+    }
+  };
+
+  const menuActions = [
+    {
+      label: 'Add New Program',
+      onClick: () => setShowAddForm(true),
+    },
+    { label: 'Export CSV', onClick: handleExportCSV },
+    { label: 'Import CSV', onClick: () => setShowImportModal(true) }
+  ];
 
   const renderTableBody = () => {
     if (loading) {
       return <tr><td colSpan={3} className={styles.spinnerCell}><Spinner /></td></tr>;
     }
-    // 4. Update check to use filtered data
     if (filteredPrograms.length === 0) {
       return (
         <tr>
@@ -117,7 +162,6 @@ const ManageProgramsPage = () => {
         </tr>
       );
     }
-    // 5. Map over 'currentItems' for pagination
     return currentItems.map((program) => (
       <tr key={program.id}>
         <td>{program.title}</td>
@@ -134,12 +178,13 @@ const ManageProgramsPage = () => {
     <div className={styles.container}>
       <div className={styles.header}>
         <h2>Manage Programs</h2>
-        <button onClick={() => setShowAddForm(prev => !prev)}>
-          {showAddForm ? 'Cancel' : 'Add New Program'}
-        </button>
+        {/* --- THIS IS THE FIX --- */}
+        {/* The filter button is removed */}
+        <div className={styles.headerActions}>
+          <HeaderMenu actions={menuActions} />
+        </div>
       </div>
 
-      {/* 6. Add the Searchbar */}
       <div className={styles.searchContainer}>
         <Searchbar
           value={searchTerm}
@@ -163,7 +208,6 @@ const ManageProgramsPage = () => {
         </tbody>
       </table>
 
-      {/* 7. Update count to use filtered data */}
       <Pagination
         count={filteredPrograms.length}
         page={page}
@@ -171,6 +215,14 @@ const ManageProgramsPage = () => {
         onPageChange={setPage}
         onRowsPerPageChange={handleRowsPerPageChange}
       />
+
+      {showImportModal && (
+        <ImportCSVModal
+          onClose={() => setShowImportModal(false)}
+          onImportSuccess={handleImportSuccess}
+          importUrl="http://localhost:5000/api/import/programs"
+        />
+      )}
 
       {editingProgram && (
         <EditProgramModal
