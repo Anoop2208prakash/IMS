@@ -20,17 +20,17 @@
   text-align: center;
 
   // Theme Variables
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
+  background: var(--card-bg-default);
+  border: 1px solid var(--border-light-color);
 
   h2 {
     margin-top: 15px;
     margin-bottom: 10px;
-    color: var(--color-text-primary); // Use variable
+    color: var(--font-color); // Use variable
   }
 
   p {
-    color: var(--color-text-secondary); // Use variable
+    color: var(--secondary-text-color); // Use variable
     font-size: 1.1em;
     line-height: 1.5;
   }
@@ -38,7 +38,7 @@
 
 .iconWrapper {
   font-size: 3em;
-  color: var(--color-btn-red); // Use variable (Red)
+  color: var(--btn-danger-bg); // Use variable (Red)
 }
 
 .buttonGroup {
@@ -64,20 +64,20 @@
 }
 
 .confirmButton {
-  background-color: var(--color-btn-red); // Use variable
-  color: var(--color-primary-contrast); // Use variable (white)
+  background-color: var(--btn-danger-bg); // Use variable
+  color: var(--btn-primary-contrast); // Use variable (white)
 
   &:hover:not(:disabled) {
-    background-color: #c0392b; // Darken red
+    background-color: var(--btn-danger-hover-bg); // Use variable
   }
 }
 
 .cancelButton {
-  background-color: var(--color-background); // Use variable
-  color: var(--color-text-primary); // Use variable
-  border: 1px solid var(--color-border); // Add a border
+  background-color: var(--btn-secondary-bg); // Use variable
+  color: var(--btn-secondary-color); // Use variable
+  border: 1px solid var(--btn-secondary-border); // Add a border
 
   &:hover:not(:disabled) {
-    background-color: var(--color-border);
+    background-color: var(--btn-secondary-hover-bg);
   }
 }

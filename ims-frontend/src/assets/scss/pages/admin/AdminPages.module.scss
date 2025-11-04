@@ -1,4 +1,4 @@
-html,body {
+html, body {
   margin: 0;
   padding: 0;
 }
@@ -6,8 +6,8 @@ html,body {
 .container {
   padding: 20px;
   margin: 20px;
-  background-color: var(--color-surface);
-  color: var(--color-text-primary);
+  background-color: var(--card-bg-default);
+  color: var(--font-color);
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
@@ -22,32 +22,27 @@ html,body {
     margin: 0;
   }
   
-  // --- THIS IS THE FIX ---
-  // This ">" selector makes the style apply ONLY to buttons
-  // that are *direct children* of the header,
-  // like "Add New Teacher". It will no longer
-  // affect the icon buttons inside .headerActions.
+  // This applies ONLY to direct children, like "Add New Item"
   > button {
     padding: 10px 15px;
-    background-color: var(--color-primary);
-    color: white;
+    background-color: var(--btn-primary-bg);
+    color: var(--btn-primary-contrast);
     border: none;
     border-radius: 4px;
     cursor: pointer;
     transition: background-color 0.2s ease-in-out;
 
     &:hover:not(:disabled) {
-      background-color: var(--color-primary-hover);
+      background-color: var(--btn-primary-hover-bg);
     }
 
     &:disabled {
-      background-color: #ccc;
+      background-color: var(--btn-secondary-bg);
       cursor: not-allowed;
       opacity: 0.7;
     }
   }
 }
-// ------------------------
 
 .headerActions {
   display: flex;
@@ -55,11 +50,11 @@ html,body {
   align-items: center;
 }
 
-// This is the style for YOUR filter button
+// Style for icon buttons (Filter, 3-dot Menu)
 .iconButton {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  color: var(--color-text-primary);
+  background: var(--card-bg-default);
+  border: 1px solid var(--border-light-color);
+  color: var(--font-color);
   border-radius: 6px;
   width: 36px;
   height: 36px;
@@ -71,15 +66,20 @@ html,body {
   padding: 0; 
 
   &:hover {
-    background: var(--color-background);
+    background: var(--bg-secondary-color);
+  }
+  
+  &:disabled {
+    color: var(--disabled-text-color);
+    cursor: not-allowed;
   }
 }
 
 .filterDropdown {
   padding: 10px 15px;
-  background-color: var(--color-surface);
-  border: 1px solid var(--color-border);
-  color: var(--color-text-primary);
+  background-color: var(--card-bg-default);
+  border: 1px solid var(--border-light-color);
+  color: var(--font-color);
   border-radius: 4px;
   font-size: 0.9em;
 }
@@ -98,19 +98,19 @@ html,body {
   margin-top: 20px;
 
   th, td {
-    border: 1px solid var(--color-border);
+    border: 1px solid var(--border-light-color);
     padding: 12px 15px;
     text-align: left;
     vertical-align: middle;
   }
 
   thead th {
-    background-color: var(--color-background);
+    background-color: var(--bg-secondary-color);
     font-weight: bold;
   }
 
   tbody tr:hover {
-    background-color: var(--color-background);
+    background-color: var(--bg-secondary-color);
   }
 
   td[colSpan] {
@@ -122,7 +122,7 @@ html,body {
 }
 
 td > div[class*="emptyState"] {
-  border: 2px dashed var(--color-border-dashed);
+  border: 2px dashed var(--card-border-dashed);
   border-radius: 8px;
   padding: 40px;
   display: block; 
@@ -136,70 +136,71 @@ td > div[class*="emptyState"] {
   border: none;
   border-radius: 4px;
   cursor: pointer;
-  color: white;
+  color: var(--btn-primary-contrast); // White text
   font-size: 0.9em;
   transition: background-color 0.2s ease-in-out;
 }
 
 .editButton {
-  background-color: var(--color-btn-yellow);
-  color: #333;
+  background-color: var(--bg-yellow-100);
+  color: var(--font-dark-color);
   margin-right: 5px;
   &:hover {
-    background-color: #e0a800;
+    filter: brightness(0.9);
   }
 }
 
 .deleteButton {
-  background-color: var(--color-btn-red);
+  background-color: var(--btn-danger-bg);
   &:hover {
-    background-color: #c0392b;
+    background-color: var(--btn-danger-hover-bg);
   }
 }
 
 .assignButton {
-  background-color: var(--color-btn-teal);
+  background-color: #17a2b8; // (This is a custom color)
   margin-right: 5px;
   &:hover {
-    background-color: #138496;
+    filter: brightness(0.9);
   }
 }
 
 .checkoutButton {
-  background-color: var(--color-btn-green);
+  background-color: var(--btn-success-bg);
   margin-right: 5px;
   &:hover {
-    background-color: #218838;
+    background-color: var(--btn-success-hover-bg);
   }
   &:disabled {
-    background-color: #ccc;
+    background-color: var(--btn-secondary-bg);
     cursor: not-allowed;
   }
 }
 
 .returnButton {
-  background-color: var(--color-primary);
+  background-color: var(--btn-primary-bg);
   &:hover {
-    background-color: var(--color-primary-hover);
+    background-color: var(--btn-primary-hover-bg);
   }
 }
 
 .viewButton {
-  background-color: var(--color-btn-gray);
+  background-color: var(--btn-secondary-bg);
+  color: var(--btn-secondary-color);
   &:hover {
-    background-color: #5a6268;
+    background-color: var(--btn-secondary-hover-bg);
   }
 }
 
 .statusSelect {
   padding: 5px;
   border-radius: 4px;
-  border: 1px solid var(--color-border);
-  background-color: var(--color-surface);
-  color: var(--color-text-primary);
+  border: 1px solid var(--form-input-border-color);
+  background-color: var(--card-bg-default);
+  color: var(--font-color);
   
   &:disabled {
-    background-color: var(--color-background);
+    background-color: var(--bg-secondary-color);
     cursor: not-allowed;
     opacity: 0.7;
   }

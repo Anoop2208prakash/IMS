@@ -17,7 +17,6 @@ const generateSID = async (): Promise<string> => {
 
 // This function is for a public admission form
 export const submitApplication = async (req: Request, res: Response) => {
-  // 1. Changed courseId to programId
   const { fullName, email, password, programId } = req.body;
 
   if (!fullName || !email || !password || !programId) {
@@ -31,9 +30,8 @@ export const submitApplication = async (req: Request, res: Response) => {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    const sID = await generateSID(); // 2. Generate new sID
+    const sID = await generateSID();
 
-    // 3. Find all subjects for Semester 1 of the selected program
     const firstSemester = await prisma.semester.findFirst({
       where: { programId, name: 'Semester 1' },
       include: { subjects: { select: { id: true } } }
@@ -43,7 +41,6 @@ export const submitApplication = async (req: Request, res: Response) => {
       return res.status(400).json({ message: `This program has no subjects in Semester 1. Cannot enroll.` });
     }
 
-    // 4. Prepare enrollment data for all subjects
     const enrollmentData = firstSemester.subjects.map(subject => ({
       subjectId: subject.id,
     }));
@@ -53,16 +50,15 @@ export const submitApplication = async (req: Request, res: Response) => {
         name: fullName,
         email,
         password: hashedPassword,
-        sID: sID, // 5. Save the new sID
+        sID: sID,
         role: 'STUDENT',
         student: {
           create: {
-            // rollNumber is removed
             admissionDate: new Date(),
           },
         },
         enrollments: {
-          create: enrollmentData, // 6. Create enrollments for all subjects
+          create: enrollmentData,
         },
       },
     });
@@ -75,23 +71,4 @@ export const submitApplication = async (req: Request, res: Response) => {
   }
 };
 
-// GET a student's own attendance records
-export const getMyAttendance = async (req: AuthRequest, res: Response) => {
-  const studentId = req.user?.id;
-  if (!studentId) return res.status(401).json({ message: 'Not authenticated.' });
-
-  try {
-    const attendanceRecords = await prisma.attendance.findMany({
-      where: { studentId },
-      include: {
-        // --- THIS IS THE FIX ---
-        // Changed 'course' to 'subject' to match your schema
-        subject: { select: { title: true } }, 
-      },
-      orderBy: { date: 'desc' },
-    });
-    res.status(200).json(attendanceRecords);
-  } catch (error) {
-    res.status(500).json({ message: 'Failed to fetch attendance records.' });
-  }
-};
+// --- The getMyAttendance function has been REMOVED from this file ---

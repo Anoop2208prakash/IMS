@@ -4,7 +4,7 @@
 .modalBody {
   p {
     font-size: 0.9em;
-    color: var(--color-text-secondary);
+    color: var(--secondary-text-color); // Use new theme variable
     line-height: 1.5;
     margin-top: 0;
     text-align: center;
@@ -31,9 +31,9 @@
   justify-content: center;
   padding: 30px;
   border-radius: 8px;
-  border: 2px dashed var(--color-border-dashed);
-  background-color: var(--color-background);
-  color: var(--color-text-secondary);
+  border: 2px dashed var(--card-border-dashed); // Use new theme variable
+  background-color: var(--bg-color); // Use new theme variable
+  color: var(--secondary-text-color); // Use new theme variable
   cursor: pointer;
   transition: all 0.2s;
 
@@ -43,7 +43,7 @@
   }
 
   &:hover {
-    border-color: var(--color-primary);
-    color: var(--color-primary);
+    border-color: var(--primary-color); // Use new theme variable
+    color: var(--primary-color); // Use new theme variable
   }
 }

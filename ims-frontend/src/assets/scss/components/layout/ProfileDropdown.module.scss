@@ -15,8 +15,8 @@
   cursor: pointer;
 
   // Theme Variables
-  background-color: var(--color-primary);
-  color: var(--color-primary-contrast); // Use contrast color (white)
+  background-color: var(--btn-primary-bg);
+  color: var(--btn-primary-contrast);
 }
 
 .dropdownMenu {
@@ -24,7 +24,7 @@
   top: 50px;
   right: 0;
   border-radius: 8px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--dropdown-box-shadow); // Use new theme variable
   list-style: none;
   padding: 10px 0;
   margin: 0;
@@ -32,8 +32,8 @@
   z-index: 100;
 
   // Theme Variables
-  background-color: var(--color-surface);
-  border: 1px solid var(--color-border); // Add border for dark mode
+  background-color: var(--dropdown-content-bg);
+  border: 1px solid var(--dropdown-content-border);
 
   li {
     a, button {
@@ -46,12 +46,14 @@
       text-decoration: none;
       font-size: 1em;
       cursor: pointer;
+      box-sizing: border-box; // Add box-sizing
 
       // Theme Variables
-      color: var(--color-text-primary);
+      color: var(--font-color);
 
       &:hover {
-        background-color: var(--color-background); // Use hover color
+        background-color: var(--dropdown-item-hover-bg); // Use new theme variable
+        color: var(--dropdown-item-hover-color); // Use new theme variable
       }
     }
   }

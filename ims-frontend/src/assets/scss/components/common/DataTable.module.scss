@@ -7,22 +7,22 @@
   width: 100%;
   border-collapse: collapse;
   margin-top: 20px;
-  color: var(--color-text-primary);
+  color: var(--font-color); // Use new theme variable
 
   th, td {
-    border: 1px solid var(--color-border);
-    padding: 12px 15px; // <-- Updated padding
+    border: 1px solid var(--border-light-color); // Use new theme variable
+    padding: 12px 15px;
     text-align: left;
     vertical-align: middle;
   }
 
   thead th {
-    background-color: var(--color-background);
+    background-color: var(--bg-secondary-color); // Use new theme variable
     font-weight: bold;
   }
 
   tbody tr:hover {
-    background-color: var(--color-background);
+    background-color: var(--bg-secondary-color); // Use new theme variable
   }
 
   // This rule creates the fixed height for the empty/loading row
@@ -36,7 +36,7 @@
 
 // This styles the *inner* dashed box for the empty state
 td > div[class*="emptyState"] {
-  border: 2px dashed var(--color-border-dashed);
+  border: 2px dashed var(--card-border-dashed); // Use new theme variable
   border-radius: 8px;
   padding: 40px;
   display: inline-block;
@@ -47,5 +47,5 @@ td > div[class*="emptyState"] {
   text-align: center;
   padding: 40px;
   font-style: italic;
-  color: var(--color-text-secondary);
+  color: var(--secondary-text-color); // Use new theme variable
 }

@@ -1,14 +1,16 @@
 .container {
   padding: 20px 30px;
+  margin: 20px; // Added for floating page layout
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   
   // Theme Variables
-  background-color: var(--color-surface);
-  border: 1px solid var(--color-border);
+  background-color: var(--card-bg-default);
+  border: 1px solid var(--border-light-color);
 
   h2 {
-    color: var(--color-text-primary);
+    color: var(--font-color);
+    margin-top: 0; // Added for consistency
   }
 }
 
@@ -17,22 +19,23 @@
   border-collapse: collapse;
   margin-top: 20px;
   font-family: Arial, sans-serif;
+  color: var(--font-color); // Use new theme variable
 
   th, td {
-    border: 1px solid var(--color-border); // Use variable
+    border: 1px solid var(--border-light-color); // Use new theme variable
     padding: 12px 15px;
     text-align: left;
     vertical-align: middle;
   }
 
   thead th {
-    background-color: var(--color-background); // Use variable
+    background-color: var(--bg-secondary-color); // Use new theme variable
     font-weight: bold;
-    color: var(--color-text-primary); // Use variable
+    color: var(--font-color); // Use new theme variable
   }
 
   tbody tr:hover {
-    background-color: var(--color-background); // Use variable
+    background-color: var(--bg-secondary-color); // Use new theme variable
   }
 }
 
@@ -43,7 +46,7 @@
 }
 
 td > div[class*="emptyState"] {
-  border: 2px dashed var(--color-border-dashed);
+  border: 2px dashed var(--card-border-dashed); // Use new theme variable
   border-radius: 8px;
   padding: 80px 40px;
 }
@@ -54,16 +57,17 @@ td > div[class*="emptyState"] {
   border-radius: 12px;
   font-size: 0.8em;
   font-weight: bold;
-  color: var(--color-primary-contrast); // Use variable
+  color: var(--btn-primary-contrast); // Use new theme variable
   display: inline-block;
 }
 
 .active {
-  background-color: var(--color-primary); // Blue
+  background-color: var(--btn-primary-bg); // Use new theme variable
 }
 .returned {
-  background-color: var(--color-btn-gray); // Gray
+  background-color: var(--btn-secondary-bg); // Use new theme variable
+  color: var(--btn-secondary-color); // Use new theme variable for light mode text
 }
 .overdue {
-  background-color: var(--color-btn-red); // Red
+  background-color: var(--btn-danger-bg); // Use new theme variable
 }

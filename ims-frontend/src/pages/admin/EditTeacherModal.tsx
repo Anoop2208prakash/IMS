@@ -2,7 +2,7 @@ import React, { useState, useEffect, ChangeEvent, FormEvent } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 // This uses the correct path based on your file structure screenshot
-import styles from '../../assets/scss/pages/admin/AdminPages.module.scss'; 
+import styles from '../../assets/scss/pages/admin/EditTeacherModal.module.scss'; 
 
 // 1. Define the data structure for a teacher
 interface TeacherData {

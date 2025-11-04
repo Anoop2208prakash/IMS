@@ -1,14 +1,14 @@
 .formContainer {
-  background: var(--color-background);
+  background: var(--bg-secondary-color); // Use new theme variable
   padding: 20px;
   margin-bottom: 20px;
   border-radius: 8px;
-  border: 1px solid var(--color-border-dashed);
+  border: 1px solid var(--card-border-dashed); // Use new theme variable
 
   h3 {
     margin-top: 0;
     margin-bottom: 15px;
-    color: var(--color-text-primary);
+    color: var(--font-color); // Use new theme variable
   }
 
   form {
@@ -22,15 +22,15 @@
     margin-bottom: -10px;
     font-size: 0.9em;
     font-weight: 600;
-    color: var(--color-text-primary);
+    color: var(--form-label-color); // Use new theme variable
   }
 
   input,
   select {
     padding: 10px;
-    border: 1px solid var(--color-border);
-    background-color: var(--color-surface);
-    color: var(--color-text-primary);
+    border: 1px solid var(--form-input-border-color); // Use new theme variable
+    background-color: var(--card-bg-default); // Use new theme variable
+    color: var(--form-input-field-color); // Use new theme variable
     border-radius: 4px;
     font-size: 1em;
     font-family: Arial, sans-serif;
@@ -41,14 +41,13 @@
     appearance: none;
     -webkit-appearance: none;
     -moz-appearance: none;
-    // This SVG's fill color is hardcoded, but will be more visible in dark mode
     background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20width%3D%27292.4%27%20height%3D%27292.4%27%3E%3Cpath%20fill%3D%27%236c757d%27%20d%3D%27M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.6-3.6%205.4-7.9%205.4-12.8%200-5-1.8-9.2-5.4-12.8z%27%2F%3E%3C%2Fsvg%3E");
     background-repeat: no-repeat;
     background-position: right 10px top 50%;
     background-size: 10px auto;
 
     &:disabled {
-      background-color: var(--color-background);
+      background-color: var(--bg-secondary-color); // Use new theme variable
       opacity: 0.7;
     }
   }
@@ -58,15 +57,15 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: var(--color-background);
+  background-color: var(--bg-secondary-color); // Use new theme variable
   padding: 10px;
   border-radius: 4px;
   font-size: 1em;
-  color: var(--color-text-secondary);
+  color: var(--secondary-text-color); // Use new theme variable
 
   strong {
     font-size: 1.2em;
-    color: var(--color-text-primary);
+    color: var(--font-color); // Use new theme variable
   }
 
   .loadingName {
@@ -89,25 +88,25 @@
     transition: background-color 0.2s;
 
     &[type="submit"] {
-      background-color: var(--color-btn-green);
-      color: var(--color-primary-contrast);
+      background-color: var(--btn-success-bg); // Use new theme variable
+      color: var(--btn-primary-contrast); // Use new theme variable
 
       &:hover:not(:disabled) {
-        background-color: #218838; // Darken green
+        background-color: var(--btn-success-hover-bg); // Use new theme variable
       }
 
       &:disabled {
-        background-color: var(--color-border);
+        background-color: var(--btn-secondary-bg); // Use new theme variable
         cursor: not-allowed;
       }
     }
 
     &[type="button"] {
-      background-color: var(--color-btn-gray);
-      color: var(--color-primary-contrast);
+      background-color: var(--btn-secondary-bg); // Use new theme variable
+      color: var(--btn-secondary-color); // Use new theme variable
 
       &:hover {
-        background-color: #5a6268; // Darken gray
+        background-color: var(--btn-secondary-hover-bg); // Use new theme variable
       }
     }
   }

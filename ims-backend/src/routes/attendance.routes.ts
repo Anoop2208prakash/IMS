@@ -1,17 +1,30 @@
 import { Router } from 'express';
-import { submitAttendance, getMyAttendance } from '../controllers/attendance.controller';
+import { 
+  submitAttendance, 
+  getMyAttendance 
+} from '../controllers/attendance.controller';
 import { authMiddleware, roleMiddleware } from '../middleware/auth.middleware';
 
 const router = Router();
+const teacherRole = ['TEACHER'];
+const studentRole = ['STUDENT'];
 
-// For a Teacher to submit attendance records
-router.post('/', [authMiddleware, roleMiddleware(['TEACHER'])], submitAttendance);
+// Route for Teachers to submit attendance
+router.post(
+  '/', 
+  authMiddleware, 
+  roleMiddleware(teacherRole), 
+  submitAttendance
+);
 
-// For a Student to get their own attendance records
+// --- THIS IS THE FIX ---
+// Route for Students to get their own attendance
 router.get(
-  '/my-attendance',
-  [authMiddleware, roleMiddleware(['STUDENT'])],
+  '/my-attendance', 
+  authMiddleware, 
+  roleMiddleware(studentRole), 
   getMyAttendance
 );
+// -----------------------
 
 export default router;

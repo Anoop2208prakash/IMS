@@ -1,14 +1,17 @@
 .container {
   padding: 20px 30px;
+  margin: 20px;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   
   // Theme Variables
-  background-color: var(--color-surface);
-  border: 1px solid var(--color-border);
+  background-color: var(--card-bg-default);
+  border: 1px solid var(--border-light-color);
+  color: var(--font-color);
 
   h2 {
-    color: var(--color-text-primary);
+    color: var(--font-color);
+    margin-top: 0;
   }
 }
 
@@ -19,22 +22,23 @@
   margin-bottom: 20px;
 }
 
+// --- THIS IS THE THEME FIX ---
 .totalDueCard {
-  background: #fff3cd; // Keep this as it's a specific warning color
-  border: 1px solid #ffeeba;
+  background: var(--toast-warning-bg); // Use new theme variable
+  border: 1px solid var(--toast-warning-border); // Use new theme variable
   padding: 15px 25px;
   border-radius: 8px;
   text-align: right;
 
   span {
     display: block;
-    color: #856404;
+    color: var(--toast-warning-text); // Use new theme variable
     font-size: 0.9em;
   }
   
   strong {
     font-size: 1.8em;
-    color: #856404;
+    color: var(--toast-warning-text); // Use new theme variable
   }
 }
 
@@ -42,30 +46,30 @@
   width: 100%;
   border-collapse: collapse;
   margin-top: 20px;
+  color: var(--font-color);
 
   th, td {
-    border: 1px solid var(--color-border); // Use variable
+    border: 1px solid var(--border-light-color);
     padding: 12px 15px;
     text-align: left;
     vertical-align: middle;
   }
 
   thead th {
-    background-color: var(--color-background); // Use variable
+    background-color: var(--bg-secondary-color);
     font-weight: bold;
-    color: var(--color-text-primary); // Use variable
   }
 
   tbody tr:hover {
-    background-color: var(--color-background); // Use variable
+    background-color: var(--bg-secondary-color);
   }
 
-  // This rule creates the fixed height for empty/loading rows
+  // --- THIS FIXES THE EMPTY STATE PADDING ---
   td[colSpan] {
     height: 200px;
     text-align: center;
     vertical-align: middle;
-    padding: 0;
+    padding: 12px 15px; // <-- Was padding: 0
   }
 }
 
@@ -76,27 +80,35 @@
 
 // This styles the *inner* dashed box for the empty state
 td > div[class*="emptyState"] {
-  border: 2px dashed var(--color-border-dashed);
+  border: 2px dashed var(--card-border-dashed);
   border-radius: 8px;
   padding: 40px;
-  display: inline-block;
+  display: block; // <-- Was inline-block
+  width: 100%;
+  box-sizing: border-box;
 }
+// -------------------------------------------
 
 .status {
   padding: 5px 10px;
   border-radius: 12px;
   font-size: 0.8em;
   font-weight: bold;
-  color: var(--color-primary-contrast); // Use variable
+  color: var(--btn-primary-contrast);
   display: inline-block;
 }
 
 .pending, .overdue {
-  background-color: var(--color-btn-red); // Use variable
+  background-color: var(--btn-danger-bg);
 }
 
 .paid {
-  background-color: var(--color-btn-green); // Use variable
+  background-color: var(--btn-success-bg);
+}
+
+.cancelled {
+  background-color: var(--btn-secondary-bg);
+  color: var(--btn-secondary-color);
 }
 
 .actions {
@@ -110,12 +122,10 @@ td > div[class*="emptyState"] {
   cursor: pointer;
   font-weight: bold;
   transition: background-color 0.2s;
-
-  // Theme Variables
-  background-color: var(--color-btn-green);
-  color: var(--color-primary-contrast);
+  background-color: var(--btn-success-bg);
+  color: var(--btn-primary-contrast);
 
   &:hover {
-    background-color: #218838; // Darken green
+    background-color: var(--btn-success-hover-bg);
   }
 }

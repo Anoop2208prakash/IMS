@@ -11,12 +11,12 @@
   align-self: start; // Sticks to the top
 
   // Theme Variables
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
+  background: var(--card-bg-default);
+  border: 1px solid var(--card-border-color);
 
   h2 { 
     margin-top: 0; 
-    color: var(--color-text-primary);
+    color: var(--font-color);
   }
   
   form {
@@ -32,9 +32,13 @@
       font-size: 1em;
       
       // Theme Variables
-      border: 1px solid var(--color-border);
-      background: var(--color-surface);
-      color: var(--color-text-primary);
+      border: 1px solid var(--form-input-border-color);
+      background: var(--card-bg-default);
+      color: var(--form-input-field-color);
+
+      &::placeholder {
+        color: var(--form-placeholder-text-color);
+      }
     }
 
     button {
@@ -45,11 +49,11 @@
       font-size: 1em;
 
       // Theme Variables
-      background-color: var(--color-primary);
-      color: var(--color-primary-contrast);
+      background-color: var(--btn-primary-bg);
+      color: var(--btn-primary-contrast);
 
       &:hover {
-        background-color: var(--color-primary-hover);
+        background-color: var(--btn-primary-hover-bg);
       }
     }
   }
@@ -58,7 +62,7 @@
 .listContainer {
   h2 { 
     margin-top: 0; 
-    color: var(--color-text-primary);
+    color: var(--font-color);
   }
 }
 
@@ -69,16 +73,16 @@
   margin-bottom: 20px;
 
   // Theme Variables
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
+  background: var(--card-bg-default);
+  border: 1px solid var(--card-border-color);
 
   h3 { 
     margin-top: 0; 
-    color: var(--color-text-primary);
+    color: var(--font-color);
   }
   p { 
     line-height: 1.6; 
-    color: var(--color-text-secondary);
+    color: var(--secondary-text-color);
   }
 }
 
@@ -91,14 +95,19 @@
   font-size: 0.85em;
 
   // Theme Variables
-  border-top: 1px solid var(--color-border);
-  color: var(--color-text-secondary);
+  border-top: 1px solid var(--border-light-color);
+  color: var(--secondary-text-color);
 
   button {
     background: none;
     border: none;
     cursor: pointer;
     font-weight: bold;
-    color: var(--color-btn-red); // Use variable
+    color: var(--btn-danger-bg); // Use variable
+    padding: 0;
+
+    &:hover {
+      color: var(--btn-danger-hover-bg);
+    }
   }
 }

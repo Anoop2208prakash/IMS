@@ -1,10 +1,10 @@
 .skeleton {
-  // The shimmer effect is created using theme variables
+  // The shimmer effect is created using new theme variables
   background-image: linear-gradient(
     90deg,
-    var(--color-background) 0%,
-    var(--color-border-dashed) 50%,
-    var(--color-background) 100%
+    var(--skeleton-base-color) 0%,
+    var(--skeleton-shine-color) 50%,
+    var(--skeleton-base-color) 100%
   );
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite linear;

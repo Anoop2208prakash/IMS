@@ -1,10 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, ChangeEvent } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import styles from '../../assets/scss/pages/student/MyOrdersPage.module.scss';
 import Spinner from '../../components/common/Spinner';
 import EmptyState from '../../components/common/EmptyState';
+import Pagination from '../../components/common/Pagination'; // 1. Import Pagination
 import { BsBoxSeam } from 'react-icons/bs';
 
 type OrderStatus = 'PENDING' | 'COMPLETED' | 'CANCELLED';
@@ -20,6 +21,10 @@ interface Order {
 const MyOrdersPage = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // 2. Add state for Pagination
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
 
   useEffect(() => {
     const fetchMyOrders = async () => {
@@ -40,6 +45,17 @@ const MyOrdersPage = () => {
     fetchMyOrders();
   }, []);
 
+  // 3. Add pagination handlers
+  const handleRowsPerPageChange = (event: ChangeEvent<HTMLSelectElement>) => {
+    setRowsPerPage(Number.parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
+  const currentItems = orders.slice(
+    page * rowsPerPage,
+    page * rowsPerPage + rowsPerPage
+  );
+
   const renderTableBody = () => {
     if (loading) {
       return (
@@ -59,11 +75,11 @@ const MyOrdersPage = () => {
         </tr>
       );
     }
-    return orders.map(order => (
+    // 4. Map over currentItems
+    return currentItems.map(order => (
       <tr key={order.id}>
         <td>{order.orderId}</td>
         <td>{new Date(order.createdAt).toLocaleDateString()}</td>
-        {/* Changed dollar to rupee symbol */}
         <td>₹{order.totalAmount.toFixed(2)}</td>
         <td>
           <span className={`${styles.status} ${styles[order.status.toLowerCase()]}`}>
@@ -96,6 +112,15 @@ const MyOrdersPage = () => {
           {renderTableBody()}
         </tbody>
       </table>
+
+      {/* 5. Add Pagination component */}
+      <Pagination
+        count={orders.length}
+        page={page}
+        rowsPerPage={rowsPerPage}
+        onPageChange={setPage}
+        onRowsPerPageChange={handleRowsPerPageChange}
+      />
     </div>
   );
 };

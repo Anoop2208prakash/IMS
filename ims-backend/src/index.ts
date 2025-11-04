@@ -22,7 +22,7 @@ import inventoryRoutes from './routes/inventory.routes';
 import orderRoutes from './routes/order.routes';
 import announcementRoutes from './routes/announcement.routes';
 import dashboardRoutes from './routes/dashboard.routes';
-import transferRoutes from './routes/transfer.routes'; // Import renamed route
+import transferRoutes from './routes/transfer.routes';
 import enrollmentRoutes from './routes/enrollment.routes';
 
 dotenv.config();

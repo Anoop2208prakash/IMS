@@ -1,19 +1,12 @@
 import { Router } from 'express';
-import { getMyAttendance } from '../controllers/admission.controller';
+// getMyAttendance has been removed from here
 import { authMiddleware, roleMiddleware } from '../middleware/auth.middleware';
 
 const router = Router();
-const studentRole = ['STUDENT'];
 
-// This route is for a student to get their own attendance
-router.get(
-  '/my-attendance', 
-  authMiddleware, 
-  roleMiddleware(studentRole), 
-  getMyAttendance
-);
+// This file is now only for public (unprotected) admission routes.
+// The public "submitApplication" route can be added here if needed.
 
-// The public "submitApplication" route is no longer used.
-// Student creation is now handled by /api/students (addStudent)
+// The /my-attendance route has been REMOVED.
 
 export default router;

@@ -1,6 +1,6 @@
 .layout {
   display: flex;
-  // This padding-left is the *key*. It creates the space for the sidebar.
+  // This padding-left creates the space for the sidebar.
   padding-left: 240px;
   transition: padding-left 0.3s ease-in-out;
 }
@@ -14,7 +14,7 @@
   flex-grow: 1;
   width: 100%; // Main content is now full width
   min-height: 100vh;
-  background-color: var(--color-background);
+  background-color: var(--bg-color); // Use new theme variable
 }
 
 .header {
@@ -32,8 +32,8 @@
   box-sizing: border-box;
   
   // Theme Variables
-  background: var(--color-surface);
-  border-bottom: 1px solid var(--color-border);
+  background: var(--card-bg-default); // Use new theme variable
+  border-bottom: 1px solid var(--border-light-color); // Use new theme variable
 }
 
 .logo {
@@ -48,10 +48,8 @@
 }
 
 .content {
-  padding: 20px;
+  padding: 10px; // <-- This is the "white border" fix
   margin-top: 60px; // Pushes content down below the fixed header
-  min-height: calc(100vh - 60px); // Ensures content area fills the viewport height
-  // Theme Variables
-  background-color: var(--color-background);
-  color: var(--color-text-primary);
+  min-height: calc(100vh - 60px); 
+  background-color: var(--bg-color); // Use new theme variable
 }

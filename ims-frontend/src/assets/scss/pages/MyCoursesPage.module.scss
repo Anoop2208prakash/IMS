@@ -1,6 +1,15 @@
 .container {
+  padding: 20px;
+  margin: 20px;
+  background-color: var(--card-bg-default); // Use new theme variable
+  color: var(--font-color); // Use new theme variable
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  
   h2 {
+    margin-top: 0;
     margin-bottom: 20px;
+    color: var(--font-color); // Use new theme variable
   }
 }
 
@@ -16,30 +25,38 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   
   // Theme Variables
-  background: var(--color-surface);
-  border-left: 5px solid var(--color-primary);
-  border: 1px solid var(--color-border);
+  background: var(--bg-color); // Use bg-color to stand out
+  border: 1px solid var(--card-border-color); // Use new theme variable
+  border-left: 5px solid var(--primary-color); // Use new theme variable
 
   h3 {
     margin-top: 0;
-    color: var(--color-text-primary);
+    margin-bottom: 8px;
+    color: var(--title-text-color); // Use new theme variable
   }
 
   .code {
+    font-family: monospace;
     font-style: italic;
-    color: var(--color-text-secondary);
+    color: var(--secondary-text-color); // Use new theme variable
     margin-bottom: 15px;
     font-size: 0.9em;
   }
 
   p {
     margin: 5px 0;
-    color: var(--color-text-secondary);
+    color: var(--paragraph-text-color); // Use new theme variable
   }
 
   .credits {
     margin-top: 15px;
     font-weight: 500;
-    color: var(--color-text-primary);
+    color: var(--font-color); // Use new theme variable
   }
+}
+
+// This style is needed to center the EmptyState component
+.emptyContainer {
+  grid-column: 1 / -1;
+  padding: 40px 0;
 }

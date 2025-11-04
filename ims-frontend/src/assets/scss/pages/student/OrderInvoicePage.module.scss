@@ -3,6 +3,7 @@
   flex-direction: column;
   align-items: center;
   padding: 40px;
+  background-color: var(--bg-color); // Use new theme variable
 }
 
 .invoiceBox {
@@ -12,9 +13,9 @@
   font-family: Arial, sans-serif;
 
   // Theme Variables
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  color: var(--color-text-primary);
+  background: var(--card-bg-default);
+  border: 1px solid var(--border-light-color);
+  color: var(--font-color);
 }
 
 .header {
@@ -24,18 +25,18 @@
   padding-bottom: 15px;
   
   // Theme Variables
-  border-bottom: 2px solid var(--color-text-primary);
+  border-bottom: 2px solid var(--font-color);
 
   h1 {
     margin: 0;
-    color: var(--color-text-primary);
+    color: var(--font-color);
   }
 
   .headerDetails {
     text-align: right;
     p { 
       margin: 2px 0; 
-      color: var(--color-text-secondary);
+      color: var(--secondary-text-color);
     }
   }
 }
@@ -44,7 +45,7 @@
   padding: 20px 0;
   p { 
     margin: 2px 0; 
-    color: var(--color-text-primary);
+    color: var(--font-color);
   }
 }
 
@@ -55,14 +56,14 @@
   th, td {
     padding: 12px;
     text-align: left;
-    border-bottom: 1px solid var(--color-border-dashed); // Use variable
+    border-bottom: 1px solid var(--card-border-dashed); // Use variable
   }
 
   thead {
-    background-color: var(--color-background); // Use variable
+    background-color: var(--bg-secondary-color); // Use variable
     th {
-      border-bottom: 2px solid var(--color-border); // Use variable
-      color: var(--color-text-primary);
+      border-bottom: 2px solid var(--border-light-color); // Use variable
+      color: var(--font-color);
     }
   }
 
@@ -74,10 +75,10 @@
 .totalSection {
   margin-top: 20px;
   padding-top: 15px;
-  border-top: 2px solid var(--color-text-primary); // Use variable
+  border-top: 2px solid var(--font-color); // Use variable
   text-align: right;
   font-size: 1.4em;
-  color: var(--color-text-primary);
+  color: var(--font-color);
 }
 
 .buttonRow {
@@ -89,7 +90,7 @@
 .printButton, .backButton {
   padding: 12px 25px;
   font-size: 16px;
-  color: var(--color-primary-contrast); // Use variable
+  color: var(--btn-primary-contrast); // Use variable
   border: none;
   border-radius: 5px;
   cursor: pointer;
@@ -98,15 +99,16 @@
 }
 
 .printButton { 
-  background-color: var(--color-primary); 
+  background-color: var(--btn-primary-bg); 
   &:hover {
-    background-color: var(--color-primary-hover);
+    background-color: var(--btn-primary-hover-bg);
   }
 }
 .backButton { 
-  background-color: var(--color-btn-gray); 
+  background-color: var(--btn-secondary-bg); 
+  color: var(--btn-secondary-color);
   &:hover {
-    background-color: #5a6268;
+    background-color: var(--btn-secondary-hover-bg);
   }
 }
 
@@ -128,7 +130,11 @@
   }
   .itemsTable {
     th, td { border-bottom: 1px solid #000; }
-    thead { background-color: #eee; }
+    thead { 
+      background-color: #eee !important; 
+      -webkit-print-color-adjust: exact; 
+      color-adjust: exact;
+    }
   }
   .header { border-bottom: 2px solid #000; }
   .totalSection { border-top: 2px solid #000; }

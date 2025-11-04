@@ -1,11 +1,12 @@
 .browseContainer {
-  padding: 20px 30px;
+  padding: 20px;
+  margin: 20px;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   
   // Theme Variables
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
+  background: var(--card-bg-default);
+  color: var(--font-color);
 }
 
 .header {
@@ -16,7 +17,7 @@
   
   h2 {
     margin: 0;
-    color: var(--color-text-primary); // Use variable
+    color: var(--font-color); // Use variable
   }
 }
 
@@ -37,20 +38,20 @@
   margin-top: 20px;
 
   th, td {
-    border: 1px solid var(--color-border); // Use variable
+    border: 1px solid var(--border-light-color); // Use variable
     padding: 12px 15px;
     text-align: left;
     vertical-align: middle;
   }
 
   thead th {
-    background-color: var(--color-background); // Use variable
+    background-color: var(--bg-secondary-color); // Use variable
     font-weight: bold;
-    color: var(--color-text-primary); // Use variable
+    color: var(--font-color); // Use variable
   }
 
   tbody tr:hover {
-    background-color: var(--color-background); // Use variable
+    background-color: var(--bg-secondary-color); // Use variable
   }
 }
 
@@ -60,7 +61,7 @@
 }
 
 td > div[class*="emptyState"] {
-  border: 2px dashed var(--color-border-dashed); // Use variable
+  border: 2px dashed var(--card-border-dashed); // Use variable
   border-radius: 8px;
   padding: 80px 40px;
 }
@@ -71,14 +72,14 @@ td > div[class*="emptyState"] {
   padding: 4px 8px;
   border-radius: 12px;
   font-size: 0.8em;
-  color: var(--color-primary-contrast); // Use variable (white)
+  color: var(--btn-primary-contrast); // Use variable (white)
   display: inline-block;
 }
 
 .available {
-  background-color: var(--color-btn-green); // Use variable
+  background-color: var(--btn-success-bg); // Use variable
 }
 
 .unavailable {
-  background-color: var(--color-btn-red); // Use variable
+  background-color: var(--btn-danger-bg); // Use variable
 }

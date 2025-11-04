@@ -1,22 +1,27 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, ChangeEvent } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import styles from '../../assets/scss/pages/student/MyInvoicesPage.module.scss';
 import Spinner from '../../components/common/Spinner';
 import EmptyState from '../../components/common/EmptyState';
+import Pagination from '../../components/common/Pagination'; // 1. Import Pagination
 import { FaFileInvoiceDollar } from 'react-icons/fa';
 
 interface Invoice {
     id: string;
     amount: number;
     dueDate: string;
-    status: 'PENDING' | 'PAID' | 'OVERDUE';
+    status: 'PENDING' | 'PAID' | 'OVERDUE' | 'CANCELLED'; // Added CANCELLED
     feeStructure: { name: string; };
 }
 
 const MyInvoicesPage = () => {
     const [invoices, setInvoices] = useState<Invoice[]>([]);
     const [loading, setLoading] = useState(true);
+
+    // 2. Add state for Pagination
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
 
     const fetchInvoices = async () => {
         try {
@@ -62,6 +67,17 @@ const MyInvoicesPage = () => {
             .reduce((sum, inv) => sum + inv.amount, 0);
     }, [invoices]);
 
+    // 3. Add pagination handlers
+    const handleRowsPerPageChange = (event: ChangeEvent<HTMLSelectElement>) => {
+      setRowsPerPage(Number.parseInt(event.target.value, 10));
+      setPage(0);
+    };
+
+    const currentItems = invoices.slice(
+      page * rowsPerPage,
+      page * rowsPerPage + rowsPerPage
+    );
+
     // Function to render the table body based on state
     const renderTableBody = () => {
         if (loading) {
@@ -82,15 +98,15 @@ const MyInvoicesPage = () => {
                 </tr>
             );
         }
-        return invoices.map(invoice => (
+        // 4. Map over currentItems
+        return currentItems.map(invoice => (
             <tr key={invoice.id}>
                 <td>{invoice.feeStructure.name}</td>
-                {/* Changed dollar to rupee symbol here */}
                 <td>₹{invoice.amount.toFixed(2)}</td>
                 <td>{new Date(invoice.dueDate).toLocaleDateString()}</td>
                 <td><span className={`${styles.status} ${styles[invoice.status.toLowerCase()]}`}>{invoice.status}</span></td>
                 <td className={styles.actions}>
-                    {invoice.status !== 'PAID' && (
+                    {invoice.status !== 'PAID' && invoice.status !== 'CANCELLED' && (
                         <button className={styles.payButton} onClick={() => handlePayment(invoice.id)}>
                             Pay Now
                         </button>
@@ -106,7 +122,6 @@ const MyInvoicesPage = () => {
                 <h2>My Invoices</h2>
                 <div className={styles.totalDueCard}>
                     <span>Total Outstanding</span>
-                    {/* Changed dollar to rupee symbol here */}
                     <strong>₹{totalDue.toFixed(2)}</strong>
                 </div>
             </div>
@@ -124,6 +139,15 @@ const MyInvoicesPage = () => {
                     {renderTableBody()}
                 </tbody>
             </table>
+
+            {/* 5. Add Pagination component */}
+            <Pagination
+              count={invoices.length}
+              page={page}
+              rowsPerPage={rowsPerPage}
+              onPageChange={setPage}
+              onRowsPerPageChange={handleRowsPerPageChange}
+            />
         </div>
     );
 };

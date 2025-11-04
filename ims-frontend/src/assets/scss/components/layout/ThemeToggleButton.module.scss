@@ -8,11 +8,11 @@
   align-items: center;
   justify-content: center;
   font-size: 1.2rem;
-  color: var(--color-text-secondary);
+  color: var(--secondary-text-color); // Use new theme variable
   transition: background-color 0.2s, color 0.2s;
 
   &:hover {
-    background-color: var(--color-background);
-    color: var(--color-text-primary);
+    background-color: var(--bg-secondary-color); // Use new theme variable
+    color: var(--font-color); // Use new theme variable
   }
 }

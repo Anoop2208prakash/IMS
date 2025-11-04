@@ -1,13 +1,14 @@
 .pageContainer {
   padding: 20px;
-  border: 1px solid var(--color-border);
-  background-color: var(--color-surface);
-  color: var(--color-text-primary);
+  margin: 20px; // Creates the floating page effect
+  background-color: var(--card-bg-default);
+  color: var(--font-color);
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  // border: 1px solid var(--card-border-color); // Removed to fix white border issue
 
   h2 {
-    margin-top: 0; // <-- This is the fix
+    margin-top: 0;
     margin-bottom: 20px;
   }
 }
@@ -26,21 +27,21 @@
 }
 
 .widget {
-  background: var(--color-surface);
-  color: var(--color-text-primary);
+  background: var(--card-bg-default);
+  color: var(--font-color);
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--card-border-color);
   
   h3 {
     margin-top: 0;
-    border-bottom: 1px solid var(--color-border);
+    border-bottom: 1px solid var(--card-border-color);
     padding-bottom: 10px;
   }
 
   p {
-    color: var(--color-text-secondary);
+    color: var(--secondary-text-color);
   }
 }
 
@@ -54,7 +55,7 @@
     justify-content: space-between;
     align-items: center;
     padding: 10px 5px;
-    border-bottom: 1px solid var(--color-border);
+    border-bottom: 1px solid var(--card-border-color);
 
     &:last-child {
       border-bottom: none;
@@ -63,7 +64,7 @@
 }
 
 .viewLink {
-  color: var(--color-primary);
+  color: var(--primary-color);
   text-decoration: none;
   font-weight: bold;
   &:hover {
@@ -75,41 +76,41 @@
   margin-top: 30px;
   
   h3 {
-    color: var(--color-text-primary);
+    color: var(--font-color);
   }
 
   p {
-    color: var(--color-text-secondary);
+    color: var(--secondary-text-color);
   }
 }
 
 .announcementCard {
-  background: var(--color-surface);
+  background: var(--card-bg-default);
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   margin-bottom: 20px;
-  border: 1px solid var(--color-border);
-  border-left: 5px solid var(--color-btn-yellow); // Yellow accent
+  border: 1px solid var(--card-border-color);
+  border-left: 5px solid var(--bg-yellow-100); // Yellow accent
 
   h4 {
     margin-top: 0;
     font-size: 1.2em;
-    color: var(--color-text-primary);
+    color: var(--font-color);
   }
   
   p {
     line-height: 1.6;
-    color: var(--color-text-secondary);
+    color: var(--secondary-text-color);
   }
 }
 
 .meta {
   font-size: 0.85em;
-  color: var(--color-text-secondary);
+  color: var(--secondary-text-color);
   margin-top: 15px;
   padding-top: 10px;
-  border-top: 1px solid var(--color-border);
+  border-top: 1px solid var(--card-border-color);
 }
 
 // --- Styles for Skeletons ---
@@ -118,18 +119,18 @@
 .skeletonWidget,
 .skeletonAnnouncement {
   border-radius: 8px;
-  background-color: var(--color-surface);
-  border: 1px solid var(--color-border);
+  background-color: var(--card-bg-default);
+  border: 1px solid var(--card-border-color);
   padding: 20px;
   box-sizing: border-box;
 }
 
 .skeletonStatCard {
-  height: 90px; // Approx height of a StatCard
+  height: 90px;
 }
 
 .skeletonWidget {
-  height: 200px; // Approx height of a Widget
+  height: 200px;
   h3 {
     margin-top: 0;
     margin-bottom: 15px;
@@ -137,7 +138,7 @@
 }
 
 .skeletonAnnouncement {
-  height: 130px; // Approx height of an Announcement
+  height: 130px;
   margin-bottom: 20px;
   h4 {
     margin-top: 0;

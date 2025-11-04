@@ -5,7 +5,7 @@
   z-index: 1050;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.6);
+  background-color: rgba(0, 0, 0, 0.6); // Overlay color
   display: flex;
   justify-content: center;
   align-items: center;
@@ -20,26 +20,26 @@
   text-align: center;
 
   // Theme Variables
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
+  background: var(--card-bg-default);
+  border: 1px solid var(--border-light-color);
 
   h2 {
     margin-top: 0;
     margin-bottom: 5px;
-    color: var(--color-text-primary);
+    color: var(--font-color);
   }
 
   h3 {
     font-size: 1.2em;
     font-weight: normal;
-    color: var(--color-text-secondary);
+    color: var(--secondary-text-color);
     margin-bottom: 10px;
   }
 
   h4 {
     font-size: 1.4em;
     margin-top: 15px;
-    color: var(--color-text-primary);
+    color: var(--font-color);
   }
 }
 
@@ -52,7 +52,7 @@
 
   label {
     font-weight: bold;
-    color: var(--color-text-primary);
+    color: var(--font-color);
   }
 
   input {
@@ -63,9 +63,9 @@
     font-size: 1.1em;
     
     // Theme Variables
-    border: 1px solid var(--color-border);
-    background-color: var(--color-background);
-    color: var(--color-text-primary);
+    border: 1px solid var(--form-input-border-color);
+    background-color: var(--bg-color); // Use main background
+    color: var(--form-input-field-color);
 
     &:disabled {
       opacity: 0.7;
@@ -74,7 +74,7 @@
 }
 
 .error {
-  color: var(--color-btn-red); // Use variable
+  color: var(--btn-danger-bg); // Use variable
   font-weight: bold;
   margin-top: 15px;
 }
@@ -93,7 +93,7 @@
     font-weight: bold;
     cursor: pointer;
     transition: background-color 0.2s;
-    color: var(--color-primary-contrast); // Use variable
+    color: var(--btn-primary-contrast); // Use variable
 
     &:disabled {
       opacity: 0.7;
@@ -103,21 +103,22 @@
 }
 
 .confirmButton {
-  background-color: var(--color-btn-green); // Use variable
+  background-color: var(--btn-success-bg); // Use variable
 
   &:hover:not(:disabled) {
-    background-color: #218838; // Darken green
+    background-color: var(--btn-success-hover-bg); // Use variable
   }
 
   &:disabled {
-    background-color: var(--color-btn-green);
+    background-color: var(--btn-success-bg); // Keep color when disabled
   }
 }
 
 .cancelButton {
-  background-color: var(--color-btn-gray); // Use variable
+  background-color: var(--btn-secondary-bg); // Use variable
+  color: var(--btn-secondary-color);
 
   &:hover:not(:disabled) {
-    background-color: #5a6268; // Darken gray
+    background-color: var(--btn-secondary-hover-bg); // Use variable
   }
 }

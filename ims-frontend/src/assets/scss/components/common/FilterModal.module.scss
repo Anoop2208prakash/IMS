@@ -12,12 +12,12 @@
 }
 
 .modalContent {
-  background: var(--color-surface);
+  background: var(--card-bg-default);
   border-radius: 8px;
   box-shadow: 0 5px 15px rgba(0,0,0,0.3);
   width: 100%;
   max-width: 400px;
-  color: var(--color-text-primary);
+  color: var(--font-color);
   display: flex;
   flex-direction: column;
 }
@@ -27,7 +27,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 15px 20px;
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--border-light-color);
 
   h3 {
     margin: 0;
@@ -39,13 +39,13 @@
   background: none;
   border: none;
   font-size: 1.5rem;
-  color: var(--color-text-secondary);
+  color: var(--secondary-text-color);
   cursor: pointer;
   padding: 0;
   line-height: 1;
 
   &:hover {
-    color: var(--color-text-primary);
+    color: var(--font-color);
   }
 }
 
@@ -59,13 +59,14 @@
   label {
     font-weight: 600;
     font-size: 0.9em;
+    color: var(--form-label-color);
   }
 
   select {
     padding: 10px 15px;
-    background-color: var(--color-surface);
-    border: 1px solid var(--color-border);
-    color: var(--color-text-primary);
+    background-color: var(--card-bg-default);
+    border: 1px solid var(--form-input-border-color);
+    color: var(--form-input-field-color);
     border-radius: 4px;
     font-size: 1em;
   }
@@ -76,8 +77,8 @@
   justify-content: space-between;
   align-items: center;
   padding: 15px 20px;
-  background-color: var(--color-background);
-  border-top: 1px solid var(--color-border);
+  background-color: var(--bg-secondary-color);
+  border-top: 1px solid var(--border-light-color);
   border-bottom-left-radius: 8px;
   border-bottom-right-radius: 8px;
 
@@ -91,29 +92,29 @@
 
   .resetButton {
     background: none;
-    color: var(--color-primary);
+    color: var(--primary-color);
     &:hover {
       text-decoration: underline;
     }
   }
 
   .cancelButton {
-    background: var(--color-surface);
-    border: 1px solid var(--color-border);
-    color: var(--color-text-primary);
+    background: var(--card-bg-default);
+    border: 1px solid var(--border-light-color);
+    color: var(--font-color);
     margin-right: 10px;
 
     &:hover {
-      background-color: var(--color-border-dashed);
+      background-color: var(--bg-secondary-color);
     }
   }
   
   .applyButton {
-    background: var(--color-primary);
-    color: var(--color-primary-contrast);
+    background: var(--btn-primary-bg);
+    color: var(--btn-primary-contrast);
     
     &:hover {
-      background: var(--color-primary-hover);
+      background: var(--btn-primary-hover-bg);
     }
   }
 }

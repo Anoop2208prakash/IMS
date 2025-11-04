@@ -1,21 +1,22 @@
+// --- Sidebar Width Variables ---
+$sidebar-width: 240px;
+$sidebar-width-collapsed: 78px; // Width when only icons are visible
 
 .sidebar {
-  width: 240px; // Default expanded width
-  background-color: var(--color-sidebar-bg);
-  color: var(--color-sidebar-text);
+  width: $sidebar-width;
+  background-color: var(--sidebar-menu-bg-color); // Use new theme variable
+  color: var(--menu-font-color); // Use new theme variable
   display: flex;
   flex-direction: column;
   height: 100vh;
   position: fixed;
-  top: 60px; // Below the header
+  top: 60px; // Corrected: Aligns with the top of the viewport
   left: 0;
   z-index: 1001;
-  padding-top: 15px; // Space for the top header
+  padding-top: 15px; // Corrected: Creates space for the 60px header
   box-sizing: border-box;
   transition: width 0.3s ease-in-out;
-  
-  // This is for the right border line
-  border-right: 1px solid var(--color-sidebar-hover);
+  border-right: 1px solid var(--border-light-color); // Use new theme variable
 }
 
 .nav {
@@ -23,14 +24,14 @@
   flex-direction: column;
   flex-grow: 1;
   overflow-y: auto;
-  overflow-x: hidden; // Hide text as it shrinks
+  overflow-x: hidden;
 }
 
 .navLink {
-  color: var(--color-sidebar-text);
+  color: var(--menu-font-color);
   text-decoration: none;
   padding: 15px 20px;
-  transition: background-color 0.2s ease-in-out;
+  transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
   display: flex;
   align-items: center;
   gap: 15px;
@@ -38,12 +39,12 @@
   white-space: nowrap;
   
   &:hover {
-    background-color: var(--color-sidebar-hover);
+    background-color: var(--active-menu-bg-color); // Use new theme variable
   }
 
   &.active {
-    background-color: var(--color-sidebar-hover);
-    color: white;
+    background-color: var(--active-menu-bg-color); // Use new theme variable
+    color: var(--primary-color); // Use new theme variable
     font-weight: bold;
 
     &::before {
@@ -53,7 +54,7 @@
       top: 0;
       height: 100%;
       width: 4px;
-      background-color: var(--color-primary);
+      background-color: var(--primary-color); // Use new theme variable
     }
   }
 }
@@ -72,7 +73,7 @@
 
 // --- New Styles for Collapsed Sidebar ---
 .collapsed {
-  width: 78px; // Collapsed width
+  width: $sidebar-width-collapsed;
 
   .navLink {
     justify-content: center;
@@ -84,22 +85,26 @@
     width: 0;
     overflow: hidden;
   }
+  
+  .collapseToggle {
+    justify-content: center;
+  }
 }
 
 // --- THIS IS THE CORRECT TOGGLE BUTTON STYLE ---
 .collapseToggle {
   position: absolute;
-  top: 50px; // Center vertically
+  top: 10%; // Corrected: Center vertically
   right: -15px; // Hang off the right edge
   transform: translateY(-50%);
   
   width: 30px;
   height: 30px;
   border-radius: 50%;
-  background-color: var(--color-surface); // Use page background
-  border: 1px solid var(--color-border);
+  background-color: var(--card-bg-default); // Use new theme variable
+  border: 1px solid var(--border-light-color); // Use new theme variable
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  color: var(--color-text-primary);
+  color: var(--font-color); // Use new theme variable
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -108,11 +113,8 @@
   transition: all 0.3s ease-in-out;
 
   &:hover {
-    background-color: var(--color-primary);
-    color: var(--color-primary-contrast);
-    border-color: var(--color-primary);
+    background-color: var(--primary-color); // Use new theme variable
+    color: var(--btn-primary-contrast); // Use new theme variable
+    border-color: var(--primary-color); // Use new theme variable
   }
 }
-
-// --- Remove Mobile-Specific Styles ---
-// (All @media (max-width: 768px) rules are removed)

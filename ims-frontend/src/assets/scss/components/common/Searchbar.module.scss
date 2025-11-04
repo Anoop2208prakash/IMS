@@ -6,11 +6,11 @@
   padding: 0 12px;
 
   // Theme Variables
-  background-color: var(--color-search-bg);
-  border: 1px solid var(--color-search-border);
+  background-color: var(--bg-secondary-color); // Use new theme variable
+  border: 1px solid var(--form-input-border-color); // Use new theme variable
 
   .icon {
-    color: var(--color-search-icon);
+    color: var(--form-placeholder-text-color); // Use new theme variable
     display: flex;
     align-items: center;
     margin-right: 8px;
@@ -22,14 +22,14 @@
     background: none;
     font-size: 1em;
     flex-grow: 1;
-    color: var(--color-search-text);
+    color: var(--form-input-field-color); // Use new theme variable
 
     &:focus {
       outline: none;
     }
 
     &::placeholder {
-      color: var(--color-search-placeholder);
+      color: var(--form-placeholder-text-color); // Use new theme variable
     }
   }
 }
