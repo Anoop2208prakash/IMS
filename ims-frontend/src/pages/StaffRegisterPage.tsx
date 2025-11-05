@@ -58,6 +58,7 @@ const StaffRegisterPage = () => {
           <label htmlFor="role">Role</label>
           <select name="role" value={formData.role} onChange={handleChange} disabled={loading}>
             <option value="TEACHER">Teacher</option>
+            <option value="SUPER_ADMIN">Super Admin</option>
             <option value="ADMIN">Admin</option>
             <option value="ADMIN_ADMISSION">Admin (Admission)</option>
             <option value="ADMIN_FINANCE">Admin (Finance)</option>
