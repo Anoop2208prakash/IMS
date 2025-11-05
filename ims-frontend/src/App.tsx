@@ -18,6 +18,9 @@ import DashboardPage from './pages/DashboardPage';
 import ProfilePage from './pages/ProfilePage';
 import ChangePasswordPage from './pages/ChangePasswordPage';
 import OrderInvoicePage from './pages/student/OrderInvoicePage';
+import IDCardPage from './pages/IDCardPage';
+import BrowseBooksPage from './pages/admin/library/BrowseBooksPage';
+import MyLoansPage from './pages/admin/library/MyLoansPage';
 
 // --- Student-Only Imports ---
 import MySubjectsPage from './pages/MySubjectsPage';
@@ -29,7 +32,7 @@ import StationaryStorePage from './pages/student/StationaryStorePage';
 import MyOrdersPage from './pages/student/MyOrdersPage';
 
 // --- Teacher-Only Imports ---
-import MyClassesPage from './pages/teacher/MyClassesPage'; // 1. IMPORT THE NEW PAGE
+import MyClassesPage from './pages/teacher/MyClassesPage';
 import MarkAttendancePage from './pages/teacher/MarkAttendancePage';
 import EnterMarksPage from './pages/teacher/EnterMarksPage';
 
@@ -49,14 +52,13 @@ import GenerateInvoicesPage from './pages/admin/finance/GenerateInvoicesPage';
 import ManageInventoryPage from './pages/admin/inventory/ManageInventoryPage';
 import ViewOrdersPage from './pages/admin/ViewOrdersPage';
 import ManageAnnouncementsPage from './pages/admin/ManageAnnouncementsPage';
-import IDCardPage from './pages/IDCardPage';
-import BrowseBooksPage from './pages/admin/library/BrowseBooksPage';
-import MyLoansPage from './pages/admin/library/MyLoansPage';
+import ManageStaffPage from './pages/admin/ManageStaffPage';
+import NewStaffPage from './pages/admin/NewStaffPage';
 
 function App() {
   return (
     <ThemeProvider>
-      <Toaster 
+      <Toaster
         position="top-right"
         toastOptions={{
           success: { style: { background: '#28a745', color: 'white' } },
@@ -96,11 +98,11 @@ function App() {
 
             {/* Teacher-Only Routes */}
             <Route element={<RoleProtectedRoute allowedRoles={['TEACHER']} />}>
-              <Route path="/teacher/my-classes" element={<MyClassesPage />} /> {/* 2. ADD THE ROUTE */}
+              <Route path="/teacher/my-classes" element={<MyClassesPage />} />
               <Route path="/teacher/attendance" element={<MarkAttendancePage />} />
               <Route path="/teacher/marks" element={<EnterMarksPage />} />
             </Route>
-            
+
             {/* Admin-Only Routes */}
             <Route element={<RoleProtectedRoute allowedRoles={['ADMIN', 'ADMIN_ADMISSION']} />}>
               <Route path="/admin/admissions" element={<ViewAdmissionsPage />} />
@@ -127,6 +129,12 @@ function App() {
               <Route path="/admin/exams" element={<ManageExamsPage />} />
               <Route path="/admin/inventory" element={<ManageInventoryPage />} />
               <Route path="/admin/announcements" element={<ManageAnnouncementsPage />} />
+            </Route>
+
+            {/* SUPER_ADMIN-Only Routes */}
+            <Route element={<RoleProtectedRoute allowedRoles={['SUPER_ADMIN']} />}>
+              <Route path="/admin/staff" element={<ManageStaffPage />} />
+              <Route path="/admin/staff/new" element={<NewStaffPage />} />
             </Route>
           </Route>
         </Route>
