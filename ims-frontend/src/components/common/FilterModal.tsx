@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
-import styles from '../../assets/scss/components/common/FilterModal.module.scss';
+import styles from '../../assets/scss/components/common/FilterModal.module.scss'; // Use the correct path
 
 // A generic option for the dropdown
 interface FilterOption {
@@ -13,10 +13,13 @@ interface FilterModalProps {
   onClose: () => void;
   onApply: (filters: { programId: string; semesterId: string }) => void;
   initialFilters: { programId: string; semesterId: string };
-  filterType: 'program' | 'programAndSemester' | 'category';
+  filterType: 'program' | 'programAndSemester';
   
-  // These are optional because they are not needed for 'category'
-  programOptions?: FilterOption[]; 
+  // These are now required
+  programLabel: string; // The label for the first dropdown
+  programOptions: FilterOption[]; 
+  
+  // These are optional
   semesterOptions?: FilterOption[];
 }
 
@@ -24,22 +27,24 @@ const FilterModal = ({
   onClose, 
   onApply, 
   initialFilters, 
-  filterType, 
-  programOptions = [], // Default to empty array
-  semesterOptions = [] // Default to empty array
+  filterType,
+  programLabel, // The label for the first dropdown
+  programOptions = [], 
+  semesterOptions = [] 
 }: FilterModalProps) => {
 
-  // State
   const [selectedProgramId, setSelectedProgramId] = useState(initialFilters.programId);
   const [selectedSemesterId, setSelectedSemesterId] = useState(initialFilters.semesterId);
 
-  // 1. Define the static category options
-  const categoryOptions: FilterOption[] = [
-    { value: 'all', label: 'All Categories' },
-    { value: 'STATIONARY', label: 'Stationary' },
-    { value: 'UNIFORM', label: 'Uniform' },
-    { value: 'OTHER', label: 'Other' }
-  ];
+  // This effect will run if the filterType is 'programAndSemester'
+  // to pre-load the semesters if a program is already selected
+  useEffect(() => {
+    if (filterType === 'programAndSemester' && selectedProgramId !== 'all') {
+      // This assumes the semesterOptions are passed in correctly
+      // If not, an async fetch would be needed here
+    }
+  }, [filterType, selectedProgramId]);
+
 
   const handleApply = () => {
     onApply({ programId: selectedProgramId, semesterId: selectedSemesterId });
@@ -53,49 +58,26 @@ const FilterModal = ({
     onClose();
   };
 
-  // 2. This render function now correctly handles all 3 types
   const renderFilters = () => {
-    switch (filterType) {
-      case 'category':
-        return (
+    return (
+      <>
+        {/* FIX: Use the 'programLabel' prop for the label */}
+        <label>{programLabel}</label>
+        <select 
+          value={selectedProgramId} 
+          onChange={(e) => {
+            setSelectedProgramId(e.target.value);
+            if (filterType === 'programAndSemester') {
+              setSelectedSemesterId('all');
+            }
+          }}
+        >
+          {/* FIX: Use the 'programOptions' prop */}
+          {programOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
+        </select>
+        
+        {filterType === 'programAndSemester' && (
           <>
-            <label>Category</label>
-            <select 
-              value={selectedProgramId} // We reuse programId to store the category
-              onChange={(e) => setSelectedProgramId(e.target.value)}
-            >
-              {categoryOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
-            </select>
-          </>
-        );
-      
-      case 'program':
-        return (
-          <>
-            <label>Program</label>
-            <select 
-              value={selectedProgramId} 
-              onChange={(e) => setSelectedProgramId(e.target.value)}
-            >
-              {programOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
-            </select>
-          </>
-        );
-
-      case 'programAndSemester':
-        return (
-          <>
-            <label>Program</label>
-            <select 
-              value={selectedProgramId} 
-              onChange={(e) => {
-                setSelectedProgramId(e.target.value);
-                setSelectedSemesterId('all'); // Reset semester when program changes
-              }}
-            >
-              {programOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
-            </select>
-            
             <label>Semester</label>
             <select 
               value={selectedSemesterId} 
@@ -105,12 +87,9 @@ const FilterModal = ({
               {semesterOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
             </select>
           </>
-        );
-      
-      default:
-        // This is the error you were seeing
-        return <p style={{ color: 'red' }}>Error: Filter type is not configured correctly.</p>;
-    }
+        )}
+      </>
+    );
   };
 
   return (

@@ -52,6 +52,7 @@ import ManageAnnouncementsPage from './pages/admin/ManageAnnouncementsPage';
 import IDCardPage from './pages/IDCardPage';
 import BrowseBooksPage from './pages/admin/library/BrowseBooksPage';
 import MyLoansPage from './pages/admin/library/MyLoansPage';
+import ManageStaffPage from './pages/admin/ManageStaffPage';
 
 function App() {
   return (
@@ -127,6 +128,10 @@ function App() {
               <Route path="/admin/exams" element={<ManageExamsPage />} />
               <Route path="/admin/inventory" element={<ManageInventoryPage />} />
               <Route path="/admin/announcements" element={<ManageAnnouncementsPage />} />
+            </Route>
+
+            <Route element={<RoleProtectedRoute allowedRoles={['SUPER_ADMIN']} />}>
+              <Route path="/admin/staff" element={<ManageStaffPage />} />
             </Route>
           </Route>
         </Route>
