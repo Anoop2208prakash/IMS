@@ -1,41 +1,36 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import toast from 'react-hot-toast'; // 1. Import toast
 import styles from '../assets/scss/pages/IDCardPage.module.scss';
 import Spinner from '../components/common/Spinner';
 import logo from '../assets/image/logo.png';
 import { BsPersonSquare } from 'react-icons/bs';
+import { useAuth } from '../context/AuthContext'; // 2. Import useAuth
 
-// 1. Updated ProfileData interface
+// 3. Updated ProfileData interface
 interface ProfileData {
   id: string;
   name: string;
   email: string;
-  sID: string; // <-- This is the new ID
+  sID: string;
   role: string;
-  student?: {
-    // rollNumber: string; // <-- Removed
+  student: { // Student has these fields
     admissionDate: string;
     photoUrl?: string;
     phoneNumber?: string;
     bloodGroup?: string;
     programName?: string; 
     durationYears?: number;
-  };
-  teacher?: {
-    // employeeId: string; // <-- Removed
+  } | null;
+  teacher: { // Teacher does NOT have these fields
     dateJoined: string;
     department?: string;
-    photoUrl?: string;
-  };
+  } | null;
 }
 
-// 2. Updated helper functions
-const getIdentifier = (profile: ProfileData) => {
-  return profile.sID; // Just return the sID
-};
-
+// 4. Updated helper functions
 const getTitle = (profile: ProfileData) => {
-  return profile.student?.programName || profile.teacher?.department || profile.role;
+  return profile.student?.programName || profile.teacher?.department || profile.role.replace('_', ' ');
 };
 
 const getJoinDate = (profile: ProfileData) => {
@@ -52,41 +47,60 @@ const getExpireDate = (profile: ProfileData) => {
   return 'N/A';
 };
 
+// 5. Photo only comes from the student record
 const getPhotoUrl = (profile: ProfileData): string | null => {
-  const photo = profile.student?.photoUrl || profile.teacher?.photoUrl;
+  const photo = profile.student?.photoUrl;
   return photo ? `http://localhost:5000${photo}` : null;
 };
+
+// 6. Phone and Blood Group only come from the student record
+const getPhoneNumber = (profile: ProfileData): string | null => {
+  return profile.student?.phoneNumber || null;
+}
+const getBloodGroup = (profile: ProfileData): string | null => {
+  return profile.student?.bloodGroup || null;
+}
 
 const IDCardPage = () => {
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [loading, setLoading] = useState(true);
+  const { user } = useAuth(); // Get the logged-in user
 
   useEffect(() => {
     const fetchProfile = async () => {
       try {
+        setLoading(true);
         const response = await axios.get('http://localhost:5000/api/profile/me');
         setProfile(response.data);
       } catch (err) {
-        console.error("Failed to fetch profile", err);
+        // 7. Add error handling
+        if (axios.isAxiosError(err) && err.response) {
+          toast.error(err.response.data.message || 'Failed to fetch profile.');
+        } else {
+          toast.error('An unexpected error occurred.');
+        }
       } finally {
         setLoading(false);
       }
     };
-    fetchProfile();
-  }, []);
+    
+    if (user) { // Only fetch if the user is loaded
+      fetchProfile();
+    }
+  }, [user]); // Re-run if user changes
 
   if (loading) {
     return <Spinner />;
   }
   
   if (!profile) {
-    // This message will now only appear if the API call truly fails
     return <p>Could not load profile data.</p>;
   }
 
   const photoUrl = getPhotoUrl(profile);
-  const { student } = profile;
-  const isStudent = student && profile.role === 'STUDENT';
+  const phoneNumber = getPhoneNumber(profile);
+  const bloodGroup = getBloodGroup(profile);
+  const sIDLabel = profile.role === 'STUDENT' ? 'SID' : 'Staff ID';
 
   return (
     <div className={styles.pageContainer}>
@@ -107,20 +121,20 @@ const IDCardPage = () => {
             <p className={styles.title}>{getTitle(profile)}</p>
 
             <div className={styles.infoGrid}>
-              <span className={styles.label}>{isStudent ? 'SID' : 'ID'}</span>
-              <span className={styles.value}>: {getIdentifier(profile)}</span>
+              <span className={styles.label}>{sIDLabel}</span>
+              <span className={styles.value}>: {profile.sID}</span>
               
-              {profile.student?.bloodGroup && (
+              {bloodGroup && (
                 <>
                   <span className={styles.label}>BLOOD</span>
-                  <span className={styles.value}>: {profile.student.bloodGroup}</span>
+                  <span className={styles.value}>: {bloodGroup}</span>
                 </>
               )}
               
-              {profile.student?.phoneNumber && (
+              {phoneNumber && (
                 <>
                   <span className={styles.label}>PHONE</span>
-                  <span className={styles.value}>: {profile.student.phoneNumber}</span>
+                  <span className={styles.value}>: {phoneNumber}</span>
                 </>
               )}
               
@@ -145,7 +159,7 @@ const IDCardPage = () => {
         </div>
       </div>
       
-      <button className={styles.printButton} onClick={() => globalThis.print()}>
+      <button className={styles.printButton} onClick={() => window.print()}>
         Print ID Card
       </button>
     </div>

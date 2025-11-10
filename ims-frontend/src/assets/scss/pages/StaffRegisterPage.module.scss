@@ -1,0 +1,188 @@
+.pageWrapper {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 100vh;
+  padding: 40px 20px;
+  background-color: var(--bg-color);
+}
+
+.form {
+  width: 100%;
+  max-width: 900px;
+  background: var(--card-bg-default);
+  color: var(--font-color);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--border-light-color);
+}
+
+.header {
+  padding: 20px 30px;
+  border-bottom: 1px solid var(--border-light-color);
+  
+  h2 {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    font-size: 1.5em;
+  }
+}
+
+.formBody {
+  padding: 30px;
+}
+
+.contentWrapper {
+  display: flex;
+  gap: 30px;
+  
+  @media (max-width: 768px) {
+    flex-direction: column;
+  }
+}
+
+// --- Left Column ---
+.imageUploadColumn {
+  flex: 1;
+  max-width: 250px;
+  
+  @media (max-width: 768px) {
+    max-width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+}
+
+.fileInput {
+  width: 0.1px;
+  height: 0.1px;
+  opacity: 0;
+  overflow: hidden;
+  position: absolute;
+  z-index: -1;
+}
+
+.imageUploadLabel {
+  width: 200px;
+  height: 200px;
+  border-radius: 8px;
+  border: 2px dashed var(--card-border-dashed);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  overflow: hidden;
+  background: var(--bg-secondary-color);
+  transition: all 0.2s;
+
+  &:hover {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+  }
+}
+
+.imagePreview {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.imagePlaceholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.2em;
+  color: var(--secondary-text-color);
+}
+
+// --- Right Column ---
+.fieldsColumn {
+  flex: 3;
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+
+  @media (max-width: 600px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  label {
+    font-weight: 600;
+    font-size: 0.9em;
+    color: var(--form-label-color);
+  }
+
+  input,
+  select {
+    width: 100%;
+    padding: 10px;
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-size: 1em;
+    border: 1px solid var(--form-input-border-color);
+    background-color: var(--card-bg-default);
+    color: var(--form-input-field-color);
+
+    &:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 2px var(--form-focus-outline);
+    }
+  }
+}
+
+// --- Actions Footer ---
+.formActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 15px;
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border-light-color);
+
+  button, .cancelButton {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 1em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+
+    &:disabled {
+      cursor: not-allowed;
+      opacity: 0.7;
+    }
+  }
+
+  .submitButton {
+    background-color: var(--btn-primary-bg);
+    color: var(--btn-primary-contrast);
+    &:hover:not(:disabled) {
+      background-color: var(--btn-primary-hover-bg);
+    }
+  }
+
+  .cancelButton {
+    background-color: var(--btn-secondary-bg);
+    color: var(--btn-secondary-color);
+    border: 1px solid var(--btn-secondary-border);
+    &:hover:not(:disabled) {
+      background-color: var(--btn-secondary-hover-bg);
+    }
+  }
+}

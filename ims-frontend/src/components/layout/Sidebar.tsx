@@ -6,7 +6,8 @@ import {
   BsBookHalf, BsArrowLeftRight, BsCalendarCheck, BsClipboardCheck,
   BsReceipt, BsFileEarmarkPerson, BsCartFill, BsBoxSeam, BsPencilSquare,
   BsJournalBookmarkFill, BsBook, BsCardChecklist, BsMegaphoneFill,
-  BsFileEarmarkTextFill, BsChevronLeft, BsChevronRight
+  BsFileEarmarkTextFill, BsChevronLeft, BsChevronRight,
+  BsShieldLockFill
 } from 'react-icons/bs';
 import { FaChalkboardTeacher, FaFileInvoiceDollar } from 'react-icons/fa';
 
@@ -73,7 +74,11 @@ const navLinks = {
     { path: '/admin/library/books', label: 'Manage Books', icon: <BsBookHalf /> },
     { path: '/admin/library/loans', label: 'Manage Loans', icon: <BsArrowLeftRight /> },
   ],
-  SUPER_ADMIN: [],
+  SUPER_ADMIN: [
+    { path: '/', label: 'Dashboard', icon: <BsFillGridFill /> },
+    { path: '/id-card', label: 'ID Card', icon: <BsPersonBadgeFill /> },
+    { path: '/admin/staff', label: 'Manage Staff', icon: <BsShieldLockFill /> },
+  ],
 };
 
 const Sidebar = ({ isCollapsed, onToggle }: SidebarProps) => {
