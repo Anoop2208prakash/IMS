@@ -2,24 +2,22 @@ import { useState, ChangeEvent, FormEvent } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import { useNavigate, Link } from 'react-router-dom';
-import styles from '../assets/scss/pages/StaffRegisterPage.module.scss'; // 1. Use the NEW stylesheet
+import styles from '../assets/scss/pages/StaffRegisterPage.module.scss';
 import { FaUserPlus, FaCamera } from 'react-icons/fa';
 import ButtonSpinner from '../components/common/ButtonSpinner';
-
-// 2. REMOVE the generateRandomSID function
+import CustomDatePicker from '../components/common/CustomDatePicker'; // Import the custom picker
 
 const StaffRegisterPage: React.FC = () => {
-  // 3. REMOVE sID from the initial state
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     password: '',
     phoneNumber: '',
     dob: '',
-    role: 'SUPER_ADMIN', // Default to SUPER_ADMIN
+    role: 'SUPER_ADMIN',
     department: '',
     bloodGroup: '',
-    dateJoined: new Date().toISOString().split('T')[0],
+    dateJoined: new Date().toISOString().split('T')[0], // Default to today
   });
 
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -50,6 +48,11 @@ const StaffRegisterPage: React.FC = () => {
     });
   };
 
+  // Helper for CustomDatePicker
+  const handleDateChange = (field: string, date: string) => {
+    setFormData(prev => ({ ...prev, [field]: date }));
+  };
+
   const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
@@ -70,12 +73,11 @@ const StaffRegisterPage: React.FC = () => {
     const submissionData = new FormData();
     submissionData.append('profileImage', imageFile);
     
-    // 4. Loop through formData (sID is no longer in it)
     Object.keys(formData).forEach(key => {
       submissionData.append(key, formData[key as keyof typeof formData]);
     });
     
-    submissionData.append('fullName', formData.name); // Match backend controller
+    submissionData.append('fullName', formData.name);
 
     const promise = axios.post('http://localhost:5000/api/staff/register', submissionData, {
       headers: { 'Content-Type': 'multipart/form-data' },
@@ -84,7 +86,7 @@ const StaffRegisterPage: React.FC = () => {
     toast.promise(promise, {
       loading: 'Creating staff member...',
       success: (res) => {
-        navigate('/login'); // Go to login page on success
+        navigate('/login');
         return `${res.data.message}. Please log in.`;
       },
       error: (err) => err.response?.data?.message || 'Failed to create staff member.'
@@ -149,8 +151,6 @@ const StaffRegisterPage: React.FC = () => {
                   />
                 </div>
                 
-                {/* 5. REMOVED the sID input field */}
-
                 <div className={styles.formGroup}>
                   <label htmlFor="password">Password</label>
                   <input
@@ -169,9 +169,13 @@ const StaffRegisterPage: React.FC = () => {
 
                 <div className={styles.formGroup}>
                   <label htmlFor="dob">Date of Birth</label>
-                  <input
-                    id="dob" type="date" name="dob"
-                    value={formData.dob} onChange={handleChange} required disabled={loading}
+                  {/* Use CustomDatePicker for DOB */}
+                  <CustomDatePicker
+                    name="dob"
+                    value={formData.dob}
+                    onChange={(date) => handleDateChange('dob', date)}
+                    required
+                    placeholder="Select date of birth"
                   />
                 </div>
 
@@ -215,9 +219,13 @@ const StaffRegisterPage: React.FC = () => {
 
                 <div className={styles.formGroup}>
                   <label htmlFor="dateJoined">Date Joined</label>
-                  <input
-                    id="dateJoined" type="date" name="dateJoined"
-                    value={formData.dateJoined} onChange={handleChange} required disabled={loading}
+                  {/* Use CustomDatePicker for Date Joined */}
+                  <CustomDatePicker
+                    name="dateJoined"
+                    value={formData.dateJoined}
+                    onChange={(date) => handleDateChange('dateJoined', date)}
+                    required
+                    placeholder="Select joining date"
                   />
                 </div>
               </div>

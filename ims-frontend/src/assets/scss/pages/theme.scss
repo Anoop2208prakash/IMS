@@ -315,8 +315,7 @@
   --box-shadow-2: 0px 6px 12px -3px #01040966;
   --box-shadow-3: 0px 6px 18px 0px #01040966;
 
-  --dropdown-box-shadow: var(--box-shadow-1), var(--box-shadow-2),
-    var(--box-shadow-3);
+  --dropdown-box-shadow: var(--box-shadow-1), var(--box-shadow-2), var(--box-shadow-3);
 
   // skeleton loader
   --skeleton-base-color: #1e1e24;
@@ -329,6 +328,7 @@ html, body {
   margin: 0;
   padding: 0;
   overflow-x: hidden;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background-color: var(--bg-color);
   color: var(--font-color);
   transition: background-color 0.3s, color 0.3s;

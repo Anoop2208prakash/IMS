@@ -1,0 +1,183 @@
+.datePickerContainer {
+  position: relative;
+  width: 100%;
+}
+
+.inputWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+
+  input {
+    width: 100%;
+    // Padding: Top Right Bottom Left
+    padding: 10px 40px 10px 10px; 
+    border-radius: 4px;
+    font-size: 1em;
+    cursor: pointer;
+    
+    // Theme Variables
+    border: 1px solid var(--form-input-border-color);
+    background-color: var(--card-bg-default);
+    color: var(--form-input-field-color);
+
+    &::placeholder {
+      color: var(--form-placeholder-text-color);
+      opacity: 1;
+    }
+
+    &:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 2px var(--form-focus-outline);
+    }
+  }
+
+  .calendarIcon {
+    position: absolute;
+    right: 12px;
+    color: var(--secondary-text-color);
+    font-size: 1.1em;
+    pointer-events: none;
+  }
+}
+
+// --- The Popover Calendar ---
+.calendarDropdown {
+  position: absolute;
+  bottom: 100%;
+  left: 0;
+  margin-bottom: 5px;
+  z-index: 9999;
+  width: 280px;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+
+  // Theme Variables
+  background-color: var(--dropdown-content-bg);
+  border: 1px solid var(--border-light-color);
+  color: var(--font-color);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+
+  // Navigation buttons (< and >)
+  button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--secondary-text-color);
+    padding: 5px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover {
+      background-color: var(--bg-secondary-color);
+      color: var(--font-color);
+    }
+  }
+}
+
+// --- NEW: Styles for Month/Year Selectors ---
+.headerSelectors {
+  display: flex;
+  gap: 8px;
+
+  select {
+    // --- FIX: Force removal of default arrow ---
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-image: none;
+    // -------------------------------------------
+
+    background-color: var(--bg-secondary-color);
+    color: var(--font-color);
+    border: 1px solid var(--border-light-color);
+    border-radius: 4px;
+    padding: 4px 10px; // Consistent padding
+    font-size: 0.9em;
+    font-weight: bold;
+    cursor: pointer;
+    outline: none;
+    text-align: center;
+    text-align-last: center; // Fix for centering in some browsers
+
+    &:hover {
+      border-color: var(--primary-color);
+      background-color: var(--card-bg-default);
+    }
+
+    &:focus {
+      border-color: var(--primary-color);
+    }
+
+    option {
+      background-color: var(--card-bg-default);
+      color: var(--font-color);
+    }
+  }
+  
+  // Extra fix for legacy browsers
+  select::-ms-expand {
+    display: none;
+  }
+}
+// -------------------------------------------
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 5px;
+  text-align: center;
+}
+
+.dayName {
+  font-size: 0.85em;
+  color: var(--secondary-text-color);
+  font-weight: 600;
+  margin-bottom: 5px;
+}
+
+.dayCell {
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.95em;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: var(--font-color);
+
+  &:hover:not(.empty):not(.selected) {
+    background-color: var(--bg-secondary-color);
+  }
+
+  &.empty {
+    cursor: default;
+  }
+
+  &.selected {
+    background-color: var(--primary-color);
+    color: var(--btn-primary-contrast);
+    font-weight: bold;
+  }
+
+  &.today {
+    border: 1px solid var(--primary-color);
+    color: var(--primary-color);
+    
+    &.selected {
+      color: var(--btn-primary-contrast);
+    }
+  }
+}
