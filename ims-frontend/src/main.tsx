@@ -4,7 +4,7 @@ import App from './App';
 import { BrowserRouter } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
-import './assets/scss/pages/theme.scss'; // Your global theme file
+import './assets/scss/pages/theme.scss';
 
 // Setup for LocatorJS
 import setupLocatorUI from "@locator/runtime";
