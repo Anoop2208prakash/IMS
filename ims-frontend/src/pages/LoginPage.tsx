@@ -95,6 +95,10 @@ const LoginPage = () => {
         <button type="submit" className={styles.submitButton} disabled={loading}>
           {loading ? <ButtonSpinner /> : 'Login'}
         </button>
+
+        <Link to="/staff-register" className={styles.backLink}>
+          Staff Registration (Temporary)
+        </Link>
       </form>
     </div>
   );

@@ -142,6 +142,11 @@
       box-shadow: 0 0 0 2px var(--form-focus-outline);
     }
   }
+
+  .readOnlyInput {
+    background-color: var(--bg-secondary-color);
+    opacity: 0.8;
+  }
 }
 
 // --- Actions Footer ---
@@ -162,6 +167,9 @@
     cursor: pointer;
     transition: all 0.2s;
     text-decoration: none;
+    display: inline-flex; // Added for alignment
+    align-items: center; // Added for alignment
+    justify-content: center; // Added for alignment
 
     &:disabled {
       cursor: not-allowed;
@@ -170,6 +178,7 @@
   }
 
   .submitButton {
+    
     background-color: var(--btn-primary-bg);
     color: var(--btn-primary-contrast);
     &:hover:not(:disabled) {
