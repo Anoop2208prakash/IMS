@@ -25,6 +25,14 @@
   --modal-border-color: transparent;
   --text-muted-color: #59636e;
 
+  --fc-border-color: #707070;
+  --fc-button-hover-bg-color: rgb(108, 117, 125);
+  --fc-button-hover-border-color: rgb(108, 117, 125);
+  --fc-button-hover-text-color: rgb(255, 255, 255);
+  --fc-button-bg-color: #f6f8fb;
+  --fc-button-border-color: #d0d7de;
+  --fc-button-text-color: #424242;
+
   // form elements
   --form-input-border-color: #d0d7de;
   --form-focus-outline: rgba(29, 122, 253, 0.5);
@@ -42,12 +50,13 @@
   --font-dark-color: #333;
 
   // Button color variables
+  //primary
   --btn-primary-bg: #0d6efd;
   --btn-primary-border: #0d6efd;
   --btn-primary-hover-bg: #0b5ed7;
   --btn-primary-hover-border: #0a58ca;
   --btn-primary-hover-color: #fff;
-  --btn-primary-contrast: #fff; // Added this
+  --btn-primary-contrast: #fff;
 
   //secondary
   --btn-hover-bg-color: rgb(145, 152, 161);
@@ -67,6 +76,7 @@
   --btn-danger-hover-bg: #bb2d3b;
   --btn-danger-hover-border: #b02a37;
   --btn-focus-shadow-rgb: 49, 132, 253;
+  --btn-outline-focus-shadow-rgb: 13, 110, 253;
 
   --bg-yellow-100: #ffc107;
 
@@ -75,14 +85,76 @@
   --sidebar-menu-bg-color: #ffffff;
   --active-menu-bg-color: #f6f8fb;
 
+  // scrollbar colors
+  --scrollbar-track-bg: #f6f8fa;
+  --scrollbar-thumb-bg: #d0d7de;
+  --scrollbar-thumb-hover-bg: #8c959f;
+
+  --footer-logo-color: rgba(26, 29, 34, 0.5);
+
+  // Toast alert variant variables
+  --toast-info-bg: #ddf4ff;
+  --toast-info-text: #0969da;
+  --toast-info-icon-color: #0969da;
+  --toast-info-border: rgba(33, 140, 255, 0.4);
+
+  --toast-success-bg: #dafbe1;
+  --toast-success-text: #1a7f37;
+  --toast-success-icon-color: #1a7f37;
+  --toast-success-border: rgba(46, 160, 67, 0.4);
+
+  --toast-warning-bg: #fff8c5;
+  --toast-warning-text: #9a6700;
+  --toast-warning-icon-color: #9a6700;
+  --toast-warning-border: rgba(191, 134, 0, 0.4);
+
+  --toast-danger-bg: #ffebe9;
+  --toast-danger-text: #cf222e;
+  --toast-danger-icon-color: #cf222e;
+  --toast-danger-border: rgba(207, 34, 45, 0.4);
+
+  --toast-unavailable-bg: #f6f8fa;
+  --toast-unavailable-text: #656d76;
+  --toast-unavailable-icon-color: #656d76;
+  --toast-unavailable-border: #d8dee4;
+
+  --toast-upsell-bg: #fbefff;
+  --toast-upsell-text: #8250df;
+  --toast-upsell-icon-color: #8250df;
+  --toast-upsell-border: rgba(130, 80, 223, 0.4);
+
+  --toast-alert-text-color: #f0f6fc;
+
   // card styles
   --card-bg-default: #ffffff;
+  --card-bg-muted: #f8f9fa;
+  --card-bg-primary: #e7f1ff;
+  --card-bg-dark: #1e1e2f;
+  --card-bg-light: #fdfdfd;
+  --card-text-default: #212529;
   --card-border-color: #d1d9e0;
-  --card-border-dashed: #d0d7de; // Added this
+  --card-border-dashed: #d0d7de;
+
+  // tooltip styles
+  --tooltip-bg-color: #25292e;
+  --tooltip-text-color: #ffffff;
+
+  // dashboard title notification
+  --dashboard-notification-color: #333;
+  --dashboard-notification-bg-color: #ecf4ff;
+  --dashboard-notification-border-color: #a7c7ff;
+
+  // custom dropdown
+  --box-shadow-1: 0px 0px 0px 1px #d1d9e080;
+  --box-shadow-2: 0px 6px 12px -3px #25292e0a;
+  --box-shadow-3: 0px 6px 18px 0px #25292e1f;
+
+  --dropdown-box-shadow: var(--box-shadow-1), var(--box-shadow-2), var(--box-shadow-3);
 
   // skeleton loader
   --skeleton-base-color: #ebebeb;
   --skeleton-shine-color: #f5f5f5;
+  --skeleton-bg-color: #e0e0e0;
 }
 
 [data-theme="dark"] {
@@ -112,6 +184,14 @@
   --modal-border-color: #3d444d;
   --text-muted-color: #9198a1;
 
+  --fc-border-color: #2b2b40;
+  --fc-button-hover-bg-color: rgb(108, 117, 125);
+  --fc-button-hover-border-color: rgb(108, 117, 125);
+  --fc-button-hover-text-color: rgb(255, 255, 255);
+  --fc-button-bg-color: #f6f8fb;
+  --fc-button-border-color: #d0d7de;
+  --fc-button-text-color: #424242;
+
   // form elements
   --form-input-border-color: #3d444d;
   --form-focus-outline: rgba(29, 122, 253, 0.5);
@@ -128,6 +208,13 @@
   --disabled-text-color: #808080;
   --font-dark-color: #333;
 
+  // datagrid variables
+  --datagrid-border-color: #3d444d;
+  --datagrid-column-header-bg-color: #151b23;
+  --datagrid-column-header-text-color: #9198a1;
+  --custom-datagrid-cell-color: #f0f6fc;
+  --custom-datagrid-scrollbar-thumb-bg: #d0d0d0;
+
   // Button color variables
   // primary
   --btn-primary-bg: #0d6efd;
@@ -135,7 +222,7 @@
   --btn-primary-hover-bg: #0b5ed7;
   --btn-primary-hover-border: #0a58ca;
   --btn-primary-hover-color: #fff;
-  --btn-primary-contrast: #fff; // Added this
+  --btn-primary-contrast: #fff;
 
   //secondary
   --btn-hover-bg-color: #1d222a;
@@ -155,6 +242,7 @@
   --btn-danger-hover-bg: #bb2d3b;
   --btn-danger-hover-border: #b02a37;
   --btn-focus-shadow-rgb: 49, 132, 253;
+  --btn-outline-focus-shadow-rgb: 13, 110, 253;
 
   --bg-yellow-100: #ffc107;
 
@@ -163,12 +251,111 @@
   --sidebar-menu-bg-color: #151b23;
   --active-menu-bg-color: #292f38;
 
+  // scrollbar colors
+  --scrollbar-track-bg: #161b22;
+  --scrollbar-thumb-bg: #30363d;
+  --scrollbar-thumb-hover-bg: #8b949e;
+
+  --footer-logo-color: rgba(151, 155, 167, 0.5);
+
+  // Toast alert variant variables
+  --toast-info-bg: #121d2f;
+  --toast-info-text: #58a6ff;
+  --toast-info-icon-color: #58a6ff;
+  --toast-info-border: rgba(56, 139, 253, 0.4);
+
+  --toast-success-bg: #12261e;
+  --toast-success-text: #3fb950;
+  --toast-success-icon-color: #3fb950;
+  --toast-success-border: rgba(46, 160, 67, 0.4);
+
+  --toast-warning-bg: #272115;
+  --toast-warning-text: #d29922;
+  --toast-warning-icon-color: #d29922;
+  --toast-warning-border: rgba(187, 128, 9, 0.4);
+
+  --toast-danger-bg: #25171c;
+  --toast-danger-text: #f85149;
+  --toast-danger-icon-color: #f85149;
+  --toast-danger-border: rgba(248, 81, 73, 0.4);
+
+  --toast-unavailable-bg: #22272e;
+  --toast-unavailable-text: #8b949e;
+  --toast-unavailable-icon-color: #8b949e;
+  --toast-unavailable-border: #30363d;
+
+  --toast-upsell-bg: #2e1f47;
+  --toast-upsell-text: #d2a8ff;
+  --toast-upsell-icon-color: #d2a8ff;
+  --toast-upsell-border: rgba(226, 206, 255, 0.4);
+
+  --toast-alert-text-color: #f0f6fc;
+
   // card styles
   --card-bg-default: #151b23;
+  --card-bg-muted: #2b2b2b;
+  --card-bg-primary: #2e3b55;
+  --card-bg-dark: #121212;
+  --card-bg-light: #2a2a2a;
+  --card-text-default: #f8f9fa;
   --card-border-color: #3d444d;
-  --card-border-dashed: #3d444d; // Added this
-  
+  --card-border-dashed: #3d444d;
+
+  // tooltip styles
+  --tooltip-bg-color: #3d444d;
+  --tooltip-text-color: #f0f6fc;
+
+  // dashboard title notification
+  --dashboard-notification-color: #a7c7ff;
+  --dashboard-notification-bg-color: #1d1d1d;
+  --dashboard-notification-border-color: #818cab;
+
+  // custom dropdown
+  --box-shadow-1: 0px 0px 0px 1px #3d444d;
+  --box-shadow-2: 0px 6px 12px -3px #01040966;
+  --box-shadow-3: 0px 6px 18px 0px #01040966;
+
+  --dropdown-box-shadow: var(--box-shadow-1), var(--box-shadow-2),
+    var(--box-shadow-3);
+
   // skeleton loader
   --skeleton-base-color: #1e1e24;
   --skeleton-shine-color: #2a2a38;
+  --skeleton-bg-color: #2a2a3c;
+}
+
+/* --- Global Reset & Scrollbar Styles --- */
+html, body {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  background-color: var(--bg-color);
+  color: var(--font-color);
+  transition: background-color 0.3s, color 0.3s;
+}
+
+/* Firefox Scrollbar */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb-bg) var(--scrollbar-track-bg);
+}
+
+/* Chrome, Edge, and Safari Scrollbar */
+*::-webkit-scrollbar {
+  width: 12px;  /* Width of vertical scrollbar */
+  height: 12px; /* Height of horizontal scrollbar */
+}
+
+*::-webkit-scrollbar-track {
+  background: var(--scrollbar-track-bg);
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: var(--scrollbar-thumb-bg);
+  border-radius: 10px;
+  border: 3px solid var(--scrollbar-track-bg); /* Creates padding around thumb */
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background-color: var(--scrollbar-thumb-hover-bg);
 }
