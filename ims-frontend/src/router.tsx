@@ -50,7 +50,7 @@ import GenerateInvoicesPage from "./pages/admin/finance/GenerateInvoicesPage";
 import ManageInventoryPage from "./pages/admin/inventory/ManageInventoryPage";
 import ViewOrdersPage from "./pages/admin/ViewOrdersPage";
 import ManageAnnouncementsPage from "./pages/admin/ManageAnnouncementsPage";
-
+import ManageStaffPage from "./pages/admin/ManageStaffPage";
 
 const AppRouter = () => {
     return (
@@ -87,18 +87,12 @@ const AppRouter = () => {
                     {/* Teacher-Only Routes */}
                     <Route element={<RoleProtectedRoute allowedRoles={["TEACHER"]} />}>
                         <Route path="/teacher/my-classes" element={<MyClassesPage />} />
-                        <Route
-                            path="/teacher/attendance"
-                            element={<MarkAttendancePage />}
-                        />
+                        <Route path="/teacher/attendance" element={<MarkAttendancePage />}/>
                         <Route path="/teacher/marks" element={<EnterMarksPage />} />
                     </Route>
 
                     {/* Admin-Only Routes */}
-                    <Route
-                        element={
-                            <RoleProtectedRoute allowedRoles={["ADMIN", "ADMIN_ADMISSION"]} />
-                        }
+                    <Route element={<RoleProtectedRoute allowedRoles={["ADMIN", "ADMIN_ADMISSION"]} />}
                     >
                         <Route path="/admin/admissions" element={<ViewAdmissionsPage />} />
                         <Route path="/admin/admission/new" element={<NewAdmissionPage />} />
@@ -137,10 +131,12 @@ const AppRouter = () => {
                         <Route path="/admin/subjects" element={<ManageSubjectsPage />} />
                         <Route path="/admin/exams" element={<ManageExamsPage />} />
                         <Route path="/admin/inventory" element={<ManageInventoryPage />} />
-                        <Route
-                            path="/admin/announcements"
-                            element={<ManageAnnouncementsPage />}
+                        <Route path="/admin/announcements" element={<ManageAnnouncementsPage />}
                         />
+                    </Route>
+
+                    <Route element={<RoleProtectedRoute allowedRoles={["SUPER_ADMIN"]} />}>
+                        <Route path="/admin/staff" element={<ManageStaffPage />} /> 
                     </Route>
                 </Route>
             </Route>
